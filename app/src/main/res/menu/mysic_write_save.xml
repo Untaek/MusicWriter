@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_save"
+        android:icon="@android:drawable/ic_menu_save"
+        android:title="저장"
+        app:showAsAction="always"
+        >
+        <menu>
+            <item
+                android:title="새로 저장하기"
+                android:id="@+id/action_save_new">
+            </item>
+            <item
+                android:title="기존 악보에 저장하기"
+                android:id="@+id/action_save_again">
+            </item>
+        </menu>
+    </item>
+
+</menu>

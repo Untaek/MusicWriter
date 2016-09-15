@@ -1,0 +1,65 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.1"
+
+    defaultConfig {
+        applicationId "com.limwoon.musicwriter"
+        minSdkVersion 15
+        targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
+
+        //  multiDexEnabled true
+
+        ndk{
+            moduleName "myJNI"
+
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets.main {
+        //네이티브 라이브러리 경로
+        jniLibs.srcDir 'src/main/libs'
+        //JNI소스 경로
+        jni.srcDirs = []
+    }
+
+    //안드로이드 스튜디오에서 Java 소스를 빌드할 때 buildNative task를 실행시킴
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn buildNative
+    }
+
+    //네이티브 소스 빌드
+    task buildNative(type: Exec, description: 'Compile JNI source via NDK') {
+        def ndkDir = android.ndkDirectory
+        commandLine "$ndkDir/ndk-build.cmd", 'NDK_DEBUG=1', '-C', file('src/main').absolutePath
+    }
+
+    //네이티브 라이브러리 삭제
+    task cleanNative(type: Exec, description: 'Clean JNI object files') {
+        def ndkDir = android.ndkDirectory
+        commandLine "$ndkDir/ndk-build.cmd", '-C', file('src/main').absolutePath, 'clean'
+    }
+
+    clean.dependsOn 'cleanNative'
+
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+
+    compile 'com.android.support:recyclerview-v7:24.1.1'
+    compile 'com.android.support:cardview-v7:24.1.1'
+    compile 'com.android.support:appcompat-v7:24.1.1'
+    compile 'com.android.support:design:24.1.1'
+}

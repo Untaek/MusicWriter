@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="beats_array">
+        <item>2/4 박자</item>
+        <item>3/4 박자</item>
+        <item>4/4 박자</item>
+        <item>6/8 박자</item>
+    </string-array>
+</resources>
