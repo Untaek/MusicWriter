@@ -198,9 +198,8 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                     button.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Intent intent = new Intent(rootView.getContext(), testActivity.class);
+                            Intent intent = new Intent(rootView.getContext(), LoginActivity.class);
                             startActivity(intent);
-
                         }
                     });
                     break;
