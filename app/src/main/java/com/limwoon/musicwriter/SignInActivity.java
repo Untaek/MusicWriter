@@ -49,7 +49,7 @@ public class SignInActivity extends AppCompatActivity {
                         bundle.putString("id", id);
                         bundle.putString("pw", correctPw);
                         bundle.putString("email", email);
-                        SignInAsync task = new SignInAsync();
+                        SignInAsync task = new SignInAsync(getBaseContext());
                         task.execute(bundle);
                     }
                     else {

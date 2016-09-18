@@ -1,8 +1,10 @@
 package com.limwoon.musicwriter.http;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,7 +18,9 @@ import java.net.URL;
 /**
  * Created by 운택 on 2016-09-15.
  */
-public class SignInAsync extends AsyncTask<Bundle, Void, Void> {
+public class SignInAsync extends AsyncTask<Bundle, Void, Integer> {
+
+    Context context;
 
     String id;
     String pw;
@@ -27,7 +31,11 @@ public class SignInAsync extends AsyncTask<Bundle, Void, Void> {
     InputStream is = null;
     OutputStream os = null;
 
-    Object result = null;
+    String result = null;
+
+    public SignInAsync(Context context){
+        this.context = context;
+    }
 
     @Override
     protected void onPreExecute() {
@@ -35,14 +43,14 @@ public class SignInAsync extends AsyncTask<Bundle, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(Bundle... bundles) {
+    protected Integer doInBackground(Bundle... bundles) {
         try {
             Bundle bundle = bundles[0];
             id = bundle.getString("id");
             pw = bundle.getString("pw");
             email = bundle.getString("email");
 
-            url = new URL("http://115.71.236.157/exam.php");
+            url = new URL("http://115.71.236.157/signin.php");
             httpURLConn = (HttpURLConnection) url.openConnection();
             httpURLConn.setRequestMethod("POST");
             httpURLConn.setDoInput(true);
@@ -50,7 +58,6 @@ public class SignInAsync extends AsyncTask<Bundle, Void, Void> {
             httpURLConn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
             String message = "id="+ id + "&pw=" + pw + "&email=" + email;
-            //is = httpURLConn.getInputStream();
             os = httpURLConn.getOutputStream();
             os.write(message.getBytes("UTF-8"));
             os.flush();
@@ -58,32 +65,37 @@ public class SignInAsync extends AsyncTask<Bundle, Void, Void> {
 
             is = httpURLConn.getInputStream();
 
-            StringBuilder builder = new StringBuilder();
             BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 
             while (true){
                 String line = reader.readLine();
                 if(line == null) break;
                 Log.d("response", line);
+                result = line;
             }
-
             is.close();
-            result = builder.toString();
 
         }catch (MalformedURLException e){
-
+            e.printStackTrace();
         }catch (IOException e) {
             e.printStackTrace();
         }finally {
             httpURLConn.disconnect();
         }
 
-        return null;
+        return Integer.parseInt(result);
     }
 
     @Override
-    protected void onPostExecute(Void aVoid) {
-        super.onPostExecute(aVoid);
-        Log.d("httpURLCONN", ""+result);
+    protected void onPostExecute(Integer result) {
+        if(result==1){
+            Toast.makeText(context, "가입이 완료", Toast.LENGTH_SHORT).show();
+        }else if(result==10){
+            Toast.makeText(context, "아이디가 이미 존재합니다", Toast.LENGTH_SHORT).show();
+        }else if(result==11){
+            Toast.makeText(context, "이메일이 이미 존재합니다", Toast.LENGTH_SHORT).show();
+        }
+
+        super.onPostExecute(result);
     }
 }
