@@ -1,5 +1,6 @@
 package com.limwoon.musicwriter.http;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -51,6 +52,7 @@ public class LoginAsync extends AsyncTask<Bundle, Void, Integer> {
             httpConn.setDoInput(true);
             httpConn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
+
             os = httpConn.getOutputStream();
             os.write(message.getBytes("UTF-8"));
             os.flush();
@@ -76,6 +78,7 @@ public class LoginAsync extends AsyncTask<Bundle, Void, Integer> {
     protected void onPostExecute(Integer result) {
         if(result==1){
             Toast.makeText(context, "로그인 완료", Toast.LENGTH_SHORT).show();
+            ((Activity)context).finish();
         }else if(result==10){
             Toast.makeText(context, "아이디나 비밀번호가 틀립니다", Toast.LENGTH_SHORT).show();
         }
