@@ -25,10 +25,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TabbedActivity"
-            android:label="하하하"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".MusicViewActivity"
             android:label="@string/title_activity_music_view"
             android:theme="@style/AppTheme.NoActionBar" />
