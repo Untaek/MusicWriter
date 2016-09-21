@@ -1,8 +1,10 @@
 package com.limwoon.musicwriter.http;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -90,6 +92,7 @@ public class SignInAsync extends AsyncTask<Bundle, Void, Integer> {
     protected void onPostExecute(Integer result) {
         if(result==1){
             Toast.makeText(context, "가입이 완료", Toast.LENGTH_SHORT).show();
+            ((Activity)context).finish();
         }else if(result==10){
             Toast.makeText(context, "아이디가 이미 존재합니다", Toast.LENGTH_SHORT).show();
         }else if(result==11){

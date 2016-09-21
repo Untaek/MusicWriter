@@ -1,5 +1,6 @@
 package com.limwoon.musicwriter;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,13 +19,17 @@ public class LoginActivity extends AppCompatActivity {
     String id;
     String pw;
 
+    Activity activity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        activity=this;
 
         editTextId = (EditText) findViewById(R.id.login_id);
         editTextPw = (EditText) findViewById(R.id.login_pw);
+
 
         // 로그인 버튼 클릭
         findViewById(R.id.confirm_log_in).setOnClickListener(new View.OnClickListener() {
@@ -33,7 +38,7 @@ public class LoginActivity extends AppCompatActivity {
                 id = editTextId.getText().toString();
                 pw = editTextPw.getText().toString();
 
-                LoginAsync loginAsync = new LoginAsync(getBaseContext());
+                LoginAsync loginAsync = new LoginAsync(activity);
                 if(!id.equals("") && !pw.equals("")){
                     Bundle bundle = new Bundle();
                     bundle.putString("id", id);
@@ -50,8 +55,9 @@ public class LoginActivity extends AppCompatActivity {
         findViewById(R.id.textBtn_sign_in).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
+                Intent intent = new Intent(activity, SignInActivity.class);
                 startActivity(intent);
+
             }
         });
 

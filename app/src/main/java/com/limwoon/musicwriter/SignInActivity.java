@@ -1,5 +1,6 @@
 package com.limwoon.musicwriter;
 
+import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -21,18 +22,19 @@ public class SignInActivity extends AppCompatActivity {
     EditText editTextPw2;
     EditText editTextEmail;
 
+    Activity activity;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
+        activity = this;
 
         editTextId = (EditText) findViewById(R.id.sign_in_id);
         editTextPw1 = (EditText) findViewById(R.id.sign_in_pw);
         editTextPw2 = (EditText) findViewById(R.id.sign_in_pw_2);
         editTextEmail = (EditText) findViewById(R.id.sign_in_email);
-
         findViewById(R.id.confirm_sign_in).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
@@ -49,7 +51,7 @@ public class SignInActivity extends AppCompatActivity {
                         bundle.putString("id", id);
                         bundle.putString("pw", correctPw);
                         bundle.putString("email", email);
-                        SignInAsync task = new SignInAsync(getBaseContext());
+                        SignInAsync task = new SignInAsync(activity);
                         task.execute(bundle);
                     }
                     else {
