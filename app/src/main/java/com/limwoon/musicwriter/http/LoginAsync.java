@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.limwoon.musicwriter.MusicViewActivity;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,7 +72,6 @@ public class LoginAsync extends AsyncTask<Bundle, Void, Integer> {
         } finally {
             httpConn.disconnect();
         }
-
         return result;
     }
 

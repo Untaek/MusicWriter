@@ -70,6 +70,13 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {

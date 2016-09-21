@@ -30,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
         editTextId = (EditText) findViewById(R.id.login_id);
         editTextPw = (EditText) findViewById(R.id.login_pw);
 
+
         // 로그인 버튼 클릭
         findViewById(R.id.confirm_log_in).setOnClickListener(new View.OnClickListener() {
             @Override
