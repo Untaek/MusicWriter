@@ -1,7 +1,9 @@
 package com.limwoon.musicwriter;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -27,14 +30,16 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.limwoon.musicwriter.SQLite.DefineSQL;
 import com.limwoon.musicwriter.SQLite.SheetDbHelper;
+import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 import com.limwoon.musicwriter.data.SheetData;
 import com.limwoon.musicwriter.list.SheetRecyListAdapter;
 import com.limwoon.musicwriter.list.SheetRecyListItemClickListener;
-import com.limwoon.musicwriter.sounds.Sounds;
 
 import java.util.ArrayList;
 
@@ -45,13 +50,21 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
     MyFragmentPagerAdapter myFragmentPagerAdapter;
     TabLayout tabLayout;
     Toolbar toolbar;
+
+    // navigationView 안에 있는 View들 //
+    LinearLayout linearUserInfContainer;
+    TextView textViewUserStrID;
+    TextView textViewUserEmail;
+    Button buttonLogin;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_nav);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-        mNavigationView = (NavigationView) findViewById(R.id.shitstuff);
+        mNavigationView = (NavigationView) findViewById(R.id.navigationview_main);
+        mNavigationView.setNavigationItemSelectedListener(this);
         myFragmentPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.container);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -60,21 +73,42 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
         mViewPager.setAdapter(myFragmentPagerAdapter);
         tabLayout.setupWithViewPager(mViewPager);
 
+        linearUserInfContainer = (LinearLayout) mNavigationView.getHeaderView(0).findViewById(R.id.nav_header_userInf_container);
+        textViewUserStrID = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.nav_header_userID);
+        textViewUserEmail = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.nav_header_userEmail);
+        buttonLogin = (Button) mNavigationView.getHeaderView(0).findViewById(R.id.nav_header_loginBtn);
+
+        buttonLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(intent);
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+            }
+        });
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawerLayout.setDrawerListener(toggle);
         toggle.syncState();
-
-        Sounds sounds = new Sounds();
-        sounds.loadSound(this);
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-
+        if(PUBLIC_APP_DATA.isLogin()){
+            linearUserInfContainer.setVisibility(View.VISIBLE);
+            buttonLogin.setVisibility(View.GONE);
+            textViewUserStrID.setText(PUBLIC_APP_DATA.getUserStrID());
+            textViewUserEmail.setText(PUBLIC_APP_DATA.getUserEmail());
+            mNavigationView.getMenu().findItem(R.id.nav_menu_logout).setVisible(true);
+        }
+        else {
+            linearUserInfContainer.setVisibility(View.INVISIBLE);
+            buttonLogin.setVisibility(View.VISIBLE);
+            mNavigationView.getMenu().findItem(R.id.nav_menu_logout).setVisible(false);
+        }
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -82,30 +116,40 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        Log.d("z", "onNavigationItemSelected: "+item);
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        switch (id){
+            case R.id.nav_menu_logout: {
+                Log.d("z", "onNavigationItemSelected: "+item);
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this)
+                        .setTitle("로그아웃 확인")
+                        .setMessage("정말 로그아웃 하시겠습니까?")
+                        .setPositiveButton("로그아웃", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                PUBLIC_APP_DATA.logout();
+                                SharedPreferences al = getSharedPreferences("al", MODE_PRIVATE);
+                                SharedPreferences.Editor edit = al.edit();
+                                edit.clear();
+                                edit.apply();
+                                mDrawerLayout.closeDrawer(GravityCompat.START);
+                                onResume();
+                            }
+                        })
+                        .setNegativeButton("아니오", null);
+                AlertDialog dialog = dialogBuilder.create();
+                dialog.show();
+                break;
+            }
         }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawerLayout);
-        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
     public static class PlaceholderFragment extends Fragment {
         /**
          * The fragment argument representing the section number for this
-         * fragment.
+         * fragment.``
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
@@ -199,16 +243,6 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
 
                 case 3:
                     rootView = inflater.inflate(R.layout.fragment_sheet_list_favorite, container, false);
-
-                    Button button = (Button) rootView.findViewById(R.id.fevobtn);
-
-                    button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent intent = new Intent(rootView.getContext(), LoginActivity.class);
-                            startActivity(intent);
-                        }
-                    });
                     break;
             }
 
