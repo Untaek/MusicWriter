@@ -2,14 +2,25 @@ package com.limwoon.musicwriter.data;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 
+import com.facebook.AccessToken;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginManager;
+import com.limwoon.musicwriter.http.FaceBookUserData;
 import com.limwoon.musicwriter.sounds.Sounds;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by ejdej on 2016-09-21.
@@ -22,6 +33,7 @@ public class PUBLIC_APP_DATA extends Application {
     static private String userStrID;
     static private String userEmail;
     static private boolean isLogin;
+    static private AccessToken fbToken;
 
     public static void logout(){
         userToken = null;
@@ -30,6 +42,14 @@ public class PUBLIC_APP_DATA extends Application {
         userStrID = null;
         userEmail = null;
         isLogin = false;
+    }
+
+    public static AccessToken getFbToken() {
+        return fbToken;
+    }
+
+    public static void setFbToken(AccessToken fbToken) {
+        PUBLIC_APP_DATA.fbToken = fbToken;
     }
 
     public static boolean isLogin() {
@@ -83,9 +103,14 @@ public class PUBLIC_APP_DATA extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
+
+        Log.d("starttoken0", AccessToken.getCurrentAccessToken()+"");
 
         SharedPreferences al = getSharedPreferences("al", MODE_PRIVATE);
         String jwt = al.getString("jwt", null);
+
 
         if(jwt != null){
             try {

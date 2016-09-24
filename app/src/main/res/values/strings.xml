@@ -10,4 +10,5 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_music_view">악보 연주</string>
     <string name="title_activity_etetetetset">etetetetset</string>
+    <string name="facebook_app_id">1156225657785386</string>
 </resources>

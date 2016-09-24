@@ -2,8 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:title="ㅊㅊ"
+        android:icon="@drawable/ic_action_name"
+        android:id="@+id/nav_menu_favorite"
+        />
+    <item
+        android:title="사람들의 악보 보기"
+        android:icon="@drawable/ic_action_name"
+        android:id="@+id/nav_menu_shared_sheet"
+        />
+    <item
         android:title="로그아웃"
-        android:icon="@drawable/ic_keyboard_return_black_24dp"
+        android:icon="@drawable/ic_power_settings_new_black_24dp"
         android:id="@+id/nav_menu_logout"
         android:visible="false"
 

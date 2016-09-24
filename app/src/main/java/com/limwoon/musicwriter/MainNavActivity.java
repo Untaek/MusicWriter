@@ -34,10 +34,13 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.facebook.AccessToken;
+import com.facebook.login.LoginManager;
 import com.limwoon.musicwriter.SQLite.DefineSQL;
 import com.limwoon.musicwriter.SQLite.SheetDbHelper;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 import com.limwoon.musicwriter.data.SheetData;
+import com.limwoon.musicwriter.http.FaceBookUserData;
 import com.limwoon.musicwriter.list.SheetRecyListAdapter;
 import com.limwoon.musicwriter.list.SheetRecyListItemClickListener;
 
@@ -61,6 +64,15 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_nav);
+
+        startActivity(new Intent(this, SplashActivity.class));
+
+        if(AccessToken.getCurrentAccessToken() != null){
+            Log.d("starttoken2", AccessToken.getCurrentAccessToken()+"");
+            FaceBookUserData faceBookUserData = new FaceBookUserData(getApplicationContext());
+            faceBookUserData.setUserData(AccessToken.getCurrentAccessToken());
+        }
+        super.onStart();
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         mNavigationView = (NavigationView) findViewById(R.id.navigationview_main);
@@ -96,7 +108,9 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d("t", "onResume: ");
 
+        Log.d("time2", ""+ System.currentTimeMillis());
         if(PUBLIC_APP_DATA.isLogin()){
             linearUserInfContainer.setVisibility(View.VISIBLE);
             buttonLogin.setVisibility(View.GONE);
@@ -129,11 +143,13 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 PUBLIC_APP_DATA.logout();
+                                LoginManager.getInstance().logOut();
                                 SharedPreferences al = getSharedPreferences("al", MODE_PRIVATE);
                                 SharedPreferences.Editor edit = al.edit();
                                 edit.clear();
                                 edit.apply();
                                 mDrawerLayout.closeDrawer(GravityCompat.START);
+                                myFragmentPagerAdapter.notifyDataSetChanged();
                                 onResume();
                             }
                         })
@@ -208,8 +224,6 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                     spinnerSelectBeats.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                            Log.d("Item ->", ""+i);
-
                             beatIndex = i;
                         }
 
@@ -243,6 +257,20 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
 
                 case 3:
                     rootView = inflater.inflate(R.layout.fragment_sheet_list_favorite, container, false);
+
+                    LinearLayout loginContainer = (LinearLayout) rootView.findViewById(R.id.please_login_container);
+                    if(PUBLIC_APP_DATA.isLogin()) loginContainer.setVisibility(View.GONE);
+                    else loginContainer.setVisibility(View.VISIBLE);
+
+                    // 로그인 버튼 클릭
+                    rootView.findViewById(R.id.favorite_login).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(getContext(), LoginActivity.class);
+                            startActivity(intent);
+                        }
+                    });
+
                     break;
             }
 
@@ -254,12 +282,9 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
             super.onResume();
             int page = getArguments().getInt(ARG_SECTION_NUMBER);
             if (page==2){
-                Log.d("Resume-","true");
 
                 sheetDbHelper  = new SheetDbHelper(rootView.getContext());
                 db = sheetDbHelper.getReadableDatabase();
-
-
 
                 String[] columns = {
                         DefineSQL._ID,
@@ -304,6 +329,11 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                     listCount=-1;
                 }
             }
+            if(page==3){
+                LinearLayout loginContainer = (LinearLayout) rootView.findViewById(R.id.please_login_container);
+                if(PUBLIC_APP_DATA.isLogin()) loginContainer.setVisibility(View.GONE);
+                else loginContainer.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -319,6 +349,11 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
         }
 
         @Override
+        public int getItemPosition(Object object) {
+            return -2;
+        }
+
+        @Override
         public int getCount() {
             return 3;
         }
@@ -327,8 +362,8 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
         public CharSequence getPageTitle(int position) {
             switch (position){
                 case 0: return "작곡하기";
-                case 1: return  "악보 목록";
-                case 2: return "즐겨찾는 목록";
+                case 1: return "만든 악보";
+                case 2: return "즐겨 찾는 악보";
             }
             return null;
         }
