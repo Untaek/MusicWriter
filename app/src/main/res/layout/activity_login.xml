@@ -29,16 +29,18 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingBottom="@dimen/activity_vertical_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin">
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:layout_gravity="center">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            
             >
 
             <EditText
@@ -99,14 +101,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="8dp">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="회원 가입 하기"
                 android:textSize="20sp"
                 android:layout_gravity="center"
-                android:padding="2dp"
+                android:padding="4dp"
                 android:layout_marginBottom="2dp"
                 android:id="@+id/textBtn_sign_in"
                 android:focusable="true"
@@ -119,7 +121,11 @@
                 android:text="아이디 / 비밀번호를 잊어버렸어요"
                 android:textSize="20sp"
                 android:layout_gravity="center"
-                android:padding="2dp"
+                android:padding="4dp"
+                android:textColor="@android:color/holo_green_dark"
+                android:id="@+id/textBtn_find_pw"
+                android:clickable="true"
+                android:focusable="true"
                 />
         </LinearLayout>
     </LinearLayout>

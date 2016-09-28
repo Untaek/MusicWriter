@@ -30,6 +30,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -59,6 +60,7 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
     TextView textViewUserStrID;
     TextView textViewUserEmail;
     Button buttonLogin;
+    ImageView userImage;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -89,6 +91,7 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
         textViewUserStrID = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.nav_header_userID);
         textViewUserEmail = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.nav_header_userEmail);
         buttonLogin = (Button) mNavigationView.getHeaderView(0).findViewById(R.id.nav_header_loginBtn);
+        userImage = (ImageView) mNavigationView.getHeaderView(0).findViewById(R.id.imageView_user_picture);
 
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override

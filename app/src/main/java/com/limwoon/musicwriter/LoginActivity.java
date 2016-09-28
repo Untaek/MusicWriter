@@ -3,7 +3,6 @@ package com.limwoon.musicwriter;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -23,7 +22,6 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
@@ -71,7 +69,8 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 id = editTextId.getText().toString();
                 pw = editTextPw.getText().toString();
-                boolean autoLogin = checkBoxAutoLogin.isChecked();
+                boolean autoLogin;// = checkBoxAutoLogin.isChecked();
+                autoLogin=true;
 
                 LoginAsync loginAsync = new LoginAsync(activity);
                 if(!id.equals("") && !pw.equals("")){
@@ -97,13 +96,26 @@ public class LoginActivity extends AppCompatActivity {
                     Intent intent = new Intent(activity, SignInActivity.class);
                     startActivity(intent);
                 }
+                return true;
+            }
+        });
 
-
+        // 비밀번호 찾기
+        findViewById(R.id.textBtn_find_pw).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    v.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
+                }else if(event.getAction() == MotionEvent.ACTION_UP){
+                    v.setBackgroundColor(0);
+                    Intent intent = new Intent(activity, FindPwActivity.class);
+                    startActivity(intent);
+                }
                 return false;
             }
         });
 
-        // 페이스북 로그인
+       // 페이스북 로그인
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
         accessTokenTracker = new AccessTokenTracker() {
@@ -130,6 +142,8 @@ public class LoginActivity extends AppCompatActivity {
                             String lastName = object.getString("last_name");
                             String firstName = object.getString("first_name");
                             String email = object.getString("email");
+                            String pictureURL = object.getJSONObject("picture").getJSONObject("data").getString("url");
+                            Log.d("TAG", "onCompleted: "+pictureURL);
                             boolean autoLogin = checkBoxAutoLogin.isChecked();
 
                             PUBLIC_APP_DATA.setIsLogin(true);
@@ -137,6 +151,7 @@ public class LoginActivity extends AppCompatActivity {
                             PUBLIC_APP_DATA.setUserData(object.toString());
                             PUBLIC_APP_DATA.setUserStrID(firstName + lastName);
                             PUBLIC_APP_DATA.setUserEmail(email);
+                            PUBLIC_APP_DATA.setPictureURL(pictureURL);
                             if(autoLogin){
                                 SharedPreferences sp = getSharedPreferences("al_f", MODE_PRIVATE);
                                 SharedPreferences.Editor edit = sp.edit();

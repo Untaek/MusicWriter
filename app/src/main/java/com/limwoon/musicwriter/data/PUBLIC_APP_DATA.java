@@ -34,6 +34,15 @@ public class PUBLIC_APP_DATA extends Application {
     static private String userEmail;
     static private boolean isLogin;
     static private AccessToken fbToken;
+    static private String pictureURL;
+
+    public static String getPictureURL() {
+        return pictureURL;
+    }
+
+    public static void setPictureURL(String pictureURL) {
+        PUBLIC_APP_DATA.pictureURL = pictureURL;
+    }
 
     public static void logout(){
         userToken = null;
