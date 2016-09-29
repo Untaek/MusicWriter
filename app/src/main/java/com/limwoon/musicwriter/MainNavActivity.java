@@ -119,12 +119,12 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
             buttonLogin.setVisibility(View.GONE);
             textViewUserStrID.setText(PUBLIC_APP_DATA.getUserStrID());
             textViewUserEmail.setText(PUBLIC_APP_DATA.getUserEmail());
-            mNavigationView.getMenu().findItem(R.id.nav_menu_logout).setVisible(true);
+            mNavigationView.getMenu().setGroupVisible(R.id.nav_group_user, true);
         }
         else {
             linearUserInfContainer.setVisibility(View.INVISIBLE);
             buttonLogin.setVisibility(View.VISIBLE);
-            mNavigationView.getMenu().findItem(R.id.nav_menu_logout).setVisible(false);
+            mNavigationView.getMenu().setGroupVisible(R.id.nav_group_user, false);
         }
     }
 
@@ -136,7 +136,7 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
         Log.d("z", "onNavigationItemSelected: "+item);
 
         switch (id){
-            case R.id.nav_menu_logout: {
+            case R.id.nav_menu_logout:
                 Log.d("z", "onNavigationItemSelected: "+item);
 
                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this)
@@ -160,7 +160,11 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                 AlertDialog dialog = dialogBuilder.create();
                 dialog.show();
                 break;
-            }
+            case R.id.nav_menu_user_information:
+                startActivity(new Intent(this, UserInfActivity.class));
+
+                break;
+
         }
         return true;
     }

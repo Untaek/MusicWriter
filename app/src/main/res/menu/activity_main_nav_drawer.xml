@@ -11,12 +11,25 @@
         android:icon="@drawable/ic_action_name"
         android:id="@+id/nav_menu_shared_sheet"
         />
-    <item
-        android:title="로그아웃"
-        android:icon="@drawable/ic_power_settings_new_black_24dp"
-        android:id="@+id/nav_menu_logout"
+    <group
+        android:id="@+id/nav_group_user"
         android:visible="false"
+        android:enabled="true"
+        >
 
-        />
+        <item
+            android:title="사용자 정보"
+            android:icon="@drawable/ic_account_circle_black_48dp"
+            android:id="@+id/nav_menu_user_information"
+
+            />
+         <item
+            android:title="로그아웃"
+            android:icon="@drawable/ic_power_settings_new_black_24dp"
+            android:id="@+id/nav_menu_logout"
+
+            />
+    </group>
+
 
 </menu>
