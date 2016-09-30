@@ -34,6 +34,15 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="비밀번호 바꾸기"
+            android:textSize="28sp"
+            android:id="@+id/button_change_pw"
+            />
     </LinearLayout>
 </LinearLayout>

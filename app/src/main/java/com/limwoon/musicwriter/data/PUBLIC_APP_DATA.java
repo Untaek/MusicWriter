@@ -50,6 +50,7 @@ public class PUBLIC_APP_DATA extends Application {
         userID = 0;
         userStrID = null;
         userEmail = null;
+        pictureURL = null;
         isLogin = false;
     }
 
@@ -129,12 +130,14 @@ public class PUBLIC_APP_DATA extends Application {
                 int userID = decodedJwtClaimJSON.getInt("userID");
                 String userStrID = decodedJwtClaimJSON.getString("userStrID");
                 String userEmail = decodedJwtClaimJSON.getString("userEmail");
+                String userPicUrl = decodedJwtClaimJSON.getString("userPic_url");
 
                 PUBLIC_APP_DATA.setUserToken(jwt);
                 PUBLIC_APP_DATA.setUserData(decodedJwtClaim);
                 PUBLIC_APP_DATA.setUserID(userID);
                 PUBLIC_APP_DATA.setUserStrID(userStrID);
                 PUBLIC_APP_DATA.setUserEmail(userEmail);
+                PUBLIC_APP_DATA.setPictureURL(userPicUrl);
                 PUBLIC_APP_DATA.setIsLogin(true);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();

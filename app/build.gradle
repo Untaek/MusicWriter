@@ -67,5 +67,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.android.support:design:24.1.1'
     compile 'com.facebook.android:facebook-android-sdk:4.+'
-
+    compile 'com.theartofdev.edmodo:android-image-cropper:2.3.+'
 }
