@@ -13,17 +13,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
+import com.limwoon.musicwriter.data.UserPicBitmap;
 import com.limwoon.musicwriter.http.ChangePwAsync;
 import com.limwoon.musicwriter.http.ChangeUserPic;
+import com.limwoon.musicwriter.http.GetUserPicAsync;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -42,14 +47,46 @@ public class UserInfActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user_inf);
 
         imageView_userPic = (ImageView) findViewById(R.id.imageView_user_picture_inf);
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_change_pic);
+        Bitmap userPicBitmap = new UserPicBitmap(this).getUserPicBitmap();
+        imageView_userPic.setImageBitmap(userPicBitmap);
 
         findViewById(R.id.button_change_pic).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_PICK);
-                intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
+                View view = getLayoutInflater().inflate(R.layout.choice_select_pic, null);
+                Button button_gall = (Button) view.findViewById(R.id.choice_from_gallery);
+                Button button_camera = (Button) view.findViewById(R.id.choice_from_camera);
+                Button button_from_facebook = (Button) view.findViewById(R.id.choice_from_facebook);
+                if(PUBLIC_APP_DATA.isFacebook()) button_from_facebook.setVisibility(View.VISIBLE);
+                else button_from_facebook.setVisibility(View.GONE);
 
-                startActivityForResult(intent, 100);
+                button_gall.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(Intent.ACTION_PICK);
+                        intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
+                        startActivityForResult(intent, 100);
+                    }
+                });
+                button_camera.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        startActivityForResult(intent, 100);
+                    }
+                });
+                button_from_facebook.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d("picurl", ":"+PUBLIC_APP_DATA.getPictureURL());
+                        new GetUserPicAsync(UserInfActivity.this, imageView_userPic, progressBar).execute(PUBLIC_APP_DATA.getPictureURL());
+                    }
+                });
+                AlertDialog.Builder builder = new AlertDialog.Builder(UserInfActivity.this);
+                builder.setView(view);
+                AlertDialog dialog = builder.create();
+                dialog.show();
             }
         });
 

@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -84,7 +85,11 @@ public class ChangeUserPic extends AsyncTask<Bitmap, Void, Integer> {
             result = json.getInt("result");
             imageUrl = json.getString("url");
 
-            //result = Integer.parseInt(bufferedReader.readLine());
+            String FILENAME = imageName;
+            FileOutputStream fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
+            fos.write(imageBytes);
+            fos.close();
+
             /*
             while(true){
                 String line = bufferedReader.readLine();
@@ -109,7 +114,10 @@ public class ChangeUserPic extends AsyncTask<Bitmap, Void, Integer> {
         switch (result){
             case 1:
                 Toast.makeText(context, "대표 이미지를 변경하였습니다", Toast.LENGTH_SHORT).show();
-                PUBLIC_APP_DATA.setPictureURL(imageUrl);
+                if(!PUBLIC_APP_DATA.isFacebook()) {
+                    PUBLIC_APP_DATA.setPictureURL(imageUrl);
+                    new UpdateToken(context).execute(PUBLIC_APP_DATA.getUserStrID());
+                }
                 break;
             case 10:
                 Toast.makeText(context, "이미지 변경을 실패했습니다", Toast.LENGTH_SHORT).show();
