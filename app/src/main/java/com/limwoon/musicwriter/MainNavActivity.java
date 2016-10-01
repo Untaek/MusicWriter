@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -41,6 +42,7 @@ import com.limwoon.musicwriter.SQLite.DefineSQL;
 import com.limwoon.musicwriter.SQLite.SheetDbHelper;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 import com.limwoon.musicwriter.data.SheetData;
+import com.limwoon.musicwriter.data.UserPicBitmap;
 import com.limwoon.musicwriter.http.FaceBookUserData;
 import com.limwoon.musicwriter.list.SheetRecyListAdapter;
 import com.limwoon.musicwriter.list.SheetRecyListItemClickListener;
@@ -61,6 +63,7 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
     TextView textViewUserEmail;
     Button buttonLogin;
     ImageView userImage;
+    Bitmap userPicBitmap;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,6 +76,8 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
             Log.d("starttoken2", AccessToken.getCurrentAccessToken()+"");
             FaceBookUserData faceBookUserData = new FaceBookUserData(getApplicationContext());
             faceBookUserData.setUserData(AccessToken.getCurrentAccessToken());
+            PUBLIC_APP_DATA.setIsFacebook(true);
+            PUBLIC_APP_DATA.setImageName(String.valueOf(PUBLIC_APP_DATA.getUserID()));
         }
         super.onStart();
 
@@ -111,20 +116,20 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("t", "onResume: ");
-
-        Log.d("time2", ""+ System.currentTimeMillis());
         if(PUBLIC_APP_DATA.isLogin()){
             linearUserInfContainer.setVisibility(View.VISIBLE);
             buttonLogin.setVisibility(View.GONE);
             textViewUserStrID.setText(PUBLIC_APP_DATA.getUserStrID());
             textViewUserEmail.setText(PUBLIC_APP_DATA.getUserEmail());
             mNavigationView.getMenu().setGroupVisible(R.id.nav_group_user, true);
+            userPicBitmap = new UserPicBitmap(this).getUserPicBitmap();
+            userImage.setImageBitmap(userPicBitmap);
         }
         else {
             linearUserInfContainer.setVisibility(View.INVISIBLE);
             buttonLogin.setVisibility(View.VISIBLE);
             mNavigationView.getMenu().setGroupVisible(R.id.nav_group_user, false);
+            userImage.setImageResource(R.drawable.ic_account_circle_white_48dp);
         }
     }
 
@@ -136,6 +141,9 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
         Log.d("z", "onNavigationItemSelected: "+item);
 
         switch (id){
+            case R.id.nav_menu_shared_sheet:
+                startActivity(new Intent(this, SharedSheetActivity.class));
+                break;
             case R.id.nav_menu_logout:
                 Log.d("z", "onNavigationItemSelected: "+item);
 
@@ -162,7 +170,6 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                 break;
             case R.id.nav_menu_user_information:
                 startActivity(new Intent(this, UserInfActivity.class));
-
                 break;
 
         }

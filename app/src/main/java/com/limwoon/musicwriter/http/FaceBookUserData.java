@@ -37,12 +37,13 @@ public class FaceBookUserData {
                             String lastName = object.getString("last_name");
                             String firstName = object.getString("first_name");
                             String email = object.getString("email");
+                            String picture_url = object.getJSONObject("picture").getJSONObject("data").getString("url");
                             PUBLIC_APP_DATA.setIsLogin(true);
                             PUBLIC_APP_DATA.setFbToken(token);
                             PUBLIC_APP_DATA.setUserData(object.toString());
                             PUBLIC_APP_DATA.setUserStrID(firstName + lastName);
                             PUBLIC_APP_DATA.setUserEmail(email);
-                            Log.d("time1", ""+ System.currentTimeMillis());
+                            PUBLIC_APP_DATA.setPictureURL(picture_url);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

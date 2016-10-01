@@ -25,6 +25,7 @@ import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
+import com.limwoon.musicwriter.http.FacebookCheckSignIn;
 import com.limwoon.musicwriter.http.LoginAsync;
 
 import org.json.JSONException;
@@ -118,11 +119,6 @@ public class LoginActivity extends AppCompatActivity {
        // 페이스북 로그인
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
-        accessTokenTracker = new AccessTokenTracker() {
-            @Override
-            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
-            }
-        };
 
         LoginButton facebookLoginBtn = (LoginButton) findViewById(R.id.facebook_login);
         facebookLoginBtn.setReadPermissions(Arrays.asList("public_profile", "email"));
@@ -139,6 +135,9 @@ public class LoginActivity extends AppCompatActivity {
                         try {
                             AccessToken.setCurrentAccessToken(loginResult.getAccessToken());
                             String token = loginResult.getAccessToken().getToken();
+                            long id = object.getLong("id");
+                            Log.d("facebookid", ""+id);
+                            new FacebookCheckSignIn().execute(id);
                             String lastName = object.getString("last_name");
                             String firstName = object.getString("first_name");
                             String email = object.getString("email");
@@ -147,11 +146,15 @@ public class LoginActivity extends AppCompatActivity {
                             boolean autoLogin = checkBoxAutoLogin.isChecked();
 
                             PUBLIC_APP_DATA.setIsLogin(true);
+                            PUBLIC_APP_DATA.setUserID(id);
                             PUBLIC_APP_DATA.setUserToken(token);
                             PUBLIC_APP_DATA.setUserData(object.toString());
                             PUBLIC_APP_DATA.setUserStrID(firstName + lastName);
                             PUBLIC_APP_DATA.setUserEmail(email);
                             PUBLIC_APP_DATA.setPictureURL(pictureURL);
+                            PUBLIC_APP_DATA.setImageName(String.valueOf(id));
+                            Log.d("", "imagename"+PUBLIC_APP_DATA.getImageName());
+                            PUBLIC_APP_DATA.setIsFacebook(true);
                             if(autoLogin){
                                 SharedPreferences sp = getSharedPreferences("al_f", MODE_PRIVATE);
                                 SharedPreferences.Editor edit = sp.edit();

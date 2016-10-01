@@ -1,13 +1,11 @@
 package com.limwoon.musicwriter.http;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 
@@ -15,7 +13,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -27,10 +24,10 @@ import java.net.URL;
 import static android.content.ContentValues.TAG;
 
 /**
- * Created by 운택 on 2016-09-18.
+ * Created by 운택 on 2016-10-01.
  */
-public class LoginAsync extends AsyncTask<Bundle, Void, Integer> {
 
+public class UpdateToken extends AsyncTask<String, Void, Integer> {
     Context context;
 
     HttpURLConnection httpConn;
@@ -39,26 +36,23 @@ public class LoginAsync extends AsyncTask<Bundle, Void, Integer> {
     BufferedReader bufferedReader;
 
     String id;
-    String pw;
     boolean autoLogin;
 
-    public LoginAsync(Context context){
+    public UpdateToken(Context context){
         this.context = context;
     }
 
     @Override
-    protected Integer doInBackground(Bundle... bundles) {
+    protected Integer doInBackground(String ...ids) {
         int result = 0;
         String data = null;
 
         try {
-            Bundle bundle = bundles[0];
-            id = bundle.getString("id");
-            pw = bundle.getString("pw");
-            autoLogin = bundle.getBoolean("al");
-            String message = "id="+ id + "&pw=" + pw;
+            id=ids[0];
+            autoLogin = true;
+            String message = "id="+ id;
 
-            URL url = new URL("http://115.71.236.157/login.php");
+            URL url = new URL("http://115.71.236.157/tokenupdate.php");
             httpConn = (HttpURLConnection) url.openConnection();
             httpConn.setRequestMethod("POST");
             httpConn.setDoOutput(true);
@@ -75,8 +69,6 @@ public class LoginAsync extends AsyncTask<Bundle, Void, Integer> {
             //// 로그인 판별  ////
             bufferedReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             data = bufferedReader.readLine();
-
-            Log.d(TAG, "doInBackground: "+ data);
 
             JSONObject jsonData = new JSONObject(data);
             result = jsonData.getInt("result");
@@ -97,10 +89,7 @@ public class LoginAsync extends AsyncTask<Bundle, Void, Integer> {
             PUBLIC_APP_DATA.setUserStrID(userStrID);
             PUBLIC_APP_DATA.setUserEmail(userEmail);
             PUBLIC_APP_DATA.setPictureURL(userPic_url);
-            PUBLIC_APP_DATA.setImageName(String.valueOf(userID));
             PUBLIC_APP_DATA.setIsLogin(true);
-            PUBLIC_APP_DATA.setIsFacebook(false);
-
 
             if(autoLogin){
                 SharedPreferences autoLoginPref = context.getSharedPreferences("al", Context.MODE_PRIVATE);
@@ -108,29 +97,16 @@ public class LoginAsync extends AsyncTask<Bundle, Void, Integer> {
                 editor.putString("jwt", jwt);
                 editor.apply();
             }
-
+            //result = Integer.parseInt(data);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
-            result = Integer.parseInt(data);
+            e.printStackTrace();
         } finally {
             httpConn.disconnect();
         }
         return result;
-    }
-
-    @Override
-    protected void onPostExecute(Integer result) {
-        if(result==1){
-            Toast.makeText(context, "로그인 완료", Toast.LENGTH_SHORT).show();
-            new GetUserPicAsync(context).execute(PUBLIC_APP_DATA.getPictureURL());
-            ((Activity)context).finish();
-        }else if(result==10){
-            Toast.makeText(context, "아이디나 비밀번호가 틀립니다", Toast.LENGTH_SHORT).show();
-        }
-
-        super.onPostExecute(result);
     }
 }

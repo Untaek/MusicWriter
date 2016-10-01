@@ -2,6 +2,7 @@ package com.limwoon.musicwriter.data;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -29,12 +30,39 @@ public class PUBLIC_APP_DATA extends Application {
 
     static private String userToken;
     static private String userData;
-    static private int userID;
+    static private long userID;
     static private String userStrID;
     static private String userEmail;
     static private boolean isLogin;
     static private AccessToken fbToken;
     static private String pictureURL;
+    static private String imageName;
+    static private Bitmap userPicBitmap;
+    static private boolean isFacebook = false;
+
+    public static boolean isFacebook() {
+        return isFacebook;
+    }
+
+    public static void setIsFacebook(boolean isFacebook) {
+        PUBLIC_APP_DATA.isFacebook = isFacebook;
+    }
+
+    public static Bitmap getUserPicBitmap() {
+        return userPicBitmap;
+    }
+
+    public static void setUserPicBitmap(Bitmap userPicBitmap) {
+        PUBLIC_APP_DATA.userPicBitmap = userPicBitmap;
+    }
+
+    public static String getImageName() {
+        return imageName;
+    }
+
+    public static void setImageName(String imageName){
+        PUBLIC_APP_DATA.imageName = "user_" + imageName + "_pic.jpg";
+    }
 
     public static String getPictureURL() {
         return pictureURL;
@@ -50,6 +78,7 @@ public class PUBLIC_APP_DATA extends Application {
         userID = 0;
         userStrID = null;
         userEmail = null;
+        pictureURL = null;
         isLogin = false;
     }
 
@@ -93,11 +122,11 @@ public class PUBLIC_APP_DATA extends Application {
         PUBLIC_APP_DATA.userData = userData;
     }
 
-    public static int getUserID() {
+    public static long getUserID() {
         return userID;
     }
 
-    public static void setUserID(int userID) {
+    public static void setUserID(long userID) {
         PUBLIC_APP_DATA.userID = userID;
     }
 
@@ -129,12 +158,14 @@ public class PUBLIC_APP_DATA extends Application {
                 int userID = decodedJwtClaimJSON.getInt("userID");
                 String userStrID = decodedJwtClaimJSON.getString("userStrID");
                 String userEmail = decodedJwtClaimJSON.getString("userEmail");
+                String userPicUrl = decodedJwtClaimJSON.getString("userPic_url");
 
                 PUBLIC_APP_DATA.setUserToken(jwt);
                 PUBLIC_APP_DATA.setUserData(decodedJwtClaim);
                 PUBLIC_APP_DATA.setUserID(userID);
                 PUBLIC_APP_DATA.setUserStrID(userStrID);
                 PUBLIC_APP_DATA.setUserEmail(userEmail);
+                PUBLIC_APP_DATA.setPictureURL(userPicUrl);
                 PUBLIC_APP_DATA.setIsLogin(true);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
