@@ -19,9 +19,8 @@
 
         <item
             android:title="사용자 정보"
-            android:icon="@drawable/ic_account_circle_black_48dp"
             android:id="@+id/nav_menu_user_information"
-
+            android:icon="@drawable/ic_account_circle_white_48dp"
             />
          <item
             android:title="로그아웃"

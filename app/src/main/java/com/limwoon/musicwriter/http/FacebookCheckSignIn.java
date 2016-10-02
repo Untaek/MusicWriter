@@ -3,6 +3,8 @@ package com.limwoon.musicwriter.http;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,7 +50,10 @@ public class FacebookCheckSignIn extends AsyncTask<Long, Void, Integer> {
             }
             */
 
-            result = Integer.parseInt(reader.readLine());
+            result = 1;
+
+            String picUrl = reader.readLine();
+
 
         } catch (MalformedURLException e) {
             e.printStackTrace();

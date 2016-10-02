@@ -142,7 +142,6 @@ public class LoginActivity extends AppCompatActivity {
                             String firstName = object.getString("first_name");
                             String email = object.getString("email");
                             String pictureURL = object.getJSONObject("picture").getJSONObject("data").getString("url");
-                            Log.d("TAG", "onCompleted: "+pictureURL);
                             boolean autoLogin = checkBoxAutoLogin.isChecked();
 
                             PUBLIC_APP_DATA.setIsLogin(true);
@@ -153,7 +152,6 @@ public class LoginActivity extends AppCompatActivity {
                             PUBLIC_APP_DATA.setUserEmail(email);
                             PUBLIC_APP_DATA.setPictureURL(pictureURL);
                             PUBLIC_APP_DATA.setImageName(String.valueOf(id));
-                            Log.d("", "imagename"+PUBLIC_APP_DATA.getImageName());
                             PUBLIC_APP_DATA.setIsFacebook(true);
                             if(autoLogin){
                                 SharedPreferences sp = getSharedPreferences("al_f", MODE_PRIVATE);

@@ -20,15 +20,11 @@ import static android.content.ContentValues.TAG;
 
 public class UserPicBitmap{
     private Context context;
-    private ImageView imageView;
 
     public UserPicBitmap(Context context){
         this.context=context;
     }
-    public UserPicBitmap(Context context, ImageView imageView){
-        this.context=context;
-        this.imageView=imageView;
-    }
+
     public Bitmap getUserPicBitmap(){
         Bitmap b = null;
         try {

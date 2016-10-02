@@ -51,7 +51,8 @@ public class GetUserPicAsync extends AsyncTask<String, Void, Integer> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        progressBar.setVisibility(View.VISIBLE);
+        if(progressBar!=null)
+            progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -86,18 +87,14 @@ public class GetUserPicAsync extends AsyncTask<String, Void, Integer> {
         return 1;
     }
 
-    @Override
-    protected void onProgressUpdate(Void... values) {
-
-        super.onProgressUpdate(values);
-    }
-
 
     @Override
     protected void onPostExecute(Integer result) {
         Bitmap bit = new UserPicBitmap(context).getUserPicBitmap();
-        imageView.setImageBitmap(bit);
-        progressBar.setVisibility(View.INVISIBLE);
+        if(imageView!=null)
+            imageView.setImageBitmap(bit);
+        if(progressBar!=null)
+            progressBar.setVisibility(View.INVISIBLE);
         super.onPostExecute(result);
     }
 }

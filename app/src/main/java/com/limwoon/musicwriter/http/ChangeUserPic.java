@@ -118,6 +118,9 @@ public class ChangeUserPic extends AsyncTask<Bitmap, Void, Integer> {
                     PUBLIC_APP_DATA.setPictureURL(imageUrl);
                     new UpdateToken(context).execute(PUBLIC_APP_DATA.getUserStrID());
                 }
+                else{
+
+                }
                 break;
             case 10:
                 Toast.makeText(context, "이미지 변경을 실패했습니다", Toast.LENGTH_SHORT).show();

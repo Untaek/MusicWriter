@@ -167,6 +167,8 @@ public class PUBLIC_APP_DATA extends Application {
                 PUBLIC_APP_DATA.setUserEmail(userEmail);
                 PUBLIC_APP_DATA.setPictureURL(userPicUrl);
                 PUBLIC_APP_DATA.setIsLogin(true);
+                PUBLIC_APP_DATA.setIsFacebook(false);
+                PUBLIC_APP_DATA.setImageName(String.valueOf(userID));
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             } catch (JSONException e) {

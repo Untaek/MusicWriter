@@ -47,9 +47,18 @@ public class UserInfActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user_inf);
 
         imageView_userPic = (ImageView) findViewById(R.id.imageView_user_picture_inf);
+        Button button_changepw = (Button) findViewById(R.id.button_change_pw);
         final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_change_pic);
+        if(!PUBLIC_APP_DATA.isFacebook())
+            button_changepw.setVisibility(View.VISIBLE);
+        else
+            button_changepw.setVisibility(View.GONE);
+
+
         Bitmap userPicBitmap = new UserPicBitmap(this).getUserPicBitmap();
         imageView_userPic.setImageBitmap(userPicBitmap);
+
+
 
         findViewById(R.id.button_change_pic).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,7 +99,7 @@ public class UserInfActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.button_change_pw).setOnClickListener(new View.OnClickListener() {
+        button_changepw.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 View dialView = getLayoutInflater().inflate(R.layout.dialog_change_pw, null);
