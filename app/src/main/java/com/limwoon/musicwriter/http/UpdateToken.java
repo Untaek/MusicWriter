@@ -91,12 +91,11 @@ public class UpdateToken extends AsyncTask<String, Void, Integer> {
             PUBLIC_APP_DATA.setPictureURL(userPic_url);
             PUBLIC_APP_DATA.setIsLogin(true);
 
-            if(autoLogin){
-                SharedPreferences autoLoginPref = context.getSharedPreferences("al", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = autoLoginPref.edit();
-                editor.putString("jwt", jwt);
-                editor.apply();
-            }
+            SharedPreferences autoLoginPref = context.getSharedPreferences("al", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = autoLoginPref.edit();
+            editor.putString("jwt", jwt);
+            editor.apply();
+
             //result = Integer.parseInt(data);
         } catch (MalformedURLException e) {
             e.printStackTrace();

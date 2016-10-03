@@ -29,7 +29,7 @@ import static android.content.ContentValues.TAG;
  * Created by 운택 on 2016-09-30.
  */
 
-public class ChangeUserPic extends AsyncTask<Bitmap, Void, Integer> {
+public class UploadUserPicAsync extends AsyncTask<Bitmap, Void, Integer> {
 
     InputStream is;
     DataOutputStream dataos;
@@ -38,7 +38,7 @@ public class ChangeUserPic extends AsyncTask<Bitmap, Void, Integer> {
 
     Context context;
 
-    public ChangeUserPic(Context context){
+    public UploadUserPicAsync(Context context){
         this.context=context;
     }
 
@@ -85,18 +85,6 @@ public class ChangeUserPic extends AsyncTask<Bitmap, Void, Integer> {
             result = json.getInt("result");
             imageUrl = json.getString("url");
 
-            String FILENAME = imageName;
-            FileOutputStream fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
-            fos.write(imageBytes);
-            fos.close();
-
-            /*
-            while(true){
-                String line = bufferedReader.readLine();
-                Log.d(TAG, "doInBackground: "+ line);
-                if(line==null) break;
-            }
-            */
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -104,8 +92,6 @@ public class ChangeUserPic extends AsyncTask<Bitmap, Void, Integer> {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
         return result;
     }
 
@@ -116,7 +102,6 @@ public class ChangeUserPic extends AsyncTask<Bitmap, Void, Integer> {
                 Toast.makeText(context, "대표 이미지를 변경하였습니다", Toast.LENGTH_SHORT).show();
                 if(!PUBLIC_APP_DATA.isFacebook()) {
                     PUBLIC_APP_DATA.setPictureURL(imageUrl);
-                    new UpdateToken(context).execute(PUBLIC_APP_DATA.getUserStrID());
                 }
                 else{
 

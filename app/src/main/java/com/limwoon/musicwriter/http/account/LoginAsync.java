@@ -1,4 +1,4 @@
-package com.limwoon.musicwriter.http;
+package com.limwoon.musicwriter.http.account;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,12 +10,12 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
+import com.limwoon.musicwriter.http.GetUserPicAsync;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -76,8 +76,6 @@ public class LoginAsync extends AsyncTask<Bundle, Void, Integer> {
             bufferedReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             data = bufferedReader.readLine();
 
-            Log.d(TAG, "doInBackground: "+ data);
-
             JSONObject jsonData = new JSONObject(data);
             result = jsonData.getInt("result");
 
@@ -101,13 +99,11 @@ public class LoginAsync extends AsyncTask<Bundle, Void, Integer> {
             PUBLIC_APP_DATA.setIsLogin(true);
             PUBLIC_APP_DATA.setIsFacebook(false);
 
+            SharedPreferences autoLoginPref = context.getSharedPreferences("al", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = autoLoginPref.edit();
+            editor.putString("jwt", jwt);
+            editor.apply();
 
-            if(autoLogin){
-                SharedPreferences autoLoginPref = context.getSharedPreferences("al", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = autoLoginPref.edit();
-                editor.putString("jwt", jwt);
-                editor.apply();
-            }
 
         } catch (MalformedURLException e) {
             e.printStackTrace();

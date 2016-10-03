@@ -3,7 +3,6 @@ package com.limwoon.musicwriter;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -36,16 +35,14 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.facebook.AccessToken;
-import com.facebook.login.LoginManager;
 import com.limwoon.musicwriter.SQLite.DefineSQL;
 import com.limwoon.musicwriter.SQLite.SheetDbHelper;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 import com.limwoon.musicwriter.data.SheetData;
-import com.limwoon.musicwriter.data.UserPicBitmap;
-import com.limwoon.musicwriter.http.FaceBookUserData;
+import com.limwoon.musicwriter.image.UserPicture;
 import com.limwoon.musicwriter.list.SheetRecyListAdapter;
 import com.limwoon.musicwriter.list.SheetRecyListItemClickListener;
+import com.limwoon.musicwriter.user.UserCheck;
 
 import java.util.ArrayList;
 
@@ -65,21 +62,16 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
     ImageView userImage;
     Bitmap userPicBitmap;
 
+    // 유저 이미지 처리 //
+    UserPicture userPicture;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_nav);
-
         startActivity(new Intent(this, SplashActivity.class));
 
-        if(AccessToken.getCurrentAccessToken() != null){
-            Log.d("starttoken2", AccessToken.getCurrentAccessToken()+"");
-            FaceBookUserData faceBookUserData = new FaceBookUserData(getApplicationContext());
-            faceBookUserData.setUserData(AccessToken.getCurrentAccessToken());
-            PUBLIC_APP_DATA.setIsFacebook(true);
-            PUBLIC_APP_DATA.setImageName(String.valueOf(PUBLIC_APP_DATA.getUserID()));
-        }
-        super.onStart();
+        userPicture = new UserPicture(this);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         mNavigationView = (NavigationView) findViewById(R.id.navigationview_main);
@@ -122,7 +114,7 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
             textViewUserStrID.setText(PUBLIC_APP_DATA.getUserStrID());
             textViewUserEmail.setText(PUBLIC_APP_DATA.getUserEmail());
             mNavigationView.getMenu().setGroupVisible(R.id.nav_group_user, true);
-            userPicBitmap = new UserPicBitmap(this).getUserPicBitmap();
+            userPicBitmap = userPicture.getUserPicBitmapFromCache();
             userImage.setImageBitmap(userPicBitmap);
         }
         else {
@@ -153,12 +145,7 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                         .setPositiveButton("로그아웃", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                PUBLIC_APP_DATA.logout();
-                                LoginManager.getInstance().logOut();
-                                SharedPreferences al = getSharedPreferences("al", MODE_PRIVATE);
-                                SharedPreferences.Editor edit = al.edit();
-                                edit.clear();
-                                edit.apply();
+                                new UserCheck(MainNavActivity.this).logout();
                                 mDrawerLayout.closeDrawer(GravityCompat.START);
                                 myFragmentPagerAdapter.notifyDataSetChanged();
                                 onResume();

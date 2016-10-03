@@ -39,6 +39,24 @@ public class PUBLIC_APP_DATA extends Application {
     static private String imageName;
     static private Bitmap userPicBitmap;
     static private boolean isFacebook = false;
+    public static String serverUrl = "http://115.71.236.157/";
+    static private String userFacebookPicUrl;
+
+    public static String getUserFacebookPicUrl() {
+        return userFacebookPicUrl;
+    }
+
+    public static void setUserFacebookPicUrl(String userFacebookPicUrl) {
+        PUBLIC_APP_DATA.userFacebookPicUrl = userFacebookPicUrl;
+    }
+
+    public static String getServerUrl() {
+        return serverUrl;
+    }
+
+    public static void setServerUrl(String serverUrl) {
+        PUBLIC_APP_DATA.serverUrl = serverUrl;
+    }
 
     public static boolean isFacebook() {
         return isFacebook;
@@ -143,38 +161,6 @@ public class PUBLIC_APP_DATA extends Application {
         super.onCreate();
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
-
-        Log.d("starttoken0", AccessToken.getCurrentAccessToken()+"");
-
-        SharedPreferences al = getSharedPreferences("al", MODE_PRIVATE);
-        String jwt = al.getString("jwt", null);
-
-
-        if(jwt != null){
-            try {
-                String jwtClaim = jwt.split("\\.")[1];
-                String decodedJwtClaim = new String(Base64.decode(jwtClaim, Base64.NO_WRAP), "UTF-8");
-                JSONObject decodedJwtClaimJSON = new JSONObject(decodedJwtClaim);
-                int userID = decodedJwtClaimJSON.getInt("userID");
-                String userStrID = decodedJwtClaimJSON.getString("userStrID");
-                String userEmail = decodedJwtClaimJSON.getString("userEmail");
-                String userPicUrl = decodedJwtClaimJSON.getString("userPic_url");
-
-                PUBLIC_APP_DATA.setUserToken(jwt);
-                PUBLIC_APP_DATA.setUserData(decodedJwtClaim);
-                PUBLIC_APP_DATA.setUserID(userID);
-                PUBLIC_APP_DATA.setUserStrID(userStrID);
-                PUBLIC_APP_DATA.setUserEmail(userEmail);
-                PUBLIC_APP_DATA.setPictureURL(userPicUrl);
-                PUBLIC_APP_DATA.setIsLogin(true);
-                PUBLIC_APP_DATA.setIsFacebook(false);
-                PUBLIC_APP_DATA.setImageName(String.valueOf(userID));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
 
         Sounds sounds = new Sounds();
         sounds.loadSound(this);

@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.limwoon.musicwriter.http.FindPwAsync;
+import com.limwoon.musicwriter.http.account.FindPwAsync;
 
 public class FindPwActivity extends AppCompatActivity {
 

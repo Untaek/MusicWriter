@@ -1,20 +1,15 @@
 package com.limwoon.musicwriter.http;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.limwoon.musicwriter.R;
-import com.limwoon.musicwriter.UserInfActivity;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
-import com.limwoon.musicwriter.data.UserPicBitmap;
+import com.limwoon.musicwriter.image.UserPicture;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -22,8 +17,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by 운택 on 2016-10-01.
@@ -34,17 +27,16 @@ public class GetUserPicAsync extends AsyncTask<String, Void, Integer> {
     ImageView imageView;
     ProgressBar progressBar;
 
-    public GetUserPicAsync (Context context, ImageView imageView, ProgressBar progressBar){
+    UserPicture userPicture;
+
+    public GetUserPicAsync(Context context, ImageView imageView, ProgressBar progressBar){
         this.context=context;
         this.imageView=imageView;
         this.progressBar=progressBar;
+        this.userPicture = new UserPicture(context);
     }
 
-    public GetUserPicAsync (Context context, ImageView imageView){
-        this.context=context;
-        this.imageView=imageView;
-    }
-    public GetUserPicAsync (Context context){
+    public GetUserPicAsync(Context context){
         this.context=context;
     }
 
@@ -71,8 +63,6 @@ public class GetUserPicAsync extends AsyncTask<String, Void, Integer> {
             byte[] imageBytes = byteArrayOutputStream.toByteArray();
 
             String FILENAME = PUBLIC_APP_DATA.getImageName();
-            Log.d(TAG, "doInBackground: FILENAME"+FILENAME);
-
             FileOutputStream fos = context.openFileOutput(FILENAME, Context.MODE_PRIVATE);
             fos.write(imageBytes);
             fos.flush();
@@ -90,7 +80,7 @@ public class GetUserPicAsync extends AsyncTask<String, Void, Integer> {
 
     @Override
     protected void onPostExecute(Integer result) {
-        Bitmap bit = new UserPicBitmap(context).getUserPicBitmap();
+        Bitmap bit = new UserPicture(context).getUserPicBitmapFromCache();
         if(imageView!=null)
             imageView.setImageBitmap(bit);
         if(progressBar!=null)

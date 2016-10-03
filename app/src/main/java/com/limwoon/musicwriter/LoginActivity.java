@@ -3,6 +3,7 @@ package com.limwoon.musicwriter;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -25,8 +26,11 @@ import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
+import com.limwoon.musicwriter.http.FaceBookUserData;
 import com.limwoon.musicwriter.http.FacebookCheckSignIn;
-import com.limwoon.musicwriter.http.LoginAsync;
+import com.limwoon.musicwriter.http.LoadUserPicBitmapFromURLAsync;
+import com.limwoon.musicwriter.http.account.LoginAsync;
+import com.limwoon.musicwriter.image.UserPicture;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,14 +50,13 @@ public class LoginActivity extends AppCompatActivity {
     Toolbar toolbar;
 
     CallbackManager callbackManager;
-    AccessTokenTracker accessTokenTracker;
+
+    UserPicture userPicture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        Log.d("starttoken", AccessToken.getCurrentAccessToken()+"");
-
         activity=this;
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -64,13 +67,15 @@ public class LoginActivity extends AppCompatActivity {
         editTextPw = (EditText) findViewById(R.id.login_pw);
         checkBoxAutoLogin = (CheckBox) findViewById(R.id.auto_login);
 
+        userPicture = new UserPicture(this);
+
         // 로그인 버튼 클릭
         findViewById(R.id.confirm_log_in).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 id = editTextId.getText().toString();
                 pw = editTextPw.getText().toString();
-                boolean autoLogin;// = checkBoxAutoLogin.isChecked();
+                boolean autoLogin;
                 autoLogin=true;
 
                 LoginAsync loginAsync = new LoginAsync(activity);
@@ -130,19 +135,15 @@ public class LoginActivity extends AppCompatActivity {
                         new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
-                        Log.d("jsonobject", object+"");
-                        Log.d("response", response+"");
                         try {
                             AccessToken.setCurrentAccessToken(loginResult.getAccessToken());
                             String token = loginResult.getAccessToken().getToken();
                             long id = object.getLong("id");
-                            Log.d("facebookid", ""+id);
                             new FacebookCheckSignIn().execute(id);
                             String lastName = object.getString("last_name");
                             String firstName = object.getString("first_name");
                             String email = object.getString("email");
                             String pictureURL = object.getJSONObject("picture").getJSONObject("data").getString("url");
-                            boolean autoLogin = checkBoxAutoLogin.isChecked();
 
                             PUBLIC_APP_DATA.setIsLogin(true);
                             PUBLIC_APP_DATA.setUserID(id);
@@ -151,17 +152,15 @@ public class LoginActivity extends AppCompatActivity {
                             PUBLIC_APP_DATA.setUserStrID(firstName + lastName);
                             PUBLIC_APP_DATA.setUserEmail(email);
                             PUBLIC_APP_DATA.setPictureURL(pictureURL);
+                            PUBLIC_APP_DATA.setUserFacebookPicUrl(pictureURL);
                             PUBLIC_APP_DATA.setImageName(String.valueOf(id));
                             PUBLIC_APP_DATA.setIsFacebook(true);
-                            if(autoLogin){
-                                SharedPreferences sp = getSharedPreferences("al_f", MODE_PRIVATE);
-                                SharedPreferences.Editor edit = sp.edit();
 
-                                edit.putString("ft", token);
-                                edit.apply();
-                            }
-                            Log.d("facebooktoken",token+"");
-                            Log.d("curtoken", AccessToken.getCurrentAccessToken()+"");
+                            SharedPreferences sp = getSharedPreferences("al", MODE_PRIVATE);
+                            SharedPreferences.Editor edit = sp.edit();
+                            edit.putString("ft", token);
+                            edit.apply();
+                            new FaceBookUserData(LoginActivity.this).getUserDataFromDB(id);
                             finish();
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -169,7 +168,8 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
                 Bundle parameters = new Bundle();
-                parameters.putString("fields", "id, first_name, last_name, email, picture");
+                parameters.putString("fields", "id, first_name, last_name, email, picture.width(200).height(200), gender");
+                parameters.putString("picture", "type=large");
                 request.setParameters(parameters);
                 request.executeAsync();
             }
@@ -190,7 +190,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
-
     }
 
     @Override

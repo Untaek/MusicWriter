@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.limwoon.musicwriter.http.SignInAsync;
+import com.limwoon.musicwriter.http.account.SignInAsync;
 
 public class SignInActivity extends AppCompatActivity {
 

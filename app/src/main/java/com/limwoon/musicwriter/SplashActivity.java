@@ -4,6 +4,8 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.limwoon.musicwriter.user.UserCheck;
+
 public class SplashActivity extends AppCompatActivity {
 
     @Override
@@ -11,12 +13,15 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        UserCheck userCheck = new UserCheck(this);
+        userCheck.checkIsLogin();
+
         Handler hd = new Handler();
         hd.postDelayed(new Runnable() {
 
             @Override
             public void run() {
-                finish();       // 3 초후 이미지를 닫아버림
+                finish();
             }
         }, 1500);
     }

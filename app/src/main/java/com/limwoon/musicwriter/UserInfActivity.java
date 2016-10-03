@@ -4,14 +4,11 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,26 +17,21 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
-import com.limwoon.musicwriter.data.UserPicBitmap;
-import com.limwoon.musicwriter.http.ChangePwAsync;
-import com.limwoon.musicwriter.http.ChangeUserPic;
-import com.limwoon.musicwriter.http.GetUserPicAsync;
+import com.limwoon.musicwriter.http.LoadUserPicBitmapFromURLAsync;
+import com.limwoon.musicwriter.image.UserPicture;
+import com.limwoon.musicwriter.http.account.ChangePwAsync;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.concurrent.ExecutionException;
 
 public class UserInfActivity extends AppCompatActivity {
 
     ImageView imageView_userPic;
     boolean isMatch = true;
     boolean isFill = true;
+    UserPicture userPicture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +39,8 @@ public class UserInfActivity extends AppCompatActivity {
         setContentView(R.layout.activity_user_inf);
 
         imageView_userPic = (ImageView) findViewById(R.id.imageView_user_picture_inf);
+        userPicture = new UserPicture(this);
+
         Button button_changepw = (Button) findViewById(R.id.button_change_pw);
         final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_change_pic);
         if(!PUBLIC_APP_DATA.isFacebook())
@@ -54,11 +48,8 @@ public class UserInfActivity extends AppCompatActivity {
         else
             button_changepw.setVisibility(View.GONE);
 
-
-        Bitmap userPicBitmap = new UserPicBitmap(this).getUserPicBitmap();
+        Bitmap userPicBitmap = userPicture.getUserPicBitmapFromCache();
         imageView_userPic.setImageBitmap(userPicBitmap);
-
-
 
         findViewById(R.id.button_change_pic).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,6 +58,7 @@ public class UserInfActivity extends AppCompatActivity {
                 Button button_gall = (Button) view.findViewById(R.id.choice_from_gallery);
                 Button button_camera = (Button) view.findViewById(R.id.choice_from_camera);
                 Button button_from_facebook = (Button) view.findViewById(R.id.choice_from_facebook);
+
                 if(PUBLIC_APP_DATA.isFacebook()) button_from_facebook.setVisibility(View.VISIBLE);
                 else button_from_facebook.setVisibility(View.GONE);
 
@@ -88,8 +80,15 @@ public class UserInfActivity extends AppCompatActivity {
                 button_from_facebook.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.d("picurl", ":"+PUBLIC_APP_DATA.getPictureURL());
-                        new GetUserPicAsync(UserInfActivity.this, imageView_userPic, progressBar).execute(PUBLIC_APP_DATA.getPictureURL());
+                        try {
+                            Bitmap bit = new LoadUserPicBitmapFromURLAsync().execute(PUBLIC_APP_DATA.getUserFacebookPicUrl()).get();
+                            userPicture.changeUserPicture(1, bit); // 1 : 페이스북 이미지 가져와서 바꾸기
+                            imageView_userPic.setImageBitmap(bit);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
                 AlertDialog.Builder builder = new AlertDialog.Builder(UserInfActivity.this);
@@ -158,7 +157,7 @@ public class UserInfActivity extends AppCompatActivity {
                 CropImage.activity(uri)
                         .setGuidelines(CropImageView.Guidelines.ON)
                         .setFixAspectRatio(true)
-                        .setRequestedSize(160, 160)
+                        .setRequestedSize(240, 240)
                         .start(this);
             }
         }
@@ -168,9 +167,8 @@ public class UserInfActivity extends AppCompatActivity {
                 Uri resultUri = result.getUri();
                 try {
                     Bitmap bit = MediaStore.Images.Media.getBitmap(getContentResolver(), resultUri);
+                    userPicture.changeUserPicture(0, bit);
                     imageView_userPic.setImageBitmap(bit);
-                    new ChangeUserPic(UserInfActivity.this).execute(bit);
-
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
