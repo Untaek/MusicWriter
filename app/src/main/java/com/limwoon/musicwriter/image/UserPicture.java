@@ -56,7 +56,6 @@ public class UserPicture {
             b = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_account_circle_white_48dp);
         } catch (IOException e) {
             e.printStackTrace();
-            Log.d("TAG", "onCreate: IOEXCEP");
         }
         return b;
     }
