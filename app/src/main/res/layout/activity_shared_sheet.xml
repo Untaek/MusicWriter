@@ -1,77 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.design.widget.CoordinatorLayout
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_shared_sheet"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.limwoon.musicwriter.SharedSheetActivity"
-    android:orientation="vertical">
+    >
 
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/my_toolbar"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="#00000000"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:title="zzzzzzzzzzzz"
-        />
-        <LinearLayout
+        android:layout_height="wrap_content"
+        android:id="@+id/appbar">
+        <android.support.design.widget.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <FrameLayout
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:contentScrim="@color/com_facebook_button_border_color_focused"
+            app:scrimAnimationDuration="400"
+            >
+            <android.support.v4.view.ViewPager
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <android.support.v7.widget.RecyclerView
+                android:layout_height="280dp"
+                android:id="@+id/viewPager_nice_sheet"
+                app:layout_collapseMode="parallax"
+                android:fitsSystemWindows="true"
+                app:layout_collapseParallaxMultiplier="0.7"
+
+                />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:orientation="horizontal"
+                android:id="@+id/viewPager_indicator"
+                android:layout_gravity="bottom">
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:id="@+id/recycler_shared_sheet"
-                    android:scrollbars="vertical"/>
-
-                <com.bartoszlipinski.recyclerviewheader2.RecyclerViewHeader
+                    android:layout_weight="1"/>
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:id="@+id/recycler_header">
-                    <android.support.v4.view.ViewPager
-                        android:layout_width="match_parent"
-                        android:layout_height="220dp"
-                        android:id="@+id/viewPager_nice_sheet"
-                        />
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="10dp"
-                        android:orientation="horizontal">
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:background="@color/com_facebook_button_background_color_pressed"/>
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"/>
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"/>
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"/>
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"/>
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"/>
 
-                    </LinearLayout>
-                </com.bartoszlipinski.recyclerviewheader2.RecyclerViewHeader>
-            </FrameLayout>
+            </LinearLayout>
+            <android.support.v7.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:title="테스트"
+                android:elevation="4dp"
+                android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+                app:popupTheme="@style/AppTheme.PopupOverlay"
+                app:layout_collapseMode="pin"
+                android:id="@+id/my_toolbar"
+                />
+        </android.support.design.widget.CollapsingToolbarLayout>
+    </android.support.design.widget.AppBarLayout>
 
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <android.support.design.widget.TabLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/shared_tabs"
+                app:tabMode="fixed"
+                />
+            <android.support.v4.view.ViewPager
+                android:layout_width="match_parent"
+                android:layout_height="500dp"
+                android:id="@+id/shared_list_pager"
+                android:clickable="false"
+                />
         </LinearLayout>
-
-</RelativeLayout>
+    </android.support.v4.widget.NestedScrollView>
+</android.support.design.widget.CoordinatorLayout>

@@ -25,5 +25,4 @@
     <include layout="@layout/content_music_view" />
 
 
-
 </android.support.design.widget.CoordinatorLayout>

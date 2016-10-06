@@ -13,14 +13,14 @@ import com.limwoon.musicwriter.R;
  * Created by ejdej on 2016-10-04.
  */
 
-public class ViewPagerFragment extends Fragment {
+public class TopViewPagerFragment extends Fragment {
 
     int mNum;
 
-    public ViewPagerFragment(){}
+    public TopViewPagerFragment(){}
 
-    public static ViewPagerFragment newInstance(int num) {
-        ViewPagerFragment fragment = new ViewPagerFragment();
+    public static TopViewPagerFragment newInstance(int num) {
+        TopViewPagerFragment fragment = new TopViewPagerFragment();
         Bundle bundle = new Bundle();
         bundle.putInt("num", num);
         fragment.setArguments(bundle);
@@ -35,8 +35,10 @@ public class ViewPagerFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View v =inflater.inflate(R.layout.nav_header, container, false);
+            View v =inflater.inflate(R.layout.cardview_shared_sheet_list, container, false);
         return v;
     }
+
+
 
 }

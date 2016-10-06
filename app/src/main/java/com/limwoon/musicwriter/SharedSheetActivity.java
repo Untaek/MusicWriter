@@ -1,28 +1,27 @@
 package com.limwoon.musicwriter;
 
-import android.os.Handler;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.graphics.Color;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ScrollView;
+import android.widget.LinearLayout;
 
-import com.bartoszlipinski.recyclerviewheader2.RecyclerViewHeader;
 import com.limwoon.musicwriter.data.SheetData;
+import com.limwoon.musicwriter.list.SharedListPagerAdapter;
 import com.limwoon.musicwriter.list.SharedSheetRecyclerAdapter;
 import com.limwoon.musicwriter.list.SharedSheetViewPagerAdapter;
-import com.limwoon.musicwriter.list.ViewPagerFragment;
 
 import java.util.ArrayList;
 
@@ -35,31 +34,48 @@ public class SharedSheetActivity extends AppCompatActivity {
     SharedSheetRecyclerAdapter mRecyclerAdapter;
     GridLayoutManager mLayoutManager;
     LinearLayoutManager mLinearLayoutManager;
-    RecyclerViewHeader mRecyclerViewHeader;
+    LinearLayout mViewPagerIndicator;
 
     ArrayList<SheetData> sheetList;
+    ViewPager listViewPager;
+    TabLayout listTabLayout;
+    SharedListPagerAdapter listPagerAdapter;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_shared_sheet, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.shared_menu_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+
+        return super.onCreateOptionsMenu(menu);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shared_sheet);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         sheetList = new ArrayList<>();
 
         mViewPager= (ViewPager) findViewById(R.id.viewPager_nice_sheet);
         mViewPagerAdapter = new SharedSheetViewPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mViewPagerAdapter);
+        mViewPager.setCurrentItem(1000000/2);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_shared_sheet);
-        mRecyclerAdapter = new SharedSheetRecyclerAdapter(sheetList);
-        mRecyclerView.setAdapter(mRecyclerAdapter);
-        mLayoutManager = new GridLayoutManager(this, 2, LinearLayoutManager.VERTICAL, false);
-        mLinearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        mRecyclerView.setLayoutManager(mLinearLayoutManager);
-        mRecyclerViewHeader = (RecyclerViewHeader) findViewById(R.id.recycler_header);
-        mRecyclerViewHeader.attachTo(mRecyclerView);
+        listViewPager = (ViewPager) findViewById(R.id.shared_list_pager);
+        listPagerAdapter = new SharedListPagerAdapter(getSupportFragmentManager());
+        listViewPager.setAdapter(listPagerAdapter);
+
+        listTabLayout = (TabLayout) findViewById(R.id.shared_tabs);
+        listTabLayout.setupWithViewPager(listViewPager);
+
+        mViewPagerIndicator = (LinearLayout) findViewById(R.id.viewPager_indicator);
+        mViewPagerIndicator.getChildAt(0).setBackgroundColor(Color.BLUE);
 
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -70,43 +86,33 @@ public class SharedSheetActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 Log.d("TAG", "onPageSelected: " + position);
-
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                Log.d("TAG", "onPageScrollStateChanged: " + state);
+                int current = mViewPager.getCurrentItem() % 5;
+
+                for(int i=0; i<5; i++)
+                    mViewPagerIndicator.getChildAt(i).setBackgroundColor(Color.parseColor("#00000000"));
+
+                mViewPagerIndicator.getChildAt(current).setBackgroundColor(Color.BLUE);
             }
         });
 
-        for(int i=0; i<300; i++)
-            sheetList.add(new SheetData());
 
-        mRecyclerAdapter.notifyDataSetChanged();
 
-        Thread thread = new Thread(new Runnable() {
-            Handler handler = new Handler();
-            @Override
-            public void run() {
-                while (true){
-                    try {
-                        Thread.sleep(1000);
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                mViewPager.setCurrentItem(mViewPager.getCurrentItem()+1);
-                                if(mViewPager.getCurrentItem()==mViewPagerAdapter.getCount()){
-                                    mViewPager.setCurrentItem(0);
-                                }
-                            }
-                        });
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-       // thread.start();
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id){
+            case android.R.id.home: finish();
+                break;
+            case R.id.shared_menu_search:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

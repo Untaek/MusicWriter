@@ -67,6 +67,5 @@ dependencies {
     compile 'com.android.support:design:24.1.1'
     compile 'com.facebook.android:facebook-android-sdk:4.+'
     compile 'com.theartofdev.edmodo:android-image-cropper:2.3.+'
-    compile 'com.bartoszlipinski:recyclerviewheader2:2.0.1'
 
 }

@@ -52,7 +52,8 @@
             android:name=".FindPwActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".UserInfActivity" />
-        <activity android:name=".SharedSheetActivity"></activity>
+        <activity android:name=".SharedSheetActivity"/>
+        <activity android:name=".TestActivityMustDelete"></activity>
     </application>
 
 </manifest>

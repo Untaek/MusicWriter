@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -32,6 +33,7 @@ import com.limwoon.musicwriter.draw.BaseSheet;
 import com.limwoon.musicwriter.draw.NoteRecyclerAdapter;
 import com.limwoon.musicwriter.draw.NoteRestExam;
 import com.limwoon.musicwriter.draw.SheetAppender;
+import com.limwoon.musicwriter.http.ShareSheetAsync;
 import com.limwoon.musicwriter.parse.NoteParser;
 import com.limwoon.musicwriter.sounds.Sounds;
 
@@ -65,6 +67,8 @@ public class MusicViewActivity extends AppCompatActivity {
     int musicProgress =0;
 
     NativeClass nativeClass;
+
+    Button button_shareMusic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -264,6 +268,23 @@ public class MusicViewActivity extends AppCompatActivity {
 
         textViewTitle.setText("제목 : "+title);
         textViewAuthor.setText("작곡자 : "+author);
+
+        button_shareMusic = (Button) findViewById(R.id.button_share_music);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(MusicViewActivity.this);
+        builder.setTitle("이 곡을 공유 하시겠습니까?").setMessage("z");
+        builder.setPositiveButton("네", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                new ShareSheetAsync().execute();
+            }
+        }).setNegativeButton("아니요", null);
+        button_shareMusic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
     }
 
     @Override

@@ -18,8 +18,6 @@ public class SharedSheetRecyclerAdapter extends RecyclerView.Adapter<SharedSheet
 
     ArrayList<SheetData> list;
 
-    private static final int TYPE_HEADER = 0;
-    private static final int TYPE_ITEM = 1;
 
     public SharedSheetRecyclerAdapter(ArrayList<SheetData> list){
         this.list=list;
