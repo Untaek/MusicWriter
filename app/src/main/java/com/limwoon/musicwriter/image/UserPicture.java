@@ -6,11 +6,8 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.limwoon.musicwriter.R;
-import com.limwoon.musicwriter.UserInfActivity;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
-import com.limwoon.musicwriter.http.LoadUserPicBitmapFromURLAsync;
-import com.limwoon.musicwriter.http.UpdatePictureDBAsync_FacebookUser;
-import com.limwoon.musicwriter.http.UpdatePictureDBAsync;
+import com.limwoon.musicwriter.http.account.UpdatePictureDBAsync_FacebookUser;
 import com.limwoon.musicwriter.http.UpdateToken;
 import com.limwoon.musicwriter.http.UploadUserPicAsync;
 
@@ -19,9 +16,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by 운택 on 2016-10-03.

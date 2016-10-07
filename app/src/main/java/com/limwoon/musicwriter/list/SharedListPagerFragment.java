@@ -6,12 +6,14 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.limwoon.musicwriter.R;
 import com.limwoon.musicwriter.data.SheetData;
+import com.limwoon.musicwriter.http.LoadSharedSheetList;
 
 import java.util.ArrayList;
 
@@ -20,8 +22,6 @@ import java.util.ArrayList;
  */
 
 public class SharedListPagerFragment extends Fragment {
-
-    int num;
 
     public SharedListPagerFragment(){}
 
@@ -33,31 +33,49 @@ public class SharedListPagerFragment extends Fragment {
         return fragment;
     }
 
+    static public boolean listLoading=false;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View mView;
         int fragNum = getArguments().getInt("num");
 
+
         if(fragNum == 1){
 
-            ArrayList<SheetData> sheetList = new ArrayList<>();
+            final ArrayList<SheetData> sheetList = new ArrayList<>();
 
             mView = inflater.inflate(R.layout.fragment_shared_list, container, false);
             RecyclerView mRecyclerView;
-            SharedSheetRecyclerAdapter mRecyclerAdapter;
-            LinearLayoutManager mLinearLayoutManager;
+            final SharedSheetRecyclerAdapter mRecyclerAdapter;
+            final LinearLayoutManager mLinearLayoutManager;
 
             mRecyclerView = (RecyclerView) mView.findViewById(R.id.recycler_shared_sheet);
             mRecyclerAdapter = new SharedSheetRecyclerAdapter(sheetList);
             mRecyclerView.setAdapter(mRecyclerAdapter);
             mLinearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
             mRecyclerView.setLayoutManager(mLinearLayoutManager);
+            new LoadSharedSheetList(sheetList, mRecyclerAdapter).execute(0);
+            mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
 
-            for (int i=0; i<100; i++){
-                sheetList.add(new SheetData());
-            }
-            mRecyclerAdapter.notifyDataSetChanged();
+                    int lastItem = mLinearLayoutManager.findLastVisibleItemPosition();
+                    int itemCount = mLinearLayoutManager.getItemCount();
+                    Log.d("dx", "onScrolled: "+dx);
+                    Log.d("dy", "onScrolled: "+dy);
+                    Log.d("lastitem", "onScrolled: "+lastItem);
+                    Log.d("childcount", "onScrolled: "+itemCount);
+
+                    if(lastItem >= itemCount-1 && dy>0 && !listLoading){
+                        listLoading=true;
+                        new LoadSharedSheetList(sheetList, mRecyclerAdapter).execute(itemCount/7);
+                    }
+
+                }
+            });
 
             return mView;
         }

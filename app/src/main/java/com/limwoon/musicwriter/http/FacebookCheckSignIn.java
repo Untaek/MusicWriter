@@ -42,13 +42,13 @@ public class FacebookCheckSignIn extends AsyncTask<Long, Void, Integer> {
             InputStream is = connection.getInputStream();
             InputStreamReader isReader = new InputStreamReader(is, "UTF-8");
             BufferedReader reader = new BufferedReader(isReader);
-            /*
+
             while(true){
                 String line = reader.readLine();
                 Log.d(TAG, "doInBackground: "+ line);
                 if(line==null) break;
             }
-            */
+
 
             result = 1;
 

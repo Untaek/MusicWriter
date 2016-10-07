@@ -33,12 +33,14 @@
                 android:text="음악 제목 입니다"
                 android:textSize="26sp"
                 android:layout_marginBottom="12dp"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black"
+                android:id="@+id/shared_card_title"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="작곡자"
-                android:textSize="18sp"/>
+                android:textSize="18sp"
+                android:id="@+id/shared_card_author"/>
 
         </LinearLayout>
     </LinearLayout>
@@ -82,11 +84,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="댓글 수"/>
+                    android:text="댓글 수"
+                    android:id="@+id/textView_card_sharedList_comments"
+                    android:layout_marginRight="10sp"/>
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="좋아요 수"/>
+                    android:text="좋아요 수"
+                    android:id="@+id/textView_card_sharedList_likes"/>
             </LinearLayout>
         </LinearLayout>
 

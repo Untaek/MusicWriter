@@ -3,11 +3,9 @@ package com.limwoon.musicwriter;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,20 +22,19 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.limwoon.musicwriter.SQLite.DefineSQL;
 import com.limwoon.musicwriter.SQLite.SheetDbHelper;
 import com.limwoon.musicwriter.data.NoteData;
+import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 import com.limwoon.musicwriter.draw.BaseSheet;
 import com.limwoon.musicwriter.draw.NoteRecyclerAdapter;
 import com.limwoon.musicwriter.draw.NoteRestExam;
 import com.limwoon.musicwriter.draw.SheetAppender;
 import com.limwoon.musicwriter.http.ShareSheetAsync;
-import com.limwoon.musicwriter.parse.NoteParser;
+import com.limwoon.musicwriter.data.NoteParser;
 import com.limwoon.musicwriter.sounds.Sounds;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class MusicViewActivity extends AppCompatActivity {
@@ -47,6 +44,7 @@ public class MusicViewActivity extends AppCompatActivity {
     int beats;
     String title;
     String author;
+    String data;
 
     RecyclerView sheetRecyView;
     NoteRecyclerAdapter sheetRecyAdapter;
@@ -80,7 +78,7 @@ public class MusicViewActivity extends AppCompatActivity {
 
         // 디비에서 정보 가져오기, 기본적인 정보들 변수에 넣기
         intentData = getIntent();
-        String data = intentData.getStringExtra("musicData");
+        data = intentData.getStringExtra("musicData");
         noteParser = new NoteParser(data);
         beats = noteParser.getBeats();
         title = noteParser.getTitle();
@@ -275,14 +273,34 @@ public class MusicViewActivity extends AppCompatActivity {
         builder.setPositiveButton("네", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                new ShareSheetAsync().execute();
+                Bundle bundle = new Bundle();
+                bundle.putString("title", title);
+                bundle.putString("author", author);
+                bundle.putString("note", data);
+
+                new ShareSheetAsync().execute(bundle);
             }
         }).setNegativeButton("아니요", null);
+
+        final AlertDialog.Builder builder1 = new AlertDialog.Builder(MusicViewActivity.this);
+        builder1.setTitle("오류").setMessage("로그인이 필요합니다");
+        builder1.setPositiveButton("로그인하기", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+            }
+        }).setNegativeButton("닫기", null);
         button_shareMusic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog dialog = builder.create();
-                dialog.show();
+                if(PUBLIC_APP_DATA.isLogin()){
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+                else{
+                    AlertDialog dialog1 = builder1.create();
+                    dialog1.show();
+                }
             }
         });
     }
@@ -297,7 +315,6 @@ public class MusicViewActivity extends AppCompatActivity {
     protected void onPause() {
         if(playThread!=null)
         playThread.interrupt();
-
         super.onPause();
     }
 
@@ -366,8 +383,6 @@ public class MusicViewActivity extends AppCompatActivity {
             }).show();
 
         }
-
-
 
         return super.onOptionsItemSelected(item);
     }
