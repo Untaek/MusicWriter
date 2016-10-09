@@ -88,9 +88,9 @@
                 android:src="@drawable/ic_play_arrow_black_48dp"
                 android:padding="20dp"/>
             <Button
-                android:layout_width="wrap_content"
+                android:layout_width=   "wrap_content"
                 android:layout_height="wrap_content"
-                android:text="곡 공유하기"
+                android:text="곡 게시하기"
                 android:id="@+id/button_share_music"/>
         </LinearLayout>
     </LinearLayout>

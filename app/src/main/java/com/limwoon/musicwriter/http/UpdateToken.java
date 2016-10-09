@@ -78,7 +78,7 @@ public class UpdateToken extends AsyncTask<String, Void, Integer> {
             String decodedJwtClaim = new String(Base64.decode(jwtClaim, Base64.NO_WRAP), "UTF-8");
 
             JSONObject decodedJwtClaimJSON = new JSONObject(decodedJwtClaim);
-            int userID = decodedJwtClaimJSON.getInt("userID");
+            long userID = decodedJwtClaimJSON.getLong("userID");
             String userStrID = decodedJwtClaimJSON.getString("userStrID");
             String userEmail = decodedJwtClaimJSON.getString("userEmail");
             String userPic_url = decodedJwtClaimJSON.getString("userPic_url");

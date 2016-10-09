@@ -1,8 +1,10 @@
 package com.limwoon.musicwriter.http;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 
@@ -29,6 +31,12 @@ public class ShareSheetAsync extends AsyncTask<Bundle, Void, Integer> {
     private String author;
     private String note;
 
+    Context context;
+    
+    public ShareSheetAsync(Context context){
+        this.context=context;
+    }
+    
     @Override
     protected Integer doInBackground(Bundle... bundles) {
         id = PUBLIC_APP_DATA.getUserID();
@@ -80,5 +88,12 @@ public class ShareSheetAsync extends AsyncTask<Bundle, Void, Integer> {
 
 
         return null;
+    }
+
+    @Override
+    protected void onPostExecute(Integer integer) {
+        Toast.makeText(context, "곡이 게시 되었습니다", Toast.LENGTH_SHORT).show();
+        
+        super.onPostExecute(integer);
     }
 }

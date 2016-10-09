@@ -269,7 +269,7 @@ public class MusicViewActivity extends AppCompatActivity {
 
         button_shareMusic = (Button) findViewById(R.id.button_share_music);
         final AlertDialog.Builder builder = new AlertDialog.Builder(MusicViewActivity.this);
-        builder.setTitle("이 곡을 공유 하시겠습니까?").setMessage("z");
+        builder.setTitle("이 곡을 게시 하시겠습니까?").setMessage("z");
         builder.setPositiveButton("네", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -278,7 +278,7 @@ public class MusicViewActivity extends AppCompatActivity {
                 bundle.putString("author", PUBLIC_APP_DATA.getUserStrID());
                 bundle.putString("note", data);
 
-                new ShareSheetAsync().execute(bundle);
+                new ShareSheetAsync(getApplicationContext()).execute(bundle);
             }
         }).setNegativeButton("아니요", null);
 
