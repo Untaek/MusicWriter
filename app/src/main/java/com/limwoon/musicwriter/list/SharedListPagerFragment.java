@@ -69,7 +69,7 @@ public class SharedListPagerFragment extends Fragment {
                     Log.d("lastitem", "onScrolled: "+lastItem);
                     Log.d("childcount", "onScrolled: "+itemCount);
 
-                    if(lastItem >= itemCount-1 && dy>0 && !listLoading){
+                    if(lastItem >= itemCount-1 && dy>0 && !listLoading && sheetList.size()%7==0){
                         listLoading=true;
                         new LoadSharedSheetList(sheetList, mRecyclerAdapter).execute(itemCount/7);
                     }

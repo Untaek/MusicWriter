@@ -68,7 +68,7 @@ public class LoadSharedSheetList extends AsyncTask<Integer, Void, Integer> {
 
             JSONArray jsonArray = new JSONArray(json);
             Log.d(TAG, "doInBackground: " + jsonArray);
-            for(int i=0; i<=jsonArray.length(); i++){
+            for(int i=0; i<jsonArray.length(); i++){
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String title = jsonObject.getString("title");
                 String author = jsonObject.getString("author");
@@ -92,9 +92,6 @@ public class LoadSharedSheetList extends AsyncTask<Integer, Void, Integer> {
                 sheetData.setComments(likes);
                 list.add(sheetData);
             }
-
-
-
 
 
         } catch (MalformedURLException e) {

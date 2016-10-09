@@ -159,7 +159,7 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                 startActivity(new Intent(this, UserInfActivity.class));
                 break;
             case R.id.nav_menu_favorite:
-                startActivity(new Intent(this, TestActivityMustDelete.class));
+               // startActivity(new Intent(this, TestActivityMustDelete.class));
                 break;
 
         }
