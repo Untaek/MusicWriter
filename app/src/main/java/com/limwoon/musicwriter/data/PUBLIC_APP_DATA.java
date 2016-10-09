@@ -2,6 +2,7 @@ package com.limwoon.musicwriter.data;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Base64;
@@ -13,6 +14,8 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
+import com.limwoon.musicwriter.NativeClass;
+import com.limwoon.musicwriter.draw.NoteRestExam;
 import com.limwoon.musicwriter.http.FaceBookUserData;
 import com.limwoon.musicwriter.sounds.Sounds;
 
@@ -41,6 +44,8 @@ public class PUBLIC_APP_DATA extends Application {
     static private boolean isFacebook = false;
     public static String serverUrl = "http://115.71.236.157/";
     static private String userFacebookPicUrl;
+
+    static public AssetManager assetManager;
 
     public static String getUserFacebookPicUrl() {
         return userFacebookPicUrl;
@@ -164,5 +169,8 @@ public class PUBLIC_APP_DATA extends Application {
 
         Sounds sounds = new Sounds();
         sounds.loadSound(this);
+        NativeClass nativeClass = new NativeClass();
+        assetManager = getAssets();
+        NoteRestExam noteRestExam = new NoteRestExam(getApplicationContext());
     }
 }

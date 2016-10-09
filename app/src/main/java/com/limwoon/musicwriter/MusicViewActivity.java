@@ -275,7 +275,7 @@ public class MusicViewActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 Bundle bundle = new Bundle();
                 bundle.putString("title", title);
-                bundle.putString("author", author);
+                bundle.putString("author", PUBLIC_APP_DATA.getUserStrID());
                 bundle.putString("note", data);
 
                 new ShareSheetAsync().execute(bundle);

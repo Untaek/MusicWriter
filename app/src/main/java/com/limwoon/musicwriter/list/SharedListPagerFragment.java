@@ -34,29 +34,29 @@ public class SharedListPagerFragment extends Fragment {
     }
 
     static public boolean listLoading=false;
+    ArrayList<SheetData> sheetList;
+    RecyclerView mRecyclerView;
+    SharedSheetRecyclerAdapter mRecyclerAdapter;
+    LinearLayoutManager mLinearLayoutManager;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View mView;
         int fragNum = getArguments().getInt("num");
-
-
         if(fragNum == 1){
 
-            final ArrayList<SheetData> sheetList = new ArrayList<>();
+            sheetList = new ArrayList<>();
 
             mView = inflater.inflate(R.layout.fragment_shared_list, container, false);
-            RecyclerView mRecyclerView;
-            final SharedSheetRecyclerAdapter mRecyclerAdapter;
-            final LinearLayoutManager mLinearLayoutManager;
 
             mRecyclerView = (RecyclerView) mView.findViewById(R.id.recycler_shared_sheet);
-            mRecyclerAdapter = new SharedSheetRecyclerAdapter(sheetList);
+            mRecyclerAdapter = new SharedSheetRecyclerAdapter(sheetList, container.getContext());
             mRecyclerView.setAdapter(mRecyclerAdapter);
             mLinearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
             mRecyclerView.setLayoutManager(mLinearLayoutManager);
             new LoadSharedSheetList(sheetList, mRecyclerAdapter).execute(0);
+
             mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) {

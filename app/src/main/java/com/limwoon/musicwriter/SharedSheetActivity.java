@@ -19,7 +19,9 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.limwoon.musicwriter.data.SheetData;
+import com.limwoon.musicwriter.http.LoadSharedSheetList;
 import com.limwoon.musicwriter.list.SharedListPagerAdapter;
+import com.limwoon.musicwriter.list.SharedListPagerFragment;
 import com.limwoon.musicwriter.list.SharedSheetRecyclerAdapter;
 import com.limwoon.musicwriter.list.SharedSheetViewPagerAdapter;
 
@@ -98,10 +100,6 @@ public class SharedSheetActivity extends AppCompatActivity {
                 mViewPagerIndicator.getChildAt(current).setBackgroundColor(Color.BLUE);
             }
         });
-
-
-
-
     }
 
     @Override
@@ -109,6 +107,14 @@ public class SharedSheetActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch (id){
             case android.R.id.home: finish();
+                break;
+            case R.id.shared_menu_reload:
+                RecyclerView rl = ((RecyclerView)listViewPager.getChildAt(0).findViewById(R.id.recycler_shared_sheet));
+                SharedSheetRecyclerAdapter ad = (SharedSheetRecyclerAdapter)rl.getAdapter();
+
+                ad.getList().clear();
+                new LoadSharedSheetList(ad.getList(), ad).execute(0);
+                ad.notifyDataSetChanged();
                 break;
             case R.id.shared_menu_search:
                 break;

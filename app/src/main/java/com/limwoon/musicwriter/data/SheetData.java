@@ -1,10 +1,12 @@
 package com.limwoon.musicwriter.data;
 
+import java.io.Serializable;
+
 /**
  * Created by ejdej on 2016-08-24.
  */
-public class SheetData {
-    private int id;
+public class SheetData implements Serializable {
+    private long id;
     private String title;
     private String author;
     private String note;
@@ -45,11 +47,11 @@ public class SheetData {
         this.uploadUserStrID = uploadUserStrID;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 

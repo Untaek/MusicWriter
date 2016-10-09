@@ -68,6 +68,7 @@
                 android:text="재생 하기"
                 android:textSize="18sp"
                 android:padding="18dp"
+                android:id="@+id/button_play_in_list"
                 />
             <Button
                 android:layout_width="wrap_content"
@@ -75,7 +76,8 @@
                 style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:text="악보 보기"
                 android:textSize="18sp"
-                android:padding="18dp"/>
+                android:padding="18dp"
+                android:id="@+id/button_view_sheet_in_list"/>
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"

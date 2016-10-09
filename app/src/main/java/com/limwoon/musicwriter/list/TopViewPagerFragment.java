@@ -35,7 +35,7 @@ public class TopViewPagerFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View v =inflater.inflate(R.layout.cardview_shared_sheet_list, container, false);
+            View v =inflater.inflate(R.layout.viewpager_shared_sheet_content, container, false);
         return v;
     }
 

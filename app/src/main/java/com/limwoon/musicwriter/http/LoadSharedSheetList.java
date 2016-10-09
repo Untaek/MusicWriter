@@ -58,12 +58,17 @@ public class LoadSharedSheetList extends AsyncTask<Integer, Void, Integer> {
 
             InputStream is = connection.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-
-            String json = reader.readLine();
+            /*
+            while(true){
+                String line = reader.readLine();
+                Log.d(TAG, "doInBackground: "+ line);
+                if(line==null) break;
+            }*/
+           String json = reader.readLine();
 
             JSONArray jsonArray = new JSONArray(json);
-            Log.d(TAG, "doInBackground: " + jsonArray.getJSONObject(0));
-            for(int i=0; i<jsonArray.length(); i++){
+            Log.d(TAG, "doInBackground: " + jsonArray);
+            for(int i=0; i<=jsonArray.length(); i++){
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String title = jsonObject.getString("title");
                 String author = jsonObject.getString("author");
@@ -72,8 +77,12 @@ public class LoadSharedSheetList extends AsyncTask<Integer, Void, Integer> {
                 String uploadUserID = jsonObject.getString("uploadUserID");
                 long comments = jsonObject.getLong("comments");
                 long likes = jsonObject.getLong("likes");
+                long id = jsonObject.getLong("sheetID");
+
+                note = note.substring(1, note.length()-1);
 
                 SheetData sheetData = new SheetData();
+                sheetData.setId(id);
                 sheetData.setTitle(title);
                 sheetData.setAuthor(author);
                 sheetData.setNote(note);
@@ -84,13 +93,9 @@ public class LoadSharedSheetList extends AsyncTask<Integer, Void, Integer> {
                 list.add(sheetData);
             }
 
-            /*
-            while(true){
-                String line = reader.readLine();
-                Log.d(TAG, "doInBackground: "+ line);
-                if(line==null) break;
-            }
-            */
+
+
+
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
