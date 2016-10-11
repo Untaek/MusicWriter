@@ -64,24 +64,21 @@ public class SharedListPagerFragment extends Fragment {
 
                     int lastItem = mLinearLayoutManager.findLastVisibleItemPosition();
                     int itemCount = mLinearLayoutManager.getItemCount();
-                    Log.d("dx", "onScrolled: "+dx);
-                    Log.d("dy", "onScrolled: "+dy);
-                    Log.d("lastitem", "onScrolled: "+lastItem);
-                    Log.d("childcount", "onScrolled: "+itemCount);
-
                     if(lastItem >= itemCount-1 && dy>0 && !listLoading && sheetList.size()%7==0){
                         listLoading=true;
                         new LoadSharedSheetList(sheetList, mRecyclerAdapter).execute(itemCount/7);
                     }
-
                 }
             });
-
             return mView;
         }
-
-
-
         return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    @Override
+    public void onResume() {
+        //sheetList.clear();
+       // new LoadSharedSheetList(sheetList, mRecyclerAdapter).execute(0);
+        super.onResume();
     }
 }

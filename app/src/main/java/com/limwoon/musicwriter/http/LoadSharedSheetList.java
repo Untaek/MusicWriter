@@ -89,7 +89,7 @@ public class LoadSharedSheetList extends AsyncTask<Integer, Void, Integer> {
                 sheetData.setUploadTime(uploadTime);
                 sheetData.setUploadUserStrID(uploadUserID);
                 sheetData.setComments(comments);
-                sheetData.setComments(likes);
+                sheetData.setLikes(likes);
                 list.add(sheetData);
             }
 
