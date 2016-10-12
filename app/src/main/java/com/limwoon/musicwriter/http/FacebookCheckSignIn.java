@@ -24,7 +24,7 @@ public class FacebookCheckSignIn extends AsyncTask<Long, Void, Integer> {
     @Override
     protected Integer doInBackground(Long... ids) {
         long id = ids[0];
-        String message = "id="+ id;
+        String message = "id="+ id + "&strid=" + PUBLIC_APP_DATA.getUserStrID();
         int result = -1;
         try {
             URL url = new URL("http://115.71.236.157/checkfacebookuser.php");

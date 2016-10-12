@@ -75,7 +75,6 @@ public class LoginAsync extends AsyncTask<Bundle, Void, Integer> {
             //// 로그인 판별  ////
             bufferedReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             data = bufferedReader.readLine();
-
             JSONObject jsonData = new JSONObject(data);
             result = jsonData.getInt("result");
 
@@ -110,7 +109,7 @@ public class LoginAsync extends AsyncTask<Bundle, Void, Integer> {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
-            result = Integer.parseInt(data);
+           result=Integer.parseInt(data);
         } finally {
             httpConn.disconnect();
         }

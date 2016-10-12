@@ -8,17 +8,21 @@
         android:gravity="center"
         android:orientation="vertical"
         android:id="@+id/please_login_container">
-        <TextView
-            android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="로그인 해주세요"
+                android:textSize="24sp"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="로그인하기"
+                android:id="@+id/favorite_login"
+                android:textSize="24sp"/>
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="로그인 해주세요"
-            android:textSize="24sp"/>
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="로그인하기"
-            android:id="@+id/favorite_login"
-            android:textSize="24sp"/>
+            android:id="@+id/recycler_favorite"/>
     </LinearLayout>
 
 </LinearLayout>

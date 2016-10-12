@@ -10,6 +10,15 @@ public class CommentData {
     long sheetID;
     String uploadTime;
     String comment;
+    String userStrID;
+
+    public String getUserStrID() {
+        return userStrID;
+    }
+
+    public void setUserStrID(String userStrID) {
+        this.userStrID = userStrID;
+    }
 
     public long getCommentID() {
         return commentID;

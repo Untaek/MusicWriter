@@ -34,8 +34,9 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
 
     @Override
     public void onBindViewHolder(Holder holder, int position) {
-        holder.userStrID.setText(list.get(position).getUserID()+"");
+        holder.userStrID.setText(list.get(position).getUserStrID());
         holder.commentText.setText(list.get(position).getComment());
+        holder.uploadTime.setText(list.get(position).getUploadTime());
     }
 
     @Override

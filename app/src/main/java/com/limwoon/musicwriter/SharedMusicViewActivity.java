@@ -179,13 +179,15 @@ public class SharedMusicViewActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(PUBLIC_APP_DATA.isLogin()){
-                    Bundle bundle = new Bundle();
-                    bundle.putString("comment", editText_writeComment.getText().toString());
-                    bundle.putLong("sheetID", data.getId());
-                    bundle.putLong("userID", PUBLIC_APP_DATA.getUserID());
+                    if(!editText_writeComment.getText().toString().equals("")){
+                        Bundle bundle = new Bundle();
+                        bundle.putString("comment", editText_writeComment.getText().toString());
+                        bundle.putLong("sheetID", data.getId());
+                        bundle.putLong("userID", PUBLIC_APP_DATA.getUserID());
 
-                    new WriteCommentAsync().execute(bundle);
-                    editText_writeComment.setText("");
+                        new WriteCommentAsync(commentList, commentRecyclerAdapter, textView_commentCount).execute(bundle);
+                        editText_writeComment.setText("");
+                    }
                 }
             }
         });

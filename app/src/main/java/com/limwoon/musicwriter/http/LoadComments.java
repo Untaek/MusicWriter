@@ -23,7 +23,12 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import static android.content.ContentValues.TAG;
 
@@ -67,23 +72,50 @@ public class LoadComments extends AsyncTask<Long, Void, Integer> {
             String json = reader.readLine();
 
             JSONObject jsonObject = new JSONObject(json);
-
+            String today = jsonObject.getString("today");
             JSONArray jsonArray = jsonObject.getJSONArray("comments");
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+            Date date_today =  dateFormat.parse(today);
 
             for(int i=0; i<jsonArray.length(); i++){
                 JSONObject object = jsonArray.getJSONObject(i);
                 long commentID = object.getLong("commentID");
                 long userID = object.getLong("userID");
                 long sheetID = object.getLong("sheetID");
+                String userStrID = object.getString("userStrID");
                 String uploadTime = object.getString("uploadTime");
                 String commentText = object.getString("commentText");
+
+
+
+                Date date_comment = dateFormat.parse(uploadTime);
+                Log.d("date_today", "doInBackground: "+ date_today.getTime());
+                Log.d("date_today", "doInBackground: "+ date_today);
+                Log.d("date_comment", "doInBackground: "+date_comment.getTime());
+                Log.d("date_comment", "doInBackground: "+date_comment);
+                long todayMill = date_today.getTime();
+                long uploadMill = date_comment.getTime();
+                long time = (todayMill - uploadMill)/1000;
+                String timeStr = null;
+                if(time < 60){
+                    timeStr = "방금 전";
+                }else if(time <60*60){
+                    timeStr = time/60 + "분 전";
+                }else if(time < 60*60*24){
+                    timeStr = time/(60*60) + "시간 전";
+                }else if(time < 60*60*24*30){
+                    timeStr = time/(60*60*24) + "일 전";
+                }
+
+                Log.d("date_diff", "doInBackground: "+time);
 
                 CommentData commentData = new CommentData();
                 commentData.setCommentID(commentID);
                 commentData.setUserID(userID);
                 commentData.setSheetID(sheetID);
-                commentData.setUploadTime(uploadTime);
+                commentData.setUploadTime(timeStr);
                 commentData.setComment(commentText);
+                commentData.setUserStrID(userStrID);
 
                 commentList.add(commentData);
             }
@@ -105,6 +137,8 @@ public class LoadComments extends AsyncTask<Long, Void, Integer> {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
             e.printStackTrace();
         }
         return null;
