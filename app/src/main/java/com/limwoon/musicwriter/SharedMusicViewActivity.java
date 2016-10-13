@@ -1,5 +1,6 @@
 package com.limwoon.musicwriter;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -187,6 +189,8 @@ public class SharedMusicViewActivity extends AppCompatActivity {
 
                         new WriteCommentAsync(commentList, commentRecyclerAdapter, textView_commentCount).execute(bundle);
                         editText_writeComment.setText("");
+                        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        inputMethodManager.hideSoftInputFromInputMethod(editText_writeComment.getWindowToken(), 0);
                     }
                 }
             }
