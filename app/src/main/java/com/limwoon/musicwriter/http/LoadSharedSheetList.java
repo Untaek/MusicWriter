@@ -33,6 +33,9 @@ public class LoadSharedSheetList extends AsyncTask<Integer, Void, Integer> {
     ArrayList<SheetData> list;
     SharedSheetRecyclerAdapter adapter;
 
+    int sort;
+    int fav;
+
     public LoadSharedSheetList(ArrayList<SheetData> list, SharedSheetRecyclerAdapter adapter){
         this.list = list;
         this.adapter = adapter;
@@ -41,9 +44,22 @@ public class LoadSharedSheetList extends AsyncTask<Integer, Void, Integer> {
     @Override
     protected Integer doInBackground(Integer... pages) {
         int page = pages[0];
+        // 페이징
+
+        int sort = pages[1];
+        // 0: 최신, 1: 좋아요
+
+        int fav = pages[2];
+        // 0: 기본, 1: 내 악보
+
+        long userID = 0;
+        if(fav==1){
+            userID=PUBLIC_APP_DATA.getUserID();
+        }
+        // 게시된 악보 불러오기를 위함
 
         try {
-            String message = "page="+page;
+            String message = "page="+page+"&sort="+sort+"&userID="+userID;
             URL url = new URL(PUBLIC_APP_DATA.getServerUrl()+"loadsharedsheetlist.php");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");

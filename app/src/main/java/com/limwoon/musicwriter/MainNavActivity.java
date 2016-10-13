@@ -39,7 +39,10 @@ import com.limwoon.musicwriter.SQLite.DefineSQL;
 import com.limwoon.musicwriter.SQLite.SheetDbHelper;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 import com.limwoon.musicwriter.data.SheetData;
+import com.limwoon.musicwriter.http.LoadFavoriteListAsync;
 import com.limwoon.musicwriter.image.UserPicture;
+import com.limwoon.musicwriter.list.FavoriteSheetRecyclerAdapter;
+import com.limwoon.musicwriter.list.SharedSheetRecyclerAdapter;
 import com.limwoon.musicwriter.list.SheetRecyListAdapter;
 import com.limwoon.musicwriter.list.SheetRecyListItemClickListener;
 import com.limwoon.musicwriter.user.UserCheck;
@@ -207,6 +210,12 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
         SQLiteDatabase db;
         Cursor cursor;
 
+        //즐겨찾는 악보
+        ArrayList<SheetData> favoriteList = new ArrayList<>();
+        RecyclerView favoriteRecyclerView;
+        SharedSheetRecyclerAdapter favSharedSheetRecyclerAdapter;
+        LinearLayoutManager favoriteLinearLayoutManager;
+
         @Override
         public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -262,9 +271,24 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                 case 3:
                     rootView = inflater.inflate(R.layout.fragment_sheet_list_favorite, container, false);
 
+
+                    favoriteRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_favorite);
+                    favSharedSheetRecyclerAdapter = new SharedSheetRecyclerAdapter(favoriteList, getContext());
+                    favoriteRecyclerView.setAdapter(favSharedSheetRecyclerAdapter);
+                    favoriteLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+                    favoriteRecyclerView.setLayoutManager(favoriteLinearLayoutManager);
+
+                    new LoadFavoriteListAsync(favoriteList, favSharedSheetRecyclerAdapter).execute();
+
                     LinearLayout loginContainer = (LinearLayout) rootView.findViewById(R.id.please_login_container);
-                    if(PUBLIC_APP_DATA.isLogin()) loginContainer.setVisibility(View.GONE);
-                    else loginContainer.setVisibility(View.VISIBLE);
+                    if(PUBLIC_APP_DATA.isLogin()) {
+                        loginContainer.setVisibility(View.GONE);
+                        favoriteRecyclerView.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        loginContainer.setVisibility(View.VISIBLE);
+                        favoriteRecyclerView.setVisibility(View.GONE);
+                    }
 
                     // 로그인 버튼 클릭
                     rootView.findViewById(R.id.favorite_login).setOnClickListener(new View.OnClickListener() {

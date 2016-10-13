@@ -2,8 +2,15 @@ package com.limwoon.musicwriter.http;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
+import com.limwoon.musicwriter.data.SheetData;
+import com.limwoon.musicwriter.list.SharedSheetRecyclerAdapter;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,12 +22,23 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.ArrayList;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by ejdej on 2016-10-12.
  */
 
 public class LoadFavoriteListAsync extends AsyncTask<Bundle, Void, Integer> {
+
+    ArrayList<SheetData> list;
+    SharedSheetRecyclerAdapter adapter;
+
+    public LoadFavoriteListAsync(ArrayList<SheetData> list, SharedSheetRecyclerAdapter adapter) {
+        this.list = list;
+        this.adapter = adapter;
+    }
 
     @Override
     protected Integer doInBackground(Bundle... bundles) {
@@ -45,8 +63,40 @@ public class LoadFavoriteListAsync extends AsyncTask<Bundle, Void, Integer> {
 
             String json = reader.readLine();
 
+            JSONArray jsonArray = new JSONArray(json);
+            Log.d(TAG, "doInBackground: " + jsonArray);
+            for(int i=0; i<jsonArray.length(); i++){
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String title = jsonObject.getString("title");
+                String author = jsonObject.getString("author");
+                String note = jsonObject.getString("note");
+                String uploadTime = jsonObject.getString("uploadtime");
+                String uploadUserID = jsonObject.getString("uploadUserID");
+                long comments = jsonObject.getLong("comments");
+                long likes = jsonObject.getLong("likes");
+                long id = jsonObject.getLong("sheetID");
+                Log.d(TAG, "doInBackground: "+title);
 
+                note = note.substring(1, note.length()-1);
 
+                SheetData sheetData = new SheetData();
+                sheetData.setId(id);
+                sheetData.setTitle(title);
+                sheetData.setAuthor(author);
+                sheetData.setNote(note);
+                sheetData.setUploadTime(uploadTime);
+                sheetData.setUploadUserStrID(uploadUserID);
+                sheetData.setComments(comments);
+                sheetData.setLikes(likes);
+                list.add(sheetData);
+            }
+/*
+            while(true){
+                String line = reader.readLine();
+                Log.d("favorites", "doInBackground: "+ line);
+                if(line==null) break;
+            }
+*/
         return null;
     } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -56,8 +106,16 @@ public class LoadFavoriteListAsync extends AsyncTask<Bundle, Void, Integer> {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
         return  null;
+    }
+
+    @Override
+    protected void onPostExecute(Integer integer) {
+        super.onPostExecute(integer);
+        adapter.notifyDataSetChanged();
     }
 }

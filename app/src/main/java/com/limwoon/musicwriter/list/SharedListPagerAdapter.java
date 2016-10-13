@@ -27,7 +27,7 @@ public class SharedListPagerAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position){
             case 0: return "최신 순";
-            case 1: return "좋아요 순";
+            case 1: return "추천 순";
             case 2: return "공유중인 내 악보";
         }
         return null;
