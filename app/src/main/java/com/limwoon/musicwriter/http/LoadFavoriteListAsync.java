@@ -62,6 +62,7 @@ public class LoadFavoriteListAsync extends AsyncTask<Bundle, Void, Integer> {
             BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 
             String json = reader.readLine();
+            Log.d("favjson", "doInBackground: " + json);
 
             JSONArray jsonArray = new JSONArray(json);
             Log.d(TAG, "doInBackground: " + jsonArray);

@@ -2,6 +2,9 @@ package com.limwoon.musicwriter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatSeekBar;
@@ -9,6 +12,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -33,6 +38,7 @@ import com.limwoon.musicwriter.http.DisLikeSheetAsync;
 import com.limwoon.musicwriter.http.FavoriteSheetAsync;
 import com.limwoon.musicwriter.http.LikeSheetAsync;
 import com.limwoon.musicwriter.http.LoadComments;
+import com.limwoon.musicwriter.http.SendNotiAsync;
 import com.limwoon.musicwriter.http.WriteCommentAsync;
 import com.limwoon.musicwriter.list.CommentRecyclerAdapter;
 import com.limwoon.musicwriter.sounds.Sounds;
@@ -64,6 +70,23 @@ public class SharedMusicViewActivity extends AppCompatActivity {
     EditText editText_writeComment;
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id){
+            case android.R.id.home : finish();
+                break;
+
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shared_music_view);
@@ -72,17 +95,25 @@ public class SharedMusicViewActivity extends AppCompatActivity {
         NoteParser noteParser = new NoteParser(data.getNote());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("zdz");
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         button_like = (Button) findViewById(R.id.button_like);
         button_favorite = (Button) findViewById(R.id.button_favorite);
         button_writeComment = (Button) findViewById(R.id.button_write_comment);
         editText_writeComment = (EditText) findViewById(R.id.editText_comment);
 
-        new CheckLike(findViewById(R.id.button_like), userLikeState).execute(data.getId());
-        new CheckFavorite(findViewById(R.id.button_favorite)).execute(data.getId());
-
+        if(!PUBLIC_APP_DATA.isLogin()){
+            button_like.setEnabled(false);
+            button_favorite.setEnabled(false);
+            button_writeComment.setEnabled(false);
+            editText_writeComment.setEnabled(false);
+            editText_writeComment.setText("로그인이 필요합니다");
+        }else{
+            new CheckLike(findViewById(R.id.button_like), userLikeState).execute(data.getId());
+            new CheckFavorite(findViewById(R.id.button_favorite)).execute(data.getId());
+        }
 
         textView_commentCount = (TextView) findViewById(R.id.textView_comment_header);
         commentRecyclerView = (RecyclerView) findViewById(R.id.recycler_comment);
@@ -188,11 +219,31 @@ public class SharedMusicViewActivity extends AppCompatActivity {
                         bundle.putLong("userID", PUBLIC_APP_DATA.getUserID());
 
                         new WriteCommentAsync(commentList, commentRecyclerAdapter, textView_commentCount).execute(bundle);
+                        if(data.getUploadUserID() != PUBLIC_APP_DATA.getUserID()){
+                            new SendNotiAsync().execute(data.getUploadUserID(), data.getId());
+                        }
                         editText_writeComment.setText("");
                         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                        inputMethodManager.hideSoftInputFromInputMethod(editText_writeComment.getWindowToken(), 0);
+                        inputMethodManager.hideSoftInputFromWindow(editText_writeComment.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
                     }
                 }
+            }
+        });
+
+        editText_writeComment.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    AppBarLayout appbarLayout = (AppBarLayout) findViewById(R.id.appbar);
+                    appbarLayout.setExpanded(false);
+                }
+            }
+        });
+        editText_writeComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AppBarLayout appbarLayout = (AppBarLayout) findViewById(R.id.appbar);
+                appbarLayout.setExpanded(false);
             }
         });
 

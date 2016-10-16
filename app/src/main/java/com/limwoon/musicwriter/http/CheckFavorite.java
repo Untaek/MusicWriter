@@ -52,14 +52,15 @@ public class CheckFavorite extends AsyncTask<Long, Void, Integer> {
             InputStream is = connection.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             result = Integer.parseInt(reader.readLine());
-            Log.d("checklike", "doInBackground: "+result);
-/*
+            Log.d("checklike", "doInBackgroundsheet: "+sheetID);
+            Log.d("checklike", "doInBackgrounduser: "+userID);
+            /*
             while(true){
                 String line = reader.readLine();
-                Log.d("checklike", "doInBackground: "+line);
+                Log.d("checkfav", "doInBackground: "+line);
                 if(line==null) break;
-            }
-*/
+            }*/
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {

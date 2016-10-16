@@ -14,6 +14,8 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.limwoon.musicwriter.NativeClass;
 import com.limwoon.musicwriter.draw.NoteRestExam;
 import com.limwoon.musicwriter.http.FaceBookUserData;
@@ -44,6 +46,24 @@ public class PUBLIC_APP_DATA extends Application {
     static private boolean isFacebook = false;
     public static String serverUrl = "http://115.71.236.157/";
     static private String userFacebookPicUrl;
+    static private int enablePush;
+    static private boolean isLoaded;
+
+    public static boolean isLoaded() {
+        return isLoaded;
+    }
+
+    public static void setIsLoaded(boolean isLoaded) {
+        PUBLIC_APP_DATA.isLoaded = isLoaded;
+    }
+
+    public static int getEnablePush() {
+        return enablePush;
+    }
+
+    public static void setEnablePush(int enablePush) {
+        PUBLIC_APP_DATA.enablePush = enablePush;
+    }
 
     static public AssetManager assetManager;
 
@@ -172,5 +192,6 @@ public class PUBLIC_APP_DATA extends Application {
         NativeClass nativeClass = new NativeClass();
         assetManager = getAssets();
         NoteRestExam noteRestExam = new NoteRestExam(getApplicationContext());
+
     }
 }

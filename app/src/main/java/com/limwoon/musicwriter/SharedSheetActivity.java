@@ -31,11 +31,6 @@ public class SharedSheetActivity extends AppCompatActivity {
 
     ViewPager mViewPager;
     SharedSheetViewPagerAdapter mViewPagerAdapter;
-
-    RecyclerView mRecyclerView;
-    SharedSheetRecyclerAdapter mRecyclerAdapter;
-    GridLayoutManager mLayoutManager;
-    LinearLayoutManager mLinearLayoutManager;
     LinearLayout mViewPagerIndicator;
 
     ArrayList<SheetData> sheetList;
@@ -47,8 +42,9 @@ public class SharedSheetActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_shared_sheet, menu);
 
-        MenuItem searchItem = menu.findItem(R.id.shared_menu_search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        SearchView searchView = (SearchView) menu.findItem(R.id.shared_menu_search).getActionView();
+
+
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -60,7 +56,6 @@ public class SharedSheetActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         sheetList = new ArrayList<>();
 
@@ -109,16 +104,28 @@ public class SharedSheetActivity extends AppCompatActivity {
             case android.R.id.home: finish();
                 break;
             case R.id.shared_menu_reload:
-                RecyclerView rl = ((RecyclerView)listViewPager.getChildAt(0).findViewById(R.id.recycler_shared_sheet));
-                SharedSheetRecyclerAdapter ad = (SharedSheetRecyclerAdapter)rl.getAdapter();
+                int index = listViewPager.getCurrentItem();
+                if(index==0){
+                    reloadList(0, 0, 0);
+                }else if(index==1){
+                    reloadList(0, 1, 0);
+                }else if(index==2){
+                    reloadList(0, 0, 1);
+                }
 
-                ad.getList().clear();
-                new LoadSharedSheetList(ad.getList(), ad).execute(0);
-                ad.notifyDataSetChanged();
                 break;
             case R.id.shared_menu_search:
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void reloadList(int page, int sort, int fav){
+
+        RecyclerView rl = ((RecyclerView)listViewPager.getFocusedChild().findViewById(R.id.recycler_shared_sheet));
+        SharedSheetRecyclerAdapter ad = (SharedSheetRecyclerAdapter)rl.getAdapter();
+        ad.getList().clear();
+        new LoadSharedSheetList(ad.getList(), ad).execute(page, sort, fav);
+        ad.notifyDataSetChanged();
     }
 }

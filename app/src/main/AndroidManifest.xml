@@ -44,17 +44,41 @@
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
-        <activity android:name=".SplashActivity" />
+        <activity android:name=".SplashActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainNavActivity" />
+            </activity>
         <activity
             android:name=".FindPwActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".UserInfActivity" />
+        <activity android:name=".UserInfActivity"
+            android:theme="@style/AppTheme"/>
         <activity
             android:name=".SharedSheetActivity"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainNavActivity" />
+        </activity>
         <activity android:name=".TestActivityMustDelete" />
         <activity android:name=".SharedMusicViewActivity"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".SharedSheetActivity" />
+        </activity>
+        <service android:name=".service.fcm">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <service android:name=".service.fmcId">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

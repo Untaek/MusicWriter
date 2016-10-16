@@ -35,6 +35,8 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.limwoon.musicwriter.SQLite.DefineSQL;
 import com.limwoon.musicwriter.SQLite.SheetDbHelper;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
@@ -48,6 +50,8 @@ import com.limwoon.musicwriter.list.SheetRecyListItemClickListener;
 import com.limwoon.musicwriter.user.UserCheck;
 
 import java.util.ArrayList;
+
+import static android.content.ContentValues.TAG;
 
 public class MainNavActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     DrawerLayout mDrawerLayout;
@@ -71,9 +75,11 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_nav);
-        startActivity(new Intent(this, SplashActivity.class));
 
+        setContentView(R.layout.activity_main_nav);
+        if(!PUBLIC_APP_DATA.isLoaded()){
+            startActivity(new Intent(this, SplashActivity.class));
+        }
         userPicture = new UserPicture(this);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
@@ -281,13 +287,14 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                     new LoadFavoriteListAsync(favoriteList, favSharedSheetRecyclerAdapter).execute();
 
                     LinearLayout loginContainer = (LinearLayout) rootView.findViewById(R.id.please_login_container);
+                    LinearLayout favoriteContainer = (LinearLayout) rootView.findViewById(R.id.favorite_wrapper);
                     if(PUBLIC_APP_DATA.isLogin()) {
                         loginContainer.setVisibility(View.GONE);
-                        favoriteRecyclerView.setVisibility(View.VISIBLE);
+                        favoriteContainer.setVisibility(View.VISIBLE);
                     }
                     else {
                         loginContainer.setVisibility(View.VISIBLE);
-                        favoriteRecyclerView.setVisibility(View.GONE);
+                        favoriteContainer.setVisibility(View.GONE);
                     }
 
                     // 로그인 버튼 클릭

@@ -46,6 +46,7 @@ public class UserCheck {
                 String userStrID = decodedJwtClaimJSON.getString("userStrID");
                 String userEmail = decodedJwtClaimJSON.getString("userEmail");
                 String userPicUrl = decodedJwtClaimJSON.getString("userPic_url");
+                int enablePush = decodedJwtClaimJSON.getInt("push");
 
                 PUBLIC_APP_DATA.setUserToken(token);
                 PUBLIC_APP_DATA.setUserData(decodedJwtClaim);
@@ -56,6 +57,7 @@ public class UserCheck {
                 PUBLIC_APP_DATA.setIsLogin(true);
                 PUBLIC_APP_DATA.setIsFacebook(false);
                 PUBLIC_APP_DATA.setImageName(String.valueOf(userID));
+                PUBLIC_APP_DATA.setEnablePush(enablePush);
 
                 return true;
             } catch (UnsupportedEncodingException e) {

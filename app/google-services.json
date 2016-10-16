@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "643530271871",
+    "firebase_url": "https://music-writer.firebaseio.com",
+    "project_id": "music-writer",
+    "storage_bucket": "music-writer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:643530271871:android:ff6e6671c95cacae",
+        "android_client_info": {
+          "package_name": "com.limwoon.musicwriter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "643530271871-0hrs5b1mf8vk51rn2v9fdhmg19ku3jg1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAujInX09f6aRhE4_b2oLF9v8lOANqtttw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

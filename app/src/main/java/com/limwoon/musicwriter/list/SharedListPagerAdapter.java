@@ -28,7 +28,7 @@ public class SharedListPagerAdapter extends FragmentStatePagerAdapter {
         switch (position){
             case 0: return "최신 순";
             case 1: return "추천 순";
-            case 2: return "공유중인 내 악보";
+            case 2: return "게시 된 내 악보";
         }
         return null;
     }

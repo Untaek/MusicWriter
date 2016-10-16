@@ -5,6 +5,7 @@
         android:title="테스트"
         android:icon="@drawable/ic_action_name"
         android:id="@+id/nav_menu_favorite"
+        android:visible="false"
         />
     <item
         android:title="사람들의 악보 보기"

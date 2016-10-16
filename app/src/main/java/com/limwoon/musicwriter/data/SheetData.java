@@ -14,6 +14,15 @@ public class SheetData implements Serializable {
     private long comments;
     private String uploadTime;
     private String uploadUserStrID;
+    private long uploadUserID;
+
+    public long getUploadUserID() {
+        return uploadUserID;
+    }
+
+    public void setUploadUserID(long uploadUserID) {
+        this.uploadUserID = uploadUserID;
+    }
 
     public long getLikes() {
         return likes;

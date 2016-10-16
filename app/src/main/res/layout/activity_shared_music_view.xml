@@ -9,21 +9,31 @@
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:id="@id/appbar"
+        >
         <android.support.design.widget.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:contentScrim="@color/colorPrimary"
+            >
             <HorizontalScrollView
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="wrap_content"
                 android:scrollbars="horizontal"
                 android:fadeScrollbars="false"
                 android:id="@+id/horizontalScrollView"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                android:background="#FFF">
+                app:layout_collapseMode="parallax"
+                app:layout_collapseParallaxMultiplier="0.7"
+                android:background="#FFF"
+                android:paddingTop="50dp"
+                >
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="300dp">
+                    android:layout_height="wrap_content"
+                    android:id="@+id/sheetwrapper">
 
                     <android.support.v7.widget.RecyclerView
                         android:layout_width="match_parent"
@@ -42,20 +52,24 @@
             </HorizontalScrollView>
             <android.support.v7.widget.Toolbar
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@id/toolbar"/>
+                android:layout_height="?attr/actionBarSize"
+                android:id="@id/toolbar"
+                app:layout_collapseMode="pin"
+                />
         </android.support.design.widget.CollapsingToolbarLayout>
 
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_marginTop="12dp"
+            android:padding="8dp">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -134,7 +148,8 @@
                         android:layout_height="wrap_content"
                         android:hint="댓글 남기기"
                         android:id="@+id/editText_comment"
-                        android:layout_weight="1"/>
+                        android:layout_weight="1"
+                        android:inputType="textAutoComplete"/>
                     <Button
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

@@ -9,15 +9,22 @@ import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
+import com.limwoon.musicwriter.http.LoadUserInfoAsync;
 import com.limwoon.musicwriter.http.LoadUserPicBitmapFromURLAsync;
+import com.limwoon.musicwriter.http.TogglePushAsync;
 import com.limwoon.musicwriter.image.UserPicture;
 import com.limwoon.musicwriter.http.account.ChangePwAsync;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -32,17 +39,38 @@ public class UserInfActivity extends AppCompatActivity {
     boolean isMatch = true;
     boolean isFill = true;
     UserPicture userPicture;
+    TextView textView_userStrID;
+    Switch switch_push;
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home){
+            finish();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_inf);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("사용자 정보");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         imageView_userPic = (ImageView) findViewById(R.id.imageView_user_picture_inf);
         userPicture = new UserPicture(this);
 
+        textView_userStrID = (TextView) findViewById(R.id.textView_info_name);
+        textView_userStrID.setText(PUBLIC_APP_DATA.getUserStrID());
+
         Button button_changepw = (Button) findViewById(R.id.button_change_pw);
         final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_change_pic);
+
+        new LoadUserInfoAsync(this).execute();
+
         if(!PUBLIC_APP_DATA.isFacebook())
             button_changepw.setVisibility(View.VISIBLE);
         else
@@ -145,6 +173,17 @@ public class UserInfActivity extends AppCompatActivity {
                     }
                 });
                 dialog.show();
+            }
+        });
+        switch_push = (Switch) findViewById(R.id.switch_push);
+        switch_push.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    new TogglePushAsync().execute(1);
+                }else{
+                    new TogglePushAsync().execute(0);
+                }
             }
         });
     }

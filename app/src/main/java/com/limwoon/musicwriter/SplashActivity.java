@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 import com.limwoon.musicwriter.user.UserCheck;
 
 public class SplashActivity extends AppCompatActivity {
@@ -13,6 +14,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        PUBLIC_APP_DATA.setIsLoaded(true);
         UserCheck userCheck = new UserCheck(this);
         userCheck.checkIsLogin();
 
@@ -23,6 +25,6 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 finish();
             }
-        }, 1500);
+        }, 1200);
     }
 }

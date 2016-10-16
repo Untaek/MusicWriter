@@ -9,6 +9,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 import com.limwoon.musicwriter.http.GetUserPicAsync;
 
@@ -56,7 +57,8 @@ public class LoginAsync extends AsyncTask<Bundle, Void, Integer> {
             id = bundle.getString("id");
             pw = bundle.getString("pw");
             autoLogin = bundle.getBoolean("al");
-            String message = "id="+ id + "&pw=" + pw;
+            String token_fcm = FirebaseInstanceId.getInstance().getToken();
+            String message = "id="+ id + "&pw=" + pw + "&fcm=" + token_fcm;
 
             URL url = new URL("http://115.71.236.157/login.php");
             httpConn = (HttpURLConnection) url.openConnection();
@@ -74,6 +76,12 @@ public class LoginAsync extends AsyncTask<Bundle, Void, Integer> {
 
             //// 로그인 판별  ////
             bufferedReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            /*
+            while(true){
+                String line = bufferedReader.readLine();
+                Log.d("fcmfcmfcm", "doInBackground: "+ line);
+                if(line==null) break;
+            }*/
             data = bufferedReader.readLine();
             JSONObject jsonData = new JSONObject(data);
             result = jsonData.getInt("result");
@@ -87,6 +95,7 @@ public class LoginAsync extends AsyncTask<Bundle, Void, Integer> {
             String userStrID = decodedJwtClaimJSON.getString("userStrID");
             String userEmail = decodedJwtClaimJSON.getString("userEmail");
             String userPic_url = decodedJwtClaimJSON.getString("userPic_url");
+            int enablePush = decodedJwtClaimJSON.getInt("push");
 
             PUBLIC_APP_DATA.setUserToken(jwt);
             PUBLIC_APP_DATA.setUserData(decodedJwtClaim);
@@ -97,11 +106,14 @@ public class LoginAsync extends AsyncTask<Bundle, Void, Integer> {
             PUBLIC_APP_DATA.setImageName(String.valueOf(userID));
             PUBLIC_APP_DATA.setIsLogin(true);
             PUBLIC_APP_DATA.setIsFacebook(false);
+            PUBLIC_APP_DATA.setEnablePush(enablePush);
 
             SharedPreferences autoLoginPref = context.getSharedPreferences("al", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = autoLoginPref.edit();
             editor.putString("jwt", jwt);
             editor.apply();
+
+
 
 
         } catch (MalformedURLException e) {

@@ -90,7 +90,7 @@ public class LoadSharedSheetList extends AsyncTask<Integer, Void, Integer> {
                 String author = jsonObject.getString("author");
                 String note = jsonObject.getString("note");
                 String uploadTime = jsonObject.getString("uploadtime");
-                String uploadUserID = jsonObject.getString("uploadUserID");
+                long uploadUserID = jsonObject.getLong("uploadUserID");
                 long comments = jsonObject.getLong("comments");
                 long likes = jsonObject.getLong("likes");
                 long id = jsonObject.getLong("sheetID");
@@ -103,7 +103,7 @@ public class LoadSharedSheetList extends AsyncTask<Integer, Void, Integer> {
                 sheetData.setAuthor(author);
                 sheetData.setNote(note);
                 sheetData.setUploadTime(uploadTime);
-                sheetData.setUploadUserStrID(uploadUserID);
+                sheetData.setUploadUserID(uploadUserID);
                 sheetData.setComments(comments);
                 sheetData.setLikes(likes);
                 list.add(sheetData);

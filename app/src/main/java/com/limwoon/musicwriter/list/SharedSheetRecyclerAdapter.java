@@ -64,6 +64,7 @@ public class SharedSheetRecyclerAdapter extends RecyclerView.Adapter<SharedSheet
         holder.author.setText(list.get(position).getAuthor());
         holder.comments.setText("댓글 "+ list.get(position).getComments());
         holder.likes.setText("추천 " + list.get(position).getLikes());
+        holder.date.setText(list.get(position).getUploadTime());
     }
 
     @Override
@@ -77,6 +78,7 @@ public class SharedSheetRecyclerAdapter extends RecyclerView.Adapter<SharedSheet
         TextView author;
         TextView comments;
         TextView likes;
+        TextView date;
         Button play;
         Button viewSheet;
         ArrayList<SheetData> list;
@@ -88,6 +90,7 @@ public class SharedSheetRecyclerAdapter extends RecyclerView.Adapter<SharedSheet
             author = (TextView) itemView.findViewById(R.id.shared_card_author);
             comments = (TextView) itemView.findViewById(R.id.textView_card_sharedList_comments);
             likes = (TextView) itemView.findViewById(R.id.textView_card_sharedList_likes);
+            date = (TextView) itemView.findViewById(R.id.textView_date);
             play = (Button) itemView.findViewById(R.id.button_play_in_list);
             viewSheet = (Button) itemView.findViewById(R.id.button_view_sheet_in_list);
 
@@ -117,6 +120,13 @@ public class SharedSheetRecyclerAdapter extends RecyclerView.Adapter<SharedSheet
                     public void run(){
                         NativeClass.createEngine();
                         NativeClass.createAssetAudioPlayer(PUBLIC_APP_DATA.assetManager, "");
+                        NativeClass.setStopAssetAudioPlayer(0);
+
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
 
                         for(int i=0; i<notes.size(); i++) {
                             if (notes.get(i).node) continue;

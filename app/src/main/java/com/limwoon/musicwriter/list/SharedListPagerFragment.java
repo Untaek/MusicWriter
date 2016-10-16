@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.limwoon.musicwriter.R;
 import com.limwoon.musicwriter.data.SheetData;
@@ -66,6 +67,8 @@ public class SharedListPagerFragment extends Fragment {
         int fragNum = getArguments().getInt("num");
         if(fragNum == 1){
             mView = inflater.inflate(R.layout.fragment_shared_list, container, false);
+            TextView textView_title = (TextView) mView.findViewById(R.id.textView_pageTitle);
+            textView_title.setText("최근 게시된 악보");
             sheetList = new ArrayList<>();
             mRecyclerView = (RecyclerView) mView.findViewById(R.id.recycler_shared_sheet);
             mRecyclerAdapter = new SharedSheetRecyclerAdapter(sheetList, container.getContext());
@@ -91,6 +94,8 @@ public class SharedListPagerFragment extends Fragment {
         }
         else if(fragNum==2){
             mView = inflater.inflate(R.layout.fragment_shared_list, container, false);
+            TextView textView_title = (TextView) mView.findViewById(R.id.textView_pageTitle);
+            textView_title.setText("추천을 많이 받은 악보");
             sheetList2 = new ArrayList<>();
             mRecyclerView2 = (RecyclerView) mView.findViewById(R.id.recycler_shared_sheet);
             mRecyclerAdapter2 = new SharedSheetRecyclerAdapter(sheetList2, container.getContext());
@@ -117,6 +122,8 @@ public class SharedListPagerFragment extends Fragment {
         }
         else if(fragNum==3){
             mView = inflater.inflate(R.layout.fragment_shared_list, container, false);
+            TextView textView_title = (TextView) mView.findViewById(R.id.textView_pageTitle);
+            textView_title.setText("내가 게시한 악보");
             sheetList3 = new ArrayList<>();
             mRecyclerView3 = (RecyclerView) mView.findViewById(R.id.recycler_shared_sheet);
             mRecyclerAdapter3 = new SharedSheetRecyclerAdapter(sheetList3, container.getContext());
