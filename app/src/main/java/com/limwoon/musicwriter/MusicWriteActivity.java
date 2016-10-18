@@ -185,9 +185,9 @@ public class MusicWriteActivity extends AppCompatActivity {
 
         // 음악 재생
 
-        NativeClass nativeClass = new NativeClass();
-        nativeClass.createEngine();
-        nativeClass.createAssetAudioPlayer(getAssets(), "");
+        NativeClass.createEngine();
+        NativeClass.createBefferQueueAudioPlayer();
+        NativeClass.createBufferFromAsset(getAssets(), "");
 
         btnPlayMusic = (ImageView) findViewById(R.id.btnMusicPlay);
         musicSeekBar = (SeekBar) findViewById(R.id.music_seek_bar);
@@ -244,15 +244,15 @@ public class MusicWriteActivity extends AppCompatActivity {
                                 if(noteList.get(i).node) continue;
                                 for(int j=0; j<6; j++){
                                     if(noteList.get(i).tone[j]!=-1){
-                                        NativeClass.setPlayingAssetAudioPlayer(j, noteList.get(i).tone[j]);
+                                        NativeClass.setPlayingBufferQueue(j, noteList.get(i).tone[j]);
                                         Log.d("TTT", "runnote: "+noteList.get(i).tone[j]);
                                     }
                                 }
                                 try {
                                     Thread.sleep(Sounds.getDuration(noteList.get(i).duration));
-                                    NativeClass.setStopAssetAudioPlayer(0);
+                                    NativeClass.setStopBufferQueue();
                                 } catch (InterruptedException e) { // 정지버튼 클릭
-                                    NativeClass.setStopAssetAudioPlayer(0);
+                                    NativeClass.setStopBufferQueue();
                                     noteRecyclerView.post(new Runnable() {
                                         @Override
                                         public void run() {

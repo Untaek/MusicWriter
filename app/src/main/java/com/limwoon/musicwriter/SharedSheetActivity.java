@@ -48,6 +48,12 @@ public class SharedSheetActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        NativeClass.releaseAll();
+        super.onDestroy();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shared_sheet);
@@ -56,8 +62,9 @@ public class SharedSheetActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         NativeClass.createEngine();
-        NativeClass.createBufferFromAsset(getAssets(), "");
         NativeClass.createBefferQueueAudioPlayer();
+        NativeClass.createBufferFromAsset(getAssets(), "");
+
 
         sheetList = new ArrayList<>();
 

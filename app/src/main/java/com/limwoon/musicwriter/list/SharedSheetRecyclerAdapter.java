@@ -107,9 +107,7 @@ public class SharedSheetRecyclerAdapter extends RecyclerView.Adapter<SharedSheet
             final int index = getAdapterPosition();
             String jsonStr = list.get(index).getNote();
             if(v==play){
-                Log.d("getnotestring", "onClick: "+ jsonStr);
                 NoteParser noteParser = new NoteParser(jsonStr);
-                Log.d("getnotestring", "onClick: "+ noteParser.getNotes());
                 notes = new ArrayList<>();
                 for(int i=0; i<noteParser.getNoteLength(); i++) {
                     notes.add(noteParser.getNoteAt(i));
@@ -118,10 +116,6 @@ public class SharedSheetRecyclerAdapter extends RecyclerView.Adapter<SharedSheet
                 playThread = new Thread(new Runnable() {
                     @Override
                     public void run(){
-                        NativeClass.createEngine();
-                        NativeClass.createAssetAudioPlayer(PUBLIC_APP_DATA.assetManager, "");
-                        NativeClass.setStopAssetAudioPlayer(0);
-
                         try {
                             Thread.sleep(500);
                         } catch (InterruptedException e) {
@@ -132,15 +126,15 @@ public class SharedSheetRecyclerAdapter extends RecyclerView.Adapter<SharedSheet
                             if (notes.get(i).node) continue;
                             for (int j = 0; j < 6; j++) {
                                 if (notes.get(i).tone[j] != -1) {
-                                    NativeClass.setPlayingAssetAudioPlayer(j, notes.get(i).tone[j]);
+                                    NativeClass.setPlayingBufferQueue(j, notes.get(i).tone[j]);
                                 }
                             }
                             try {
                                 Thread.sleep(Sounds.getDuration(notes.get(i).duration));
-                                NativeClass.setStopAssetAudioPlayer(0);
+                                NativeClass.setStopBufferQueue();
                                 if(i == notes.size()-1) NativeClass.releaseAll();
                             } catch (InterruptedException e) { // 정지버튼 클릭
-                                NativeClass.setStopAssetAudioPlayer(0);
+                                NativeClass.setStopBufferQueue();
                                 break;
                             }
                         }

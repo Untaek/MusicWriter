@@ -169,14 +169,17 @@ public class MusicViewActivity extends AppCompatActivity {
                                 if(noteList.get(i).node) continue;
                                 for(int j=0; j<6; j++){
                                     if(noteList.get(i).tone[j]!=-1){
-                                        NativeClass.setPlayingAssetAudioPlayer(j, noteList.get(i).tone[j]);
+                                        //NativeClass.setPlayingAssetAudioPlayer(j, noteList.get(i).tone[j]);
+                                        NativeClass.setPlayingBufferQueue(j, noteList.get(i).tone[j]);
                                     }
                                 }
                                 try {
                                     Thread.sleep(Sounds.getDuration(noteList.get(i).duration));
-                                    NativeClass.setStopAssetAudioPlayer(0);
+                                    //NativeClass.setStopAssetAudioPlayer(0);
+                                    NativeClass.setStopBufferQueue();
                                 } catch (InterruptedException e) { // 정지버튼 클릭
-                                    NativeClass.setStopAssetAudioPlayer(0);
+                                    //NativeClass.setStopAssetAudioPlayer(0);
+                                    NativeClass.setStopBufferQueue();
                                     sheetRecyView.post(new Runnable() {
                                         @Override
                                         public void run() {
@@ -294,7 +297,6 @@ public class MusicViewActivity extends AppCompatActivity {
                 if(PUBLIC_APP_DATA.isLogin()){
                     AlertDialog dialog = builder.create();
                     dialog.show();
-                    NativeClass.setPlayingBufferQueue(4,0);
                 }
                 else{
                     AlertDialog dialog1 = builder1.create();

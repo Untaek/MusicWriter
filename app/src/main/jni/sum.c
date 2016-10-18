@@ -86,6 +86,7 @@ JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_createEngine
       outputMixVolume = NULL;
   }
 
+
 JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_createBufferFromAsset
 (JNIEnv *env, jclass cls, jobject assetManager, jstring jfileDir){
 
@@ -97,19 +98,22 @@ assetDir = AAssetManager_openDir(mgr, dir);
 
 int i;
 for(i=0; i<6; i++){
-AAsset* asset = AAssetManager_open(mgr, AAssetDir_getNextFileName(assetDir), AASSET_MODE_UNKNOWN);
+AAsset* asset = AAssetManager_open(mgr, AAssetDir_getNextFileName(assetDir), AASSET_MODE_BUFFER);
 player[i]->buffer = AAsset_getBuffer(asset);
 player[i]->bufferSize = AAsset_getLength(asset);
 }
 }
 
+
+
 JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_createBefferQueueAudioPlayer
 (JNIEnv *env, jclass cls){
 
 SLDataLocator_AndroidSimpleBufferQueue loc_bufq = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE, 2};
-SLDataFormat_PCM format_pcm = {SL_DATAFORMAT_PCM, 1, SL_SAMPLINGRATE_8,
+SLDataFormat_PCM format_pcm = {SL_DATAFORMAT_PCM, 1, SL_SAMPLINGRATE_44_1,
                                SL_PCMSAMPLEFORMAT_FIXED_16, SL_PCMSAMPLEFORMAT_FIXED_16,
                                SL_SPEAKER_FRONT_CENTER, SL_BYTEORDER_LITTLEENDIAN};
+SLDataFormat_MIME format_mime = {SL_DATAFORMAT_MIME, NULL, SL_CONTAINERTYPE_UNSPECIFIED};
 SLDataSource audioSrc = {&loc_bufq, &format_pcm};
 
 SLDataLocator_OutputMix loc_outmix = {SL_DATALOCATOR_OUTPUTMIX, outputMixObject};
@@ -139,7 +143,7 @@ LOGI("%d done", i);
 
 JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_setPlayingBufferQueue
 (JNIEnv *env, jclass cls, jint tone, jint pitch){
-(*player[tone]->playbackRateItf)->SetRate(player[tone]->playbackRateItf, 2000);
+(*player[tone]->playbackRateItf)->SetRate(player[tone]->playbackRateItf, 1000*pow(2, pitch/12.0));
 (*player[tone]->bqPlayerBufferQueue)->Enqueue(
 (player[tone]->bqPlayerBufferQueue),
 (player[tone]->buffer),
@@ -155,8 +159,12 @@ LOGI("%d buffersize", player[tone]->bufferSize);
 JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_setStopBufferQueue
 (JNIEnv *env, jclass cls){
 
-(*player[2]->bqPlayerPlay)->SetPlayState((*player[2]->bqPlayerPlay), SL_PLAYSTATE_STOPPED );
-(*player[2]->bqPlayerBufferQueue)->Clear((*player[2]->bqPlayerBufferQueue));
+int i;
+for(i=0; i<6; i++){
+(*player[i]->bqPlayerPlay)->SetPlayState(player[i]->bqPlayerPlay, SL_PLAYSTATE_STOPPED);
+(*player[i]->bqPlayerBufferQueue)->Clear(player[i]->bqPlayerBufferQueue);
+}
+
 }
 
 
@@ -282,6 +290,20 @@ JNIEXPORT jboolean JNICALL Java_com_limwoon_musicwriter_NativeClass_getArrayList
     (JNIEnv *env, jclass cls){
 
         int i;
+
+    for(i=0; i<6; i++){
+
+(*player[i]->bqPlayerObject)->Destroy(player[i]->bqPlayerObject);
+player[i]->bqPlayerPlay = NULL;
+player[i]->bqPlayerBufferQueue = NULL;
+player[i]->playbackRateItf = NULL;
+player[i]->dynamicInterface = NULL;
+player[i]->buffer = NULL;
+player[i]->bufferSize = NULL;
+free(player[i]);
+}
+
+
         for(i=0; i<6; i++)
             if (fdPlayerObject[i] != NULL) {
                 (*fdPlayerObject[i])->Destroy(fdPlayerObject[i]);

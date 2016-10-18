@@ -87,12 +87,21 @@ public class SharedMusicViewActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        NativeClass.releaseAll();
+        super.onDestroy();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shared_music_view);
 
         data = (SheetData) getIntent().getSerializableExtra("data");
         NoteParser noteParser = new NoteParser(data.getNote());
+        NativeClass.createEngine();
+        NativeClass.createBefferQueueAudioPlayer();
+        NativeClass.createBufferFromAsset(getAssets(), "");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
@@ -138,22 +147,18 @@ public class SharedMusicViewActivity extends AppCompatActivity {
                 Thread playThread = new Thread(new Runnable() {
                     @Override
                     public void run(){
-                        NativeClass.createEngine();
-                        NativeClass.createAssetAudioPlayer(PUBLIC_APP_DATA.assetManager, "");
-
                         for(int i=0; i<noteList.size(); i++) {
                             if (noteList.get(i).node) continue;
                             for (int j = 0; j < 6; j++) {
                                 if (noteList.get(i).tone[j] != -1) {
-                                    NativeClass.setPlayingAssetAudioPlayer(j, noteList.get(i).tone[j]);
+                                    NativeClass.setPlayingBufferQueue(j, noteList.get(i).tone[j]);
                                 }
                             }
                             try {
                                 Thread.sleep(Sounds.getDuration(noteList.get(i).duration));
-                                NativeClass.setStopAssetAudioPlayer(0);
-                                if(i == noteList.size()-1) NativeClass.releaseAll();
+                                NativeClass.setStopBufferQueue();
                             } catch (InterruptedException e) { // 정지버튼 클릭
-                                NativeClass.setStopAssetAudioPlayer(0);
+                                NativeClass.setStopBufferQueue();
                                 break;
                             }
                         }
