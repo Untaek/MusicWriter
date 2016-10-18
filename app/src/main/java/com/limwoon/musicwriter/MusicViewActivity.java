@@ -64,8 +64,6 @@ public class MusicViewActivity extends AppCompatActivity {
     Thread playThread;
     int musicProgress =0;
 
-    NativeClass nativeClass;
-
     Button button_shareMusic;
 
     @Override
@@ -117,9 +115,9 @@ public class MusicViewActivity extends AppCompatActivity {
 
         musicSeekBar.setMax(noteParser.getNoteLength()-1);
 
-        nativeClass = new NativeClass();
-        nativeClass.createEngine();
-        nativeClass.createAssetAudioPlayer(getAssets(), "");
+        NativeClass.createEngine();
+        NativeClass.createBefferQueueAudioPlayer();
+        NativeClass.createBufferFromAsset(getAssets(), "");
 
         final View.OnTouchListener onTouchListener = new View.OnTouchListener() {
             @Override
@@ -171,14 +169,14 @@ public class MusicViewActivity extends AppCompatActivity {
                                 if(noteList.get(i).node) continue;
                                 for(int j=0; j<6; j++){
                                     if(noteList.get(i).tone[j]!=-1){
-                                        nativeClass.setPlayingAssetAudioPlayer(j, noteList.get(i).tone[j]);
+                                        NativeClass.setPlayingAssetAudioPlayer(j, noteList.get(i).tone[j]);
                                     }
                                 }
                                 try {
                                     Thread.sleep(Sounds.getDuration(noteList.get(i).duration));
-                                    nativeClass.setStopAssetAudioPlayer(0);
+                                    NativeClass.setStopAssetAudioPlayer(0);
                                 } catch (InterruptedException e) { // 정지버튼 클릭
-                                    nativeClass.setStopAssetAudioPlayer(0);
+                                    NativeClass.setStopAssetAudioPlayer(0);
                                     sheetRecyView.post(new Runnable() {
                                         @Override
                                         public void run() {
@@ -296,6 +294,7 @@ public class MusicViewActivity extends AppCompatActivity {
                 if(PUBLIC_APP_DATA.isLogin()){
                     AlertDialog dialog = builder.create();
                     dialog.show();
+                    NativeClass.setPlayingBufferQueue(4,0);
                 }
                 else{
                     AlertDialog dialog1 = builder1.create();
@@ -307,7 +306,7 @@ public class MusicViewActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        nativeClass.releaseAll();
+        NativeClass.releaseAll();
         super.onDestroy();
     }
 

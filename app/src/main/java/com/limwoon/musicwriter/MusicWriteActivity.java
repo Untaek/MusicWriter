@@ -245,6 +245,7 @@ public class MusicWriteActivity extends AppCompatActivity {
                                 for(int j=0; j<6; j++){
                                     if(noteList.get(i).tone[j]!=-1){
                                         NativeClass.setPlayingAssetAudioPlayer(j, noteList.get(i).tone[j]);
+                                        Log.d("TTT", "runnote: "+noteList.get(i).tone[j]);
                                     }
                                 }
                                 try {

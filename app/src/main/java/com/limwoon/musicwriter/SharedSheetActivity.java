@@ -44,8 +44,6 @@ public class SharedSheetActivity extends AppCompatActivity {
 
         SearchView searchView = (SearchView) menu.findItem(R.id.shared_menu_search).getActionView();
 
-
-
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -56,6 +54,10 @@ public class SharedSheetActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        NativeClass.createEngine();
+        NativeClass.createBufferFromAsset(getAssets(), "");
+        NativeClass.createBefferQueueAudioPlayer();
 
         sheetList = new ArrayList<>();
 
@@ -95,6 +97,8 @@ public class SharedSheetActivity extends AppCompatActivity {
                 mViewPagerIndicator.getChildAt(current).setBackgroundColor(Color.BLUE);
             }
         });
+
+
     }
 
     @Override
@@ -128,4 +132,5 @@ public class SharedSheetActivity extends AppCompatActivity {
         new LoadSharedSheetList(ad.getList(), ad).execute(page, sort, fav);
         ad.notifyDataSetChanged();
     }
+
 }

@@ -25,6 +25,14 @@ JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_createBefferQueu
 
 /*
  * Class:     com_limwoon_musicwriter_NativeClass
+ * Method:    createBufferFromAsset
+ * Signature: (Landroid/content/res/AssetManager;Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_createBufferFromAsset
+  (JNIEnv *, jclass, jobject, jstring);
+
+/*
+ * Class:     com_limwoon_musicwriter_NativeClass
  * Method:    createAssetAudioPlayer
  * Signature: (Landroid/content/res/AssetManager;Ljava/lang/String;)V
  */
@@ -38,6 +46,22 @@ JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_createAssetAudio
  */
 JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_setPlayingAssetAudioPlayer
   (JNIEnv *, jclass, jint, jint);
+
+/*
+ * Class:     com_limwoon_musicwriter_NativeClass
+ * Method:    setPlayingBufferQueue
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_setPlayingBufferQueue
+  (JNIEnv *, jclass, jint, jint);
+
+/*
+ * Class:     com_limwoon_musicwriter_NativeClass
+ * Method:    setStopBufferQueue
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_setStopBufferQueue
+  (JNIEnv *, jclass);
 
 /*
  * Class:     com_limwoon_musicwriter_NativeClass

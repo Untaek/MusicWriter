@@ -43,6 +43,30 @@ static int fd[6];
 
 static AAssetDir* assetDir;
 
+
+typedef struct player_{
+    SLObjectItf bqPlayerObject;
+    SLPlayItf bqPlayerPlay;
+    SLAndroidSimpleBufferQueueItf bqPlayerBufferQueue;
+    SLPlaybackRateItf playbackRateItf;
+    SLDynamicInterfaceManagementItf dynamicInterface;
+    const void* buffer;
+    int bufferSize;
+}player_Body;
+
+static player_Body* player[6];
+
+int is_playing, is_done_buffer = 0;
+
+//define our callback
+
+void SLAPIENTRY play_callback( SLPlayItf player, void *context, SLuint32 event ){
+
+    if( event & SL_PLAYEVENT_HEADATEND )
+    is_done_buffer = 1;
+}
+
+
 JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_createEngine
   (JNIEnv *env, jclass cls){
 
@@ -50,8 +74,8 @@ JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_createEngine
   (*engineObject)->Realize(engineObject, SL_BOOLEAN_FALSE);
   (*engineObject)->GetInterface(engineObject, SL_IID_ENGINE, &engineEngine);
 
-  const SLInterfaceID ids[] = { SL_IID_VOLUME };
-  const SLboolean req[] = { SL_BOOLEAN_FALSE };
+  const SLInterfaceID ids[1] = { SL_IID_PLAYBACKRATE };
+  const SLboolean req[1] = { SL_BOOLEAN_FALSE };
 
   (*engineEngine)->CreateOutputMix(engineEngine, &outputMixObject, 1, ids, req);
 
@@ -62,75 +86,152 @@ JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_createEngine
       outputMixVolume = NULL;
   }
 
-JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_createAssetAudioPlayer
-  (JNIEnv *env, jclass cls, jobject assetManager, jstring jfileDir){
+JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_createBufferFromAsset
+(JNIEnv *env, jclass cls, jobject assetManager, jstring jfileDir){
 
-  AAssetManager* mgr = AAssetManager_fromJava(env, assetManager);
-  const char* dir = (*env)->GetStringUTFChars(env, jfileDir, NULL);
+AAssetManager* mgr = AAssetManager_fromJava(env, assetManager);
+const char* dir = (*env)->GetStringUTFChars(env, jfileDir, NULL);
 
-  assetDir = AAssetManager_openDir(mgr, dir);
-  (*env)->ReleaseStringUTFChars(env, jfileDir, dir);
+assetDir = AAssetManager_openDir(mgr, dir);
+(*env)->ReleaseStringUTFChars(env, jfileDir, dir);
 
-    SLpermille minRate[6] = {0,};
-    SLpermille maxRate[6] = {4000,};
-    SLpermille stepSize[6] ={0,};
-    SLpermille rate[6];
-    SLuint32 capa[6];
-
-    int i;
-    for(i=0; i<6; i++){
-        AAsset* asset = AAssetManager_open(mgr, AAssetDir_getNextFileName(assetDir), AASSET_MODE_UNKNOWN);
-        fd[i] = AAsset_openFileDescriptor(asset, &start[i], &length[i]);
-
-        SLDataLocator_AndroidFD loc_fd = {SL_DATALOCATOR_ANDROIDFD, fd[i], start[i], length[i]};
-        SLDataFormat_MIME format_mime = {SL_DATAFORMAT_MIME, NULL, SL_CONTAINERTYPE_UNSPECIFIED};
-        SLDataSource audioSrc = {&loc_fd, &format_mime};
-
-        SLDataLocator_AndroidSimpleBufferQueue loc_bq = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE, 2};
-        SLDataLocator_OutputMix loc_outmix = {SL_DATALOCATOR_OUTPUTMIX, outputMixObject};
-
-        SLDataSink audioSnk = {&loc_outmix, NULL};
-
-        // create audio player
-        const SLInterfaceID ids[] = {SL_IID_PLAY, SL_IID_DYNAMICINTERFACEMANAGEMENT};
-        const SLboolean req[] = {SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE};
-        SLresult result;
-        (*engineEngine)->CreateAudioPlayer(engineEngine, &fdPlayerObject[i], &audioSrc, &audioSnk, 2, ids, req);
-
-        // realize the player
-        (*fdPlayerObject[i])->Realize(fdPlayerObject[i], SL_BOOLEAN_FALSE);
-        (*fdPlayerObject[i])->GetInterface(fdPlayerObject[i], SL_IID_DYNAMICINTERFACEMANAGEMENT, (void*)&dynamicInterface[i]);
-        (*dynamicInterface[i])->AddInterface(dynamicInterface[i], SL_IID_PLAYBACKRATE, SL_BOOLEAN_FALSE);
-        (*fdPlayerObject[i])->GetInterface(fdPlayerObject[i], SL_IID_PLAYBACKRATE, &playbackRateItf[i]);
-        (*playbackRateItf[i])->GetRateRange(playbackRateItf[i], 0, (void*)&minRate[i], (void*)&maxRate[i], (void*)&stepSize[i], (void*)&capa[i]);
-        (*fdPlayerObject[i])->GetInterface(fdPlayerObject[i], SL_IID_PLAY, &fdPlayerPlay[i]);
-        (*fdPlayerPlay[i])->SetPlayState(fdPlayerPlay[i], SL_PLAYSTATE_PLAYING);
-        (*fdPlayerPlay[i])->SetPlayState(fdPlayerPlay[i], SL_PLAYSTATE_STOPPED);
-    }
-  AAssetDir_close(assetDir);
+int i;
+for(i=0; i<6; i++){
+AAsset* asset = AAssetManager_open(mgr, AAssetDir_getNextFileName(assetDir), AASSET_MODE_UNKNOWN);
+player[i]->buffer = AAsset_getBuffer(asset);
+player[i]->bufferSize = AAsset_getLength(asset);
 }
+}
+
+JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_createBefferQueueAudioPlayer
+(JNIEnv *env, jclass cls){
+
+SLDataLocator_AndroidSimpleBufferQueue loc_bufq = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE, 2};
+SLDataFormat_PCM format_pcm = {SL_DATAFORMAT_PCM, 1, SL_SAMPLINGRATE_8,
+                               SL_PCMSAMPLEFORMAT_FIXED_16, SL_PCMSAMPLEFORMAT_FIXED_16,
+                               SL_SPEAKER_FRONT_CENTER, SL_BYTEORDER_LITTLEENDIAN};
+SLDataSource audioSrc = {&loc_bufq, &format_pcm};
+
+SLDataLocator_OutputMix loc_outmix = {SL_DATALOCATOR_OUTPUTMIX, outputMixObject};
+SLDataSink audioSnk = {&loc_outmix, NULL};
+
+const SLInterfaceID ids[2] = {SL_IID_BUFFERQUEUE, SL_IID_DYNAMICINTERFACEMANAGEMENT};
+const SLboolean req[2] = {SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE};
+
+int i;
+for(i=0; i<6; i++){
+player[i] = (player_Body*)malloc(sizeof(player_Body));
+(*engineEngine)->CreateAudioPlayer(engineEngine, (&player[i]->bqPlayerObject), &audioSrc, &audioSnk, 2, ids, req);
+(*player[i]->bqPlayerObject)->Realize(player[i]->bqPlayerObject, SL_BOOLEAN_FALSE);
+
+(*player[i]->bqPlayerObject)->GetInterface(player[i]->bqPlayerObject, SL_IID_PLAY, &(player[i]->bqPlayerPlay));
+(*player[i]->bqPlayerObject)->GetInterface(player[i]->bqPlayerObject, SL_IID_BUFFERQUEUE, &(player[i]->bqPlayerBufferQueue));
+(*player[i]->bqPlayerObject)->GetInterface(player[i]->bqPlayerObject, SL_IID_DYNAMICINTERFACEMANAGEMENT, (&player[i]->dynamicInterface));
+(*player[i]->dynamicInterface)->AddInterface(player[i]->dynamicInterface, SL_IID_PLAYBACKRATE, SL_BOOLEAN_FALSE);
+(*player[i]->bqPlayerObject)->GetInterface(player[i]->bqPlayerObject, SL_IID_PLAYBACKRATE, (&player[i]->playbackRateItf));
+(*player[i]->bqPlayerObject)->GetInterface(player[i]->bqPlayerObject, SL_IID_ANDROIDSIMPLEBUFFERQUEUE, (&player[i]->bqPlayerBufferQueue));
+
+LOGI("%d done", i);
+}
+}
+
+
+
+JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_setPlayingBufferQueue
+(JNIEnv *env, jclass cls, jint tone, jint pitch){
+(*player[tone]->playbackRateItf)->SetRate(player[tone]->playbackRateItf, 2000);
+(*player[tone]->bqPlayerBufferQueue)->Enqueue(
+(player[tone]->bqPlayerBufferQueue),
+(player[tone]->buffer),
+(player[tone]->bufferSize));
+
+(*player[tone]->bqPlayerPlay)->SetPlayState(player[tone]->bqPlayerPlay, SL_PLAYSTATE_PLAYING );
+
+LOGI("%l", player[tone]->buffer);
+LOGI("%d buffersize", player[tone]->bufferSize);
+
+}
+
+JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_setStopBufferQueue
+(JNIEnv *env, jclass cls){
+
+(*player[2]->bqPlayerPlay)->SetPlayState((*player[2]->bqPlayerPlay), SL_PLAYSTATE_STOPPED );
+(*player[2]->bqPlayerBufferQueue)->Clear((*player[2]->bqPlayerBufferQueue));
+}
+
+
+
+JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_createAssetAudioPlayer
+(JNIEnv *env, jclass cls, jobject assetManager, jstring jfileDir){
+
+AAssetManager* mgr = AAssetManager_fromJava(env, assetManager);
+const char* dir = (*env)->GetStringUTFChars(env, jfileDir, NULL);
+
+assetDir = AAssetManager_openDir(mgr, dir);
+(*env)->ReleaseStringUTFChars(env, jfileDir, dir);
+
+SLpermille minRate[6];
+SLpermille maxRate[6];
+SLpermille stepSize[6];
+SLpermille rate[6];
+SLuint32 capa[6];
+const void* buffer[6];
+int bufferSize[6];
+
+int i;
+for(i=0; i<6; i++){
+AAsset* asset = AAssetManager_open(mgr, AAssetDir_getNextFileName(assetDir), AASSET_MODE_UNKNOWN);
+fd[i] = AAsset_openFileDescriptor(asset, &start[i], &length[i]);
+buffer[i] = AAsset_getBuffer(asset);
+bufferSize[i] = AAsset_getLength(asset);
+
+
+SLDataLocator_AndroidFD loc_fd = {SL_DATALOCATOR_ANDROIDFD, fd[i], start[i], length[i]};
+SLDataFormat_MIME format_mime = {SL_DATAFORMAT_MIME, NULL, SL_CONTAINERTYPE_UNSPECIFIED};
+SLDataSource audioSrc = {&loc_fd, &format_mime};
+
+SLDataLocator_AndroidSimpleBufferQueue loc_bq = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE, 2};
+SLDataLocator_OutputMix loc_outmix = {SL_DATALOCATOR_OUTPUTMIX, outputMixObject};
+
+SLDataSink audioSnk = {&loc_outmix, NULL};
+
+// create audio player
+const SLInterfaceID ids[] = {SL_IID_PLAY, SL_IID_DYNAMICINTERFACEMANAGEMENT};
+const SLboolean req[] = {SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE};
+SLresult result;
+(*engineEngine)->CreateAudioPlayer(engineEngine, &fdPlayerObject[i], &audioSrc, &audioSnk, 2, ids, req);
+
+// realize the player
+(*fdPlayerObject[i])->Realize(fdPlayerObject[i], SL_BOOLEAN_FALSE);
+(*fdPlayerObject[i])->GetInterface(fdPlayerObject[i], SL_IID_PLAY, &fdPlayerPlay[i]);
+(*fdPlayerObject[i])->GetInterface(fdPlayerObject[i], SL_IID_DYNAMICINTERFACEMANAGEMENT, (void*)&dynamicInterface[i]);
+(*dynamicInterface[i])->AddInterface(dynamicInterface[i], SL_IID_PLAYBACKRATE, SL_BOOLEAN_FALSE);
+(*fdPlayerObject[i])->GetInterface(fdPlayerObject[i], SL_IID_PLAYBACKRATE, &playbackRateItf[i]);
+(*playbackRateItf[i])->GetRateRange(playbackRateItf[i], 0, (void*)&minRate[i], (void*)&maxRate[i], (void*)&stepSize[i], (void*)&capa[i]);
+
+// (*fdPlayerPlay[i])->SetPlayState(fdPlayerPlay[i], SL_PLAYSTATE_PLAYING);
+// (*fdPlayerPlay[i])->SetPlayState(fdPlayerPlay[i], SL_PLAYSTATE_STOPPED);
+}
+AAssetDir_close(assetDir);
+}
+
 
 JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_setPlayingAssetAudioPlayer
-  (JNIEnv *env, jclass cls, jint tone, jint pitch){
+(JNIEnv *env, jclass cls, jint tone, jint pitch){
 
-     (*playbackRateItf[tone])->SetRate(playbackRateItf[tone], 1000*pow(2, pitch/12.0));
-     (*fdPlayerPlay[tone])->SetPlayState(fdPlayerPlay[tone], SL_PLAYSTATE_PLAYING);
+(*playbackRateItf[tone])->SetRate(playbackRateItf[tone], 1000*pow(2, pitch/12.0));
+(*fdPlayerPlay[tone])->SetPlayState(fdPlayerPlay[tone], SL_PLAYSTATE_PLAYING);
+LOGI("%d  565", pitch);
 }
+
 
 JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_setStopAssetAudioPlayer
-  (JNIEnv *env, jclass vls, jint tone){
-        int i;
-        for(i=0; i<6; i++)
-            (*fdPlayerPlay[i])->SetPlayState(fdPlayerPlay[i], SL_PLAYSTATE_STOPPED);
-  }
-
-
-JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_setPitch
-                          (JNIEnv *env, jclass cls, jobject assetManager, jobjectArray jfileList) {
-
-
-
+(JNIEnv *env, jclass vls, jint tone){
+int i;
+for(i=0; i<6; i++)
+(*fdPlayerPlay[i])->SetPlayState(fdPlayerPlay[i], SL_PLAYSTATE_STOPPED);
 }
+
 
 JNIEXPORT jboolean JNICALL Java_com_limwoon_musicwriter_NativeClass_getArrayList
                                                 (JNIEnv *env, jclass cls, jobject objArrayListAAA){
