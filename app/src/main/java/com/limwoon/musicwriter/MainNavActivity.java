@@ -284,13 +284,12 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                     favoriteLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
                     favoriteRecyclerView.setLayoutManager(favoriteLinearLayoutManager);
 
-                    new LoadFavoriteListAsync(favoriteList, favSharedSheetRecyclerAdapter).execute();
-
                     LinearLayout loginContainer = (LinearLayout) rootView.findViewById(R.id.please_login_container);
                     LinearLayout favoriteContainer = (LinearLayout) rootView.findViewById(R.id.favorite_wrapper);
                     if(PUBLIC_APP_DATA.isLogin()) {
                         loginContainer.setVisibility(View.GONE);
                         favoriteContainer.setVisibility(View.VISIBLE);
+                        new LoadFavoriteListAsync(favoriteList, favSharedSheetRecyclerAdapter).execute();
                     }
                     else {
                         loginContainer.setVisibility(View.VISIBLE);
