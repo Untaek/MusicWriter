@@ -58,8 +58,6 @@ static player_Body* player[6];
 
 int is_playing, is_done_buffer = 0;
 
-//define our callback
-
 void SLAPIENTRY play_callback( SLPlayItf player, void *context, SLuint32 event ){
 
     if( event & SL_PLAYEVENT_HEADATEND )
@@ -143,13 +141,14 @@ LOGI("%d done", i);
 
 JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_setPlayingBufferQueue
 (JNIEnv *env, jclass cls, jint tone, jint pitch){
+(*player[tone]->bqPlayerPlay)->SetPlayState(player[tone]->bqPlayerPlay, SL_PLAYSTATE_PLAYING );
 (*player[tone]->playbackRateItf)->SetRate(player[tone]->playbackRateItf, 1000*pow(2, pitch/12.0));
 (*player[tone]->bqPlayerBufferQueue)->Enqueue(
 (player[tone]->bqPlayerBufferQueue),
 (player[tone]->buffer),
 (player[tone]->bufferSize));
 
-(*player[tone]->bqPlayerPlay)->SetPlayState(player[tone]->bqPlayerPlay, SL_PLAYSTATE_PLAYING );
+
 
 LOGI("%l", player[tone]->buffer);
 LOGI("%d buffersize", player[tone]->bufferSize);

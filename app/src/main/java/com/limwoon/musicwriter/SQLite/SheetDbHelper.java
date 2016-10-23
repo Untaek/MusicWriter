@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  * Created by ejdej on 2016-08-18.
  */
 public class SheetDbHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "musicSheet.db";
 
     public SheetDbHelper(Context context) {
@@ -21,7 +21,8 @@ public class SheetDbHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
+    public void onUpgrade(SQLiteDatabase db, int i, int i1) {
+        db.execSQL("DROP TABLE "+ DefineSQL.TABLE_NAME);
+        onCreate(db);
     }
 }

@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
+import com.limwoon.musicwriter.draw.NoteBitmapMaker;
 import com.limwoon.musicwriter.user.UserCheck;
 
 public class SplashActivity extends AppCompatActivity {
@@ -17,6 +18,12 @@ public class SplashActivity extends AppCompatActivity {
         PUBLIC_APP_DATA.setIsLoaded(true);
         UserCheck userCheck = new UserCheck(this);
         userCheck.checkIsLogin();
+
+        NativeClass.createEngine();
+        NativeClass.createBefferQueueAudioPlayer();
+        NativeClass.createBufferFromAsset(getAssets(), "");
+
+        NoteBitmapMaker noteBitmapMaker = new NoteBitmapMaker(this);
 
         Handler hd = new Handler();
         hd.postDelayed(new Runnable() {

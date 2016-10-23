@@ -17,6 +17,7 @@ public static final String COMMA = ",";
     public static final String COLUMN_NAME_AUTHOR = "author";
     public static final String COLUMN_NAME_NOTE = "note";
     public static final String COLUMN_NAME_BEATS = "beats";
+    public static final String COLUMN_NAME_TEMPO = "tempo";
 
     public static final String SQL_CREATE_TABLE =
         "CREATE TABLE " + TABLE_NAME + " ("+
@@ -24,7 +25,8 @@ public static final String COMMA = ",";
                 DefineSQL.COLUMN_NAME_TITLE + TEXT_TYPE + COMMA+
                 DefineSQL.COLUMN_NAME_AUTHOR + TEXT_TYPE + DEFAULT + "anonymous" + COMMA+
                 DefineSQL.COLUMN_NAME_NOTE + TEXT_TYPE + COMMA+
-                DefineSQL.COLUMN_NAME_BEATS + INT_TYPE +
+                DefineSQL.COLUMN_NAME_BEATS + INT_TYPE + COMMA+
+                DefineSQL.COLUMN_NAME_TEMPO + INT_TYPE +
                 ")";
 
     private static final String SQL_DELETE_TABLE =

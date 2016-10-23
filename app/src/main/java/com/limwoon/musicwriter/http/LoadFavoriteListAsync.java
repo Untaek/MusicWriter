@@ -76,6 +76,7 @@ public class LoadFavoriteListAsync extends AsyncTask<Bundle, Void, Integer> {
                 long comments = jsonObject.getLong("comments");
                 long likes = jsonObject.getLong("likes");
                 long id = jsonObject.getLong("sheetID");
+                int tempo = jsonObject.getInt("tempo");
                 Log.d(TAG, "doInBackground: "+title);
 
                 note = note.substring(1, note.length()-1);
@@ -89,6 +90,7 @@ public class LoadFavoriteListAsync extends AsyncTask<Bundle, Void, Integer> {
                 sheetData.setUploadUserStrID(uploadUserID);
                 sheetData.setComments(comments);
                 sheetData.setLikes(likes);
+                sheetData.setTempo(tempo);
                 list.add(sheetData);
             }
 /*

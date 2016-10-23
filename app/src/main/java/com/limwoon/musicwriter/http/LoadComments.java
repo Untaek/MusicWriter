@@ -1,5 +1,7 @@
 package com.limwoon.musicwriter.http;
 
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -7,6 +9,7 @@ import android.widget.TextView;
 
 import com.limwoon.musicwriter.data.CommentData;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
+import com.limwoon.musicwriter.image.UserPicture;
 import com.limwoon.musicwriter.list.CommentRecyclerAdapter;
 
 import org.json.JSONArray;
@@ -29,6 +32,7 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 
 import static android.content.ContentValues.TAG;
 
@@ -40,11 +44,13 @@ public class LoadComments extends AsyncTask<Long, Void, Integer> {
     ArrayList<CommentData> commentList;
     CommentRecyclerAdapter commentRecyclerAdapter;
     TextView textView_count;
+    Context context;
 
-    public LoadComments(ArrayList<CommentData> commentList, CommentRecyclerAdapter commentRecyclerAdapter, @Nullable TextView textView_count) {
+    public LoadComments(ArrayList<CommentData> commentList, CommentRecyclerAdapter commentRecyclerAdapter, @Nullable TextView textView_count, Context context) {
         this.commentList = commentList;
         this.commentRecyclerAdapter = commentRecyclerAdapter;
         this.textView_count = textView_count;
+        this.context = context;
     }
 
     @Override
@@ -74,6 +80,8 @@ public class LoadComments extends AsyncTask<Long, Void, Integer> {
             JSONObject jsonObject = new JSONObject(json);
             String today = jsonObject.getString("today");
             JSONArray jsonArray = jsonObject.getJSONArray("comments");
+            Log.d(TAG, "doInBackground: "+ jsonArray);
+
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
             Date date_today =  dateFormat.parse(today);
 
@@ -85,8 +93,7 @@ public class LoadComments extends AsyncTask<Long, Void, Integer> {
                 String userStrID = object.getString("userStrID");
                 String uploadTime = object.getString("uploadTime");
                 String commentText = object.getString("commentText");
-
-
+                String userPicUrl = object.getString("userPic_url");
 
                 Date date_comment = dateFormat.parse(uploadTime);
                 Log.d("date_today", "doInBackground: "+ date_today.getTime());
@@ -116,6 +123,7 @@ public class LoadComments extends AsyncTask<Long, Void, Integer> {
                 commentData.setUploadTime(timeStr);
                 commentData.setComment(commentText);
                 commentData.setUserStrID(userStrID);
+                commentData.setUserPicUrl(userPicUrl);
 
                 commentList.add(commentData);
             }
@@ -146,10 +154,26 @@ public class LoadComments extends AsyncTask<Long, Void, Integer> {
 
     @Override
     protected void onPostExecute(Integer integer) {
-        commentRecyclerAdapter.notifyDataSetChanged();
+
         if(textView_count!=null){
             textView_count.setText("댓글 ("+commentList.size()+")");
         }
+
+        UserPicture userPicture = new UserPicture(context);
+        for(int i=0; i<commentList.size(); i++){
+            Bitmap pic = userPicture.getUserPicBitmapFromCache("user_" + commentList.get(i).getUserID() + "_pic.jpg");
+            if(!userPicture.isNotFound() || commentList.get(i).getUserPicUrl().equals("0")){
+                commentList.get(i).setUserPicture(pic);
+            }
+            else{
+                new GetCommentUserPicAsync(context, commentList, i, commentRecyclerAdapter).execute(commentList.get(i).getUserPicUrl());
+            }
+        }
+
+        commentRecyclerAdapter.notifyDataSetChanged();
+
+
+
         super.onPostExecute(integer);
     }
 }

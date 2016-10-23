@@ -99,7 +99,6 @@ public class SharedSheetRecyclerAdapter extends RecyclerView.Adapter<SharedSheet
             play.setOnClickListener(this);
             viewSheet.setOnClickListener(this);
         }
-        Thread playThread;
         ArrayList<NoteData> notes;
 
         @Override
@@ -113,7 +112,7 @@ public class SharedSheetRecyclerAdapter extends RecyclerView.Adapter<SharedSheet
                     notes.add(noteParser.getNoteAt(i));
                 }
 
-                playThread = new Thread(new Runnable() {
+                Thread playThread = new Thread(new Runnable() {
                     @Override
                     public void run(){
                         try {
@@ -130,9 +129,9 @@ public class SharedSheetRecyclerAdapter extends RecyclerView.Adapter<SharedSheet
                                 }
                             }
                             try {
-                                Thread.sleep(Sounds.getDuration(notes.get(i).duration));
+                                Thread.sleep(Sounds.getDuration(notes.get(i).duration, list.get(index).getTempo()));
                                 NativeClass.setStopBufferQueue();
-                                if(i == notes.size()-1) NativeClass.releaseAll();
+
                             } catch (InterruptedException e) { // 정지버튼 클릭
                                 NativeClass.setStopBufferQueue();
                                 break;
@@ -145,8 +144,6 @@ public class SharedSheetRecyclerAdapter extends RecyclerView.Adapter<SharedSheet
             }
             else if(v==viewSheet){
                 Intent intent = new Intent(context, SharedMusicViewActivity.class);
-                //intent.putExtra("data", list.get(index).getNote());
-                //intent.putExtra("title", list.get(index).getTitle());
                 intent.putExtra("data", list.get(index));
                 Bundle bundle = new Bundle();
                 context.startActivity(intent);

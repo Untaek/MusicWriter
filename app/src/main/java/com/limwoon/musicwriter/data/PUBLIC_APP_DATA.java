@@ -1,32 +1,15 @@
 package com.limwoon.musicwriter.data;
 
 import android.app.Application;
-import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
-import android.os.Bundle;
-import android.util.Base64;
-import android.util.Log;
 
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 import com.facebook.appevents.AppEventsLogger;
-import com.facebook.login.LoginManager;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.limwoon.musicwriter.NativeClass;
-import com.limwoon.musicwriter.draw.NoteRestExam;
-import com.limwoon.musicwriter.http.FaceBookUserData;
+import com.limwoon.musicwriter.draw.NoteBitmapMaker;
 import com.limwoon.musicwriter.sounds.Sounds;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by ejdej on 2016-09-21.
@@ -191,7 +174,12 @@ public class PUBLIC_APP_DATA extends Application {
         sounds.loadSound(this);
         NativeClass nativeClass = new NativeClass();
         assetManager = getAssets();
-        NoteRestExam noteRestExam = new NoteRestExam(getApplicationContext());
+        NoteBitmapMaker noteBitmapMaker = new NoteBitmapMaker(getApplicationContext());
+    }
 
+    @Override
+    public void onTerminate() {
+        NativeClass.releaseAll();
+        super.onTerminate();
     }
 }

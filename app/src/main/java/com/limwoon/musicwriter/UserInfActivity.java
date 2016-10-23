@@ -76,7 +76,7 @@ public class UserInfActivity extends AppCompatActivity {
         else
             button_changepw.setVisibility(View.GONE);
 
-        Bitmap userPicBitmap = userPicture.getUserPicBitmapFromCache();
+        Bitmap userPicBitmap = userPicture.getUserPicBitmapFromCache(PUBLIC_APP_DATA.getImageName());
         imageView_userPic.setImageBitmap(userPicBitmap);
 
         findViewById(R.id.button_change_pic).setOnClickListener(new View.OnClickListener() {
@@ -86,6 +86,7 @@ public class UserInfActivity extends AppCompatActivity {
                 Button button_gall = (Button) view.findViewById(R.id.choice_from_gallery);
                 Button button_camera = (Button) view.findViewById(R.id.choice_from_camera);
                 Button button_from_facebook = (Button) view.findViewById(R.id.choice_from_facebook);
+                Button button_clear_picture = (Button) view.findViewById(R.id.choice_clear_picture);
 
                 if(PUBLIC_APP_DATA.isFacebook()) button_from_facebook.setVisibility(View.VISIBLE);
                 else button_from_facebook.setVisibility(View.GONE);
@@ -117,6 +118,13 @@ public class UserInfActivity extends AppCompatActivity {
                         } catch (ExecutionException e) {
                             e.printStackTrace();
                         }
+                    }
+                });
+                button_clear_picture.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        imageView_userPic.setImageResource(R.drawable.ic_account_circle_white_48dp);
+                        userPicture.unCachingImage(PUBLIC_APP_DATA.getImageName());
                     }
                 });
                 AlertDialog.Builder builder = new AlertDialog.Builder(UserInfActivity.this);

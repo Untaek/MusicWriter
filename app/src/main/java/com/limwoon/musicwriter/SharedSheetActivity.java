@@ -1,5 +1,6 @@
 package com.limwoon.musicwriter;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.MenuItemCompat;
@@ -37,27 +38,7 @@ public class SharedSheetActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_shared_sheet, menu);
-        MenuItem searchItem = menu.findItem(R.id.shared_menu_search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    protected void onDestroy() {
-        NativeClass.releaseAll();
-        super.onDestroy();
+        return true;
     }
 
     @Override
@@ -67,11 +48,6 @@ public class SharedSheetActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        NativeClass.createEngine();
-        NativeClass.createBefferQueueAudioPlayer();
-        NativeClass.createBufferFromAsset(getAssets(), "");
-
 
         sheetList = new ArrayList<>();
 
@@ -133,6 +109,7 @@ public class SharedSheetActivity extends AppCompatActivity {
 
                 break;
             case R.id.shared_menu_search:
+                startActivity(new Intent(this, SearchSheetActivity.class));
                 break;
         }
         return super.onOptionsItemSelected(item);

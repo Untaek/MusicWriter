@@ -8,6 +8,7 @@ public class NoteData {
     public int[] tone = new int[6]; // 기타 음의 저장 배열 1번줄 ~ 6번줄
     public boolean node = false; // 마디 인지?
     public boolean rest = false; // 쉼표 인지?
+    public boolean isBind = false; // 묶여있는가
 
     public boolean isAddBtn() {
         return isAddBtn;

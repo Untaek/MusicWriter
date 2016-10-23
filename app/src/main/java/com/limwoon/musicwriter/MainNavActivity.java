@@ -32,6 +32,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -73,6 +74,11 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
     UserPicture userPicture;
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -112,6 +118,7 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                 this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawerLayout.setDrawerListener(toggle);
         toggle.syncState();
+
     }
 
     @Override
@@ -123,8 +130,15 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
             textViewUserStrID.setText(PUBLIC_APP_DATA.getUserStrID());
             textViewUserEmail.setText(PUBLIC_APP_DATA.getUserEmail());
             mNavigationView.getMenu().setGroupVisible(R.id.nav_group_user, true);
-            userPicBitmap = userPicture.getUserPicBitmapFromCache();
+            userPicBitmap = userPicture.getUserPicBitmapFromCache(PUBLIC_APP_DATA.getImageName());
             userImage.setImageBitmap(userPicBitmap);
+            userPicture.setOnPictureReadyListener(new UserPicture.OnPictureReadyListener() {
+                @Override
+                public void onLoaded() {
+                    userPicBitmap = userPicture.getUserPicBitmapFromCache(PUBLIC_APP_DATA.getImageName());
+                    userImage.setImageBitmap(userPicBitmap);
+                }
+            });
         }
         else {
             linearUserInfContainer.setVisibility(View.INVISIBLE);
@@ -199,10 +213,13 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
         }
         //////// /////// ////////
 
+        // 작곡 시작
         Button btnStart;
         Spinner spinnerSelectBeats;
         int beatIndex;
         View rootView;
+        SeekBar seekBar_tempo;
+        TextView textView_tempo;
 
         //악보리스트
         RecyclerView recyclerViewMySheet;
@@ -234,6 +251,8 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
 
                     btnStart = (Button) rootView.findViewById(R.id.btn_select_bakja);
                     spinnerSelectBeats = (Spinner) rootView.findViewById(R.id.spinner_select_beats);
+                    seekBar_tempo = (SeekBar) rootView.findViewById(R.id.seekBar_tempo);
+                    textView_tempo = (TextView) rootView.findViewById(R.id.textView_tempo);
 
                     ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(inflater.getContext(),
                             R.array.beats_array, android.R.layout.simple_spinner_item);
@@ -247,7 +266,22 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                         }
 
                         @Override
-                        public void onNothingSelected(AdapterView<?> adapterView) {
+                        public void onNothingSelected(AdapterView<?> adapterView) { }
+                    });
+
+                    seekBar_tempo.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                            textView_tempo.setText(progress+50+"");
+                        }
+
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {
+
+                        }
+
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {
 
                         }
                     });
@@ -257,8 +291,8 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                         public void onClick(View view) {
                             Intent intent = new Intent(inflater.getContext(), MusicWriteActivity.class);
                             intent.putExtra("beatIndex", beatIndex);
+                            intent.putExtra("tempo", seekBar_tempo.getProgress()+50);
                             startActivity(intent);
-
                         }
                     });
                     break;
@@ -326,6 +360,7 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                         DefineSQL.COLUMN_NAME_AUTHOR,
                         DefineSQL.COLUMN_NAME_BEATS,
                         DefineSQL.COLUMN_NAME_NOTE,
+                        DefineSQL.COLUMN_NAME_TEMPO
                 };
 
                 cursor = db.query(
@@ -347,6 +382,7 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                     sheetData.setId(cursor.getInt(cursor.getColumnIndexOrThrow(DefineSQL._ID)));
                     sheetData.setAuthor("히히");
                     sheetData.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(DefineSQL.COLUMN_NAME_TITLE)));
+                    sheetData.setTempo(cursor.getInt(cursor.getColumnIndexOrThrow(DefineSQL.COLUMN_NAME_TEMPO)));
                     sheetList.add(sheetData);
                     Log.d("sheetList",""+ sheetData.getId());
                     cursor.moveToNext();

@@ -15,6 +15,15 @@ public class SheetData implements Serializable {
     private String uploadTime;
     private String uploadUserStrID;
     private long uploadUserID;
+    private int tempo;
+
+    public int getTempo() {
+        return tempo;
+    }
+
+    public void setTempo(int tempo) {
+        this.tempo = tempo;
+    }
 
     public long getUploadUserID() {
         return uploadUserID;

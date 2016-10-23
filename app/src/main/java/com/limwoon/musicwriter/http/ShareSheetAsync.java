@@ -30,6 +30,7 @@ public class ShareSheetAsync extends AsyncTask<Bundle, Void, Integer> {
     private String title;
     private String author;
     private String note;
+    private int tempo;
 
     Context context;
     
@@ -43,6 +44,7 @@ public class ShareSheetAsync extends AsyncTask<Bundle, Void, Integer> {
         title = bundles[0].getString("title");
         author = bundles[0].getString("author");
         note = bundles[0].getString("note");
+        tempo = bundles[0].getInt("tempo");
 
         JSONObject json = new JSONObject();
         try {
@@ -50,6 +52,7 @@ public class ShareSheetAsync extends AsyncTask<Bundle, Void, Integer> {
             json.put("title", title);
             json.put("author", author);
             json.put("note", note);
+            json.put("tempo", tempo);
         } catch (JSONException e) {
             e.printStackTrace();
         }

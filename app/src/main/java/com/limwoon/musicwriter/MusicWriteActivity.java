@@ -40,7 +40,7 @@ import com.limwoon.musicwriter.draw.ChoiceFlatRecyclerItemClickListener;
 import com.limwoon.musicwriter.draw.NoteRecyclerAdapter;
 import com.limwoon.musicwriter.draw.NoteRecyclerClickListener;
 import com.limwoon.musicwriter.draw.NoteRecyclerViewDecoration;
-import com.limwoon.musicwriter.draw.NoteRestExam;
+import com.limwoon.musicwriter.draw.NoteBitmapMaker;
 import com.limwoon.musicwriter.draw.SheetAppender;
 import com.limwoon.musicwriter.data.NoteParser;
 import com.limwoon.musicwriter.sounds.Sounds;
@@ -56,10 +56,11 @@ public class MusicWriteActivity extends AppCompatActivity {
     public static int beatIndex;
 
     // DB
-    int id=-1;
+    long id=-1;
     Cursor cursor;
     String title;
     String author;
+    int tempo;
 
     ArrayList<NoteData> noteList;
     NoteStore noteStore;
@@ -91,7 +92,7 @@ public class MusicWriteActivity extends AppCompatActivity {
     SeekBar seekBarSelectBeat;
     Button btnInsertRest;
     int duration = 2; // 1 : 16분음표, 2 : 8분음표, 4: 4분음표, 8 : 2분음표, 16 : 온음표
-    NoteRestExam noteRestExam;
+    NoteBitmapMaker noteBitmapMaker;
     ImageView imageViewExamNote;
     ImageView imageViewExamRest;
 
@@ -120,8 +121,9 @@ public class MusicWriteActivity extends AppCompatActivity {
 
         if(getIntent().getIntExtra("beatIndex", -1)!=-1){
             beatIndex = getIntent().getIntExtra("beatIndex", -1);
+            tempo = getIntent().getIntExtra("tempo", -1);
         }
-        id = getIntent().getIntExtra("id", -1);
+        id = getIntent().getLongExtra("id", -1);
         title = getIntent().getStringExtra("title");
         author = getIntent().getStringExtra("author");
 
@@ -131,7 +133,7 @@ public class MusicWriteActivity extends AppCompatActivity {
         noteStore = new NoteStore(noteList, noteAdapter, beatIndex);
 
         // BaseSheet 생성후 LinearLayout에 붙임
-        musicBaseSheet = new BaseSheet(this);
+        musicBaseSheet = new BaseSheet(this, beatIndex, tempo);
         sheetWrapView = (LinearLayout) findViewById(R.id.music_sheet_wrapper);
         sheetWrapView.addView(musicBaseSheet);
 
@@ -184,10 +186,6 @@ public class MusicWriteActivity extends AppCompatActivity {
         horizontalScrollView = (HorizontalScrollView) findViewById(R.id.horizontalScrollView);
 
         // 음악 재생
-
-        NativeClass.createEngine();
-        NativeClass.createBefferQueueAudioPlayer();
-        NativeClass.createBufferFromAsset(getAssets(), "");
 
         btnPlayMusic = (ImageView) findViewById(R.id.btnMusicPlay);
         musicSeekBar = (SeekBar) findViewById(R.id.music_seek_bar);
@@ -249,7 +247,7 @@ public class MusicWriteActivity extends AppCompatActivity {
                                     }
                                 }
                                 try {
-                                    Thread.sleep(Sounds.getDuration(noteList.get(i).duration));
+                                    Thread.sleep(Sounds.getDuration(noteList.get(i).duration, tempo));
                                     NativeClass.setStopBufferQueue();
                                 } catch (InterruptedException e) { // 정지버튼 클릭
                                     NativeClass.setStopBufferQueue();
@@ -262,6 +260,7 @@ public class MusicWriteActivity extends AppCompatActivity {
                                     break;
                                 }
                                 if(i==noteList.size()-1){
+                                    if(i>1)
                                     noteRecyclerView.getChildAt(i-1).post(new Runnable() {
                                         @Override
                                         public void run() {
@@ -480,7 +479,7 @@ public class MusicWriteActivity extends AppCompatActivity {
         checkBox5th.setOnCheckedChangeListener(checkedChangeListener);
         checkBox6th.setOnCheckedChangeListener(checkedChangeListener);
 
-        noteRestExam = new NoteRestExam(getApplicationContext());
+        noteBitmapMaker = new NoteBitmapMaker(getApplicationContext());
 
         /// 노트 삽입 리스너
         btnInsertNote.setOnClickListener(new View.OnClickListener() {
@@ -535,8 +534,8 @@ public class MusicWriteActivity extends AppCompatActivity {
             }
         });
 
-        imageViewExamNote.setImageBitmap(noteRestExam.getBitmap(duration));
-        imageViewExamRest.setImageBitmap(noteRestExam.getBitmap(duration + 5));
+        imageViewExamNote.setImageBitmap(noteBitmapMaker.getBitmap(duration));
+        imageViewExamRest.setImageBitmap(noteBitmapMaker.getBitmap(duration + 5));
 
         seekBarSelectBeat.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -544,8 +543,8 @@ public class MusicWriteActivity extends AppCompatActivity {
                 // 0 : 16분음표, 1 : 8분음표, 2: 4분음표, 3 : 2분음표, 4 : 온음표
                 duration = i;
 
-                imageViewExamNote.setImageBitmap(noteRestExam.getBitmap(duration));
-                imageViewExamRest.setImageBitmap(noteRestExam.getBitmap(duration + 5));
+                imageViewExamNote.setImageBitmap(noteBitmapMaker.getBitmap(duration));
+                imageViewExamRest.setImageBitmap(noteBitmapMaker.getBitmap(duration + 5));
             }
 
             @Override
@@ -633,6 +632,7 @@ public class MusicWriteActivity extends AppCompatActivity {
                                 values.put(DefineSQL.COLUMN_NAME_AUTHOR, "나");
                                 values.put(DefineSQL.COLUMN_NAME_BEATS, beatIndex);
                                 values.put(DefineSQL.COLUMN_NAME_NOTE, jsonObject.toString());
+                                values.put(DefineSQL.COLUMN_NAME_TEMPO, tempo);
 
                                 title = mTitle;
                                 author = "나";
@@ -707,6 +707,7 @@ public class MusicWriteActivity extends AppCompatActivity {
                 values.put(DefineSQL.COLUMN_NAME_AUTHOR, author);
                 values.put(DefineSQL.COLUMN_NAME_BEATS, beatIndex);
                 values.put(DefineSQL.COLUMN_NAME_NOTE, jsonObject.toString());
+                values.put(DefineSQL.COLUMN_NAME_TEMPO, tempo);
 
                 db.update(DefineSQL.TABLE_NAME, values,DefineSQL._ID+"="+currentId, null);
 
@@ -730,9 +731,4 @@ public class MusicWriteActivity extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    protected void onDestroy() {
-        NativeClass.releaseAll();
-        super.onDestroy();
-    }
 }

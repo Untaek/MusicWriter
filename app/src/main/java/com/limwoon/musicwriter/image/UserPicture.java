@@ -7,15 +7,20 @@ import android.util.Log;
 
 import com.limwoon.musicwriter.R;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
+import com.limwoon.musicwriter.http.DeletePictureAsync;
 import com.limwoon.musicwriter.http.account.UpdatePictureDBAsync_FacebookUser;
 import com.limwoon.musicwriter.http.UpdateToken;
 import com.limwoon.musicwriter.http.UploadUserPicAsync;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by 운택 on 2016-10-03.
@@ -25,8 +30,8 @@ public class UserPicture {
 
     long userID;
     String userPic_url;
-
     Context context;
+    boolean notFound = false;
 
     public UserPicture(Context context){
         this.context=context;
@@ -34,23 +39,39 @@ public class UserPicture {
         this.userPic_url=PUBLIC_APP_DATA.getPictureURL();
     }
 
-    public Bitmap getUserPicBitmapFromCache(){
+    public boolean isNotFound() {
+        return notFound;
+    }
+
+    public interface OnPictureReadyListener{
+        void onLoaded();
+    }
+
+    private OnPictureReadyListener mListener;
+
+    public void setOnPictureReadyListener(OnPictureReadyListener onPictureReadyListener){
+        this.mListener=onPictureReadyListener;
+    }
+
+    public Bitmap getUserPicBitmapFromCache(String imageName){
         Bitmap b = null;
-        Log.d("filename", "getUserPicBitmapFromCache: "+PUBLIC_APP_DATA.getImageName());
         try {
-            FileInputStream fis = context.openFileInput(PUBLIC_APP_DATA.getImageName());
+            FileInputStream fis = context.openFileInput(imageName);
             byte[] imageBytes = new byte[fis.available()];
             while (fis.read(imageBytes) != -1){}
             fis.close();
             b = BitmapFactory.decodeByteArray(imageBytes,0,imageBytes.length);
+            Log.d("TAG", "onCreate: Found "+imageName);
+            notFound=false;
             return b;
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            Log.d("TAG", "onCreate: notFound" + PUBLIC_APP_DATA.getImageName());
-            b = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_account_circle_white_48dp);
+            Log.d("TAG", "onCreate: notFound " + imageName);
+            notFound=true;
+            b = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_account_circle_black_48dp);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return b;
     }
 
@@ -89,6 +110,18 @@ public class UserPicture {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        if(mListener!= null)
+             mListener.onLoaded();
+    }
+
+    public void unCachingImage(String imageName){
+
+        File file = new File(context.getFilesDir().getPath()+"/"+imageName);
+        Log.d(TAG, "unCachingImage: "+file.exists());
+        if(file.exists()){
+            file.delete();
+            new DeletePictureAsync().execute();
         }
     }
 }

@@ -29,7 +29,7 @@ import com.limwoon.musicwriter.data.NoteData;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 import com.limwoon.musicwriter.draw.BaseSheet;
 import com.limwoon.musicwriter.draw.NoteRecyclerAdapter;
-import com.limwoon.musicwriter.draw.NoteRestExam;
+import com.limwoon.musicwriter.draw.NoteBitmapMaker;
 import com.limwoon.musicwriter.draw.SheetAppender;
 import com.limwoon.musicwriter.http.ShareSheetAsync;
 import com.limwoon.musicwriter.data.NoteParser;
@@ -45,6 +45,7 @@ public class MusicViewActivity extends AppCompatActivity {
     String title;
     String author;
     String data;
+    int tempo;
 
     RecyclerView sheetRecyView;
     NoteRecyclerAdapter sheetRecyAdapter;
@@ -72,7 +73,8 @@ public class MusicViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_music_view);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        NoteRestExam noteRestExam = new NoteRestExam(this);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //NoteBitmapMaker noteBitmapMaker = new NoteBitmapMaker(this);
 
         // 디비에서 정보 가져오기, 기본적인 정보들 변수에 넣기
         intentData = getIntent();
@@ -81,7 +83,8 @@ public class MusicViewActivity extends AppCompatActivity {
         beats = noteParser.getBeats();
         title = noteParser.getTitle();
         author = noteParser.getAuthor();
-        id = intentData.getIntExtra("id",-1);
+        id = intentData.getIntExtra("id", -1);
+        tempo = intentData.getIntExtra("tempo", -1);
 
         //악보 뷰 만들기
         noteList = new ArrayList<>();
@@ -91,18 +94,18 @@ public class MusicViewActivity extends AppCompatActivity {
 
         sheetRecyView.setAdapter(sheetRecyAdapter);
         sheetRecyView.setLayoutManager(linearLayoutManager);
-        sheetRecyView.setPadding(260,0,0,0);
+        sheetRecyView.setPadding(260, 0, 0, 0);
 
         sheetBaseLinear = (LinearLayout) findViewById(R.id.sheetBaseLinear);
-        baseSheet = new BaseSheet(this, beats);
+        baseSheet = new BaseSheet(this, beats, tempo);
         sheetBaseLinear.addView(baseSheet);
 
         // 리스트에 하나씩 넣으면서 악보 그리기
-        for(int i=0; i<noteParser.getNoteLength(); i++) {
+        for (int i = 0; i < noteParser.getNoteLength(); i++) {
             noteList.add(noteParser.getNoteAt(i));
             sheetRecyAdapter.notifyItemChanged(i);
         }
-        for(int j=0; j<noteList.size()/4; j++){
+        for (int j = 0; j < noteList.size() / 4; j++) {
             sheetAppender = new SheetAppender(getApplicationContext());
             sheetBaseLinear.addView(sheetAppender);
         }
@@ -113,11 +116,7 @@ public class MusicViewActivity extends AppCompatActivity {
         btnPlayMusic = (ImageView) findViewById(R.id.music_play_btn);
         musicSeekBar = (SeekBar) findViewById(R.id.music_seek_bar);
 
-        musicSeekBar.setMax(noteParser.getNoteLength()-1);
-
-        NativeClass.createEngine();
-        NativeClass.createBefferQueueAudioPlayer();
-        NativeClass.createBufferFromAsset(getAssets(), "");
+        musicSeekBar.setMax(noteParser.getNoteLength() - 1);
 
         final View.OnTouchListener onTouchListener = new View.OnTouchListener() {
             @Override
@@ -129,56 +128,53 @@ public class MusicViewActivity extends AppCompatActivity {
         btnPlayMusic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!isPlay){
+                if (!isPlay) {
                     musicSeekBar.setAlpha(0.7f);
                     musicSeekBar.setOnTouchListener(onTouchListener);
                     btnPlayMusic.setImageResource(R.drawable.ic_pause_black_48dp);
                     isPlay = true;
-                    if(musicProgress==noteList.size()-1) musicProgress=0;
+                    if (musicProgress == noteList.size() - 1) musicProgress = 0;
                     playThread = new Thread(new Runnable() {
                         @Override
-                        public void run(){
-                            for(i=musicProgress; i<noteList.size(); i++){
-                                musicProgress=i;
+                        public void run() {
+                            for (i = musicProgress; i < noteList.size(); i++) {
+                                musicProgress = i;
                                 horizontalScrollView.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        horizontalScrollView.smoothScrollTo(150*i-150,0);
+                                        horizontalScrollView.smoothScrollTo(150 * i - 150, 0);
                                     }
                                 });
                                 sheetRecyView.getChildAt(i).post(new Runnable() {
                                     @Override
                                     public void run() {
                                         try {
-                                            sheetRecyView.getChildAt(i-2).setBackgroundColor(Color.alpha(0));
-                                        }catch (NullPointerException e){
-                                            Log.d("jumpChild","yes");
+                                            sheetRecyView.getChildAt(i - 2).setBackgroundColor(Color.alpha(0));
+                                        } catch (NullPointerException e) {
+                                            Log.d("jumpChild", "yes");
                                         }
                                         try {
-                                            sheetRecyView.getChildAt(i-1).setBackgroundColor(Color.alpha(0));
-                                        }catch (NullPointerException e){
-                                            Log.d("jumpChild","yes");
+                                            sheetRecyView.getChildAt(i - 1).setBackgroundColor(Color.alpha(0));
+                                        } catch (NullPointerException e) {
+                                            Log.d("jumpChild", "yes");
                                         }
                                         try {
                                             sheetRecyView.getChildAt(i).setBackgroundColor(Color.GREEN);
-                                        }catch (NullPointerException e){
-                                            Log.d("Song end","end");
+                                        } catch (NullPointerException e) {
+                                            Log.d("Song end", "end");
                                         }
                                     }
                                 });
-                                if(noteList.get(i).node) continue;
-                                for(int j=0; j<6; j++){
-                                    if(noteList.get(i).tone[j]!=-1){
-                                        //NativeClass.setPlayingAssetAudioPlayer(j, noteList.get(i).tone[j]);
+                                if (noteList.get(i).node) continue;
+                                for (int j = 0; j < 6; j++) {
+                                    if (noteList.get(i).tone[j] != -1) {
                                         NativeClass.setPlayingBufferQueue(j, noteList.get(i).tone[j]);
                                     }
                                 }
                                 try {
-                                    Thread.sleep(Sounds.getDuration(noteList.get(i).duration));
-                                    //NativeClass.setStopAssetAudioPlayer(0);
+                                    Thread.sleep(Sounds.getDuration(noteList.get(i).duration, tempo)); //////////////////////////
                                     NativeClass.setStopBufferQueue();
                                 } catch (InterruptedException e) { // 정지버튼 클릭
-                                    //NativeClass.setStopAssetAudioPlayer(0);
                                     NativeClass.setStopBufferQueue();
                                     sheetRecyView.post(new Runnable() {
                                         @Override
@@ -188,14 +184,14 @@ public class MusicViewActivity extends AppCompatActivity {
                                     });
                                     break;
                                 }
-                                if(i==noteList.size()-1){
-                                    sheetRecyView.getChildAt(i-1).post(new Runnable() {
+                                if (i == noteList.size() - 1) {
+                                    sheetRecyView.getChildAt(i - 1).post(new Runnable() {
                                         @Override
                                         public void run() {
                                             try {
-                                                sheetRecyView.getChildAt(i-1).setBackgroundColor(Color.alpha(0));
-                                            }catch (NullPointerException e){
-                                                Log.d("nullpointer", ""+i);
+                                                sheetRecyView.getChildAt(i - 1).setBackgroundColor(Color.alpha(0));
+                                            } catch (NullPointerException e) {
+                                                Log.d("nullpointer", "" + i);
 
                                             }
                                         }
@@ -207,7 +203,7 @@ public class MusicViewActivity extends AppCompatActivity {
                                         musicSeekBar.setProgress(i);
                                     }
                                 });
-                                if(playThread.isInterrupted()) break;
+                                if (playThread.isInterrupted()) break;
                             }
                             musicSeekBar.setOnTouchListener(null);
                             isPlay = false;
@@ -227,12 +223,12 @@ public class MusicViewActivity extends AppCompatActivity {
                         }
                     });
                     playThread.start();
-                }else{
+                } else {
                     musicSeekBar.setAlpha(1);
                     musicSeekBar.setOnTouchListener(null);
                     isPlay = false;
                     btnPlayMusic.setImageResource(R.drawable.ic_play_arrow_black_48dp);
-                    if(playThread!=null){
+                    if (playThread != null) {
                         playThread.interrupt();
                     }
                 }
@@ -242,11 +238,11 @@ public class MusicViewActivity extends AppCompatActivity {
         musicSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, final int i, boolean b) {
-                if(b){
+                if (b) {
                     horizontalScrollView.post(new Runnable() {
                         @Override
                         public void run() {
-                            horizontalScrollView.smoothScrollTo(150*i-150,0);
+                            horizontalScrollView.smoothScrollTo(150 * i - 150, 0);
                         }
                     });
                     musicProgress = i;
@@ -265,8 +261,8 @@ public class MusicViewActivity extends AppCompatActivity {
             }
         });
 
-        textViewTitle.setText("제목 : "+title);
-        textViewAuthor.setText("작곡자 : "+author);
+        textViewTitle.setText("제목 : " + title);
+        textViewAuthor.setText("작곡자 : " + author);
 
         button_shareMusic = (Button) findViewById(R.id.button_share_music);
         final AlertDialog.Builder builder = new AlertDialog.Builder(MusicViewActivity.this);
@@ -278,6 +274,7 @@ public class MusicViewActivity extends AppCompatActivity {
                 bundle.putString("title", title);
                 bundle.putString("author", PUBLIC_APP_DATA.getUserStrID());
                 bundle.putString("note", data);
+                bundle.putInt("tempo", tempo);
 
                 new ShareSheetAsync(getApplicationContext()).execute(bundle);
             }
@@ -294,22 +291,15 @@ public class MusicViewActivity extends AppCompatActivity {
         button_shareMusic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(PUBLIC_APP_DATA.isLogin()){
+                if (PUBLIC_APP_DATA.isLogin()) {
                     AlertDialog dialog = builder.create();
                     dialog.show();
-                }
-                else{
+                } else {
                     AlertDialog dialog1 = builder1.create();
                     dialog1.show();
                 }
             }
         });
-    }
-
-    @Override
-    protected void onDestroy() {
-        NativeClass.releaseAll();
-        super.onDestroy();
     }
 
     @Override
@@ -355,6 +345,7 @@ public class MusicViewActivity extends AppCompatActivity {
             intent.putExtra("beatIndex", beats);
             intent.putExtra("title", title);
             intent.putExtra("author", author);
+            intent.putExtra("tempo", tempo);
             Log.d("beats", ""+beats);
             startActivity(intent);
 
@@ -383,6 +374,8 @@ public class MusicViewActivity extends AppCompatActivity {
                 }
             }).show();
 
+        }else if(item.getItemId()==android.R.id.home){
+            finish();
         }
 
         return super.onOptionsItemSelected(item);

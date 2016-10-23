@@ -23,16 +23,21 @@ import com.limwoon.musicwriter.R;
 
 
 public class BaseSheet extends View {
-    public BaseSheet(Context context, int beat) {
+    public BaseSheet(Context context, int beat, int tempo) {
         super(context);
         this.beat=beat;
+        this.tempo=tempo;
     }
     public BaseSheet(Context context){
         super(context);
     }
 
+
     Resources res;
     int beat=-1;
+    int tempo=-1;
+
+
 
     // 높은 음자리표 비트맵과 크기지정
     Bitmap clef;
@@ -134,7 +139,15 @@ public class BaseSheet extends View {
 
         canvas.drawText(child, 180, startY+130, linePaint);
         canvas.drawText(parent, 180, startY+220, linePaint);
+    }
 
+    void drawTempo(Canvas canvas){
+        int tempoX = startX;
+        int tempoY = startY-70;
+        Paint paint = new Paint();
+        paint.setTextSize(56);
+        canvas.drawBitmap(NoteBitmapMaker.small_note_for_tempo, tempoX, tempoY, null);
+        canvas.drawText("= "+tempo, tempoX+64, tempoY+60, paint);
     }
 
     @Override
@@ -146,10 +159,10 @@ public class BaseSheet extends View {
             drawTAB(canvas);
             drawClef(canvas);
             drawBeat(canvas);
+            drawTempo(canvas);
         }
         draw5Line(canvas);
         drawTabLine(canvas);
-
     }
 
     @Override

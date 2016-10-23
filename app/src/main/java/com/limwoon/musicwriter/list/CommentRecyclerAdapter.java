@@ -1,15 +1,21 @@
 package com.limwoon.musicwriter.list;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.limwoon.musicwriter.R;
 import com.limwoon.musicwriter.data.CommentData;
+import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
+import com.limwoon.musicwriter.http.DeleteCommentAsync;
 
 import java.util.ArrayList;
 
@@ -21,6 +27,11 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
 
     ArrayList<CommentData> list;
     Context context;
+    CommentRecyclerAdapter adapter = this;
+
+    public void setUserPicture(Holder holder, int position, Bitmap bitmap){
+        holder.userPic.setImageBitmap(list.get(position).getUserPicture());
+    }
 
     public CommentRecyclerAdapter(Context context, ArrayList<CommentData> list){
         this.context=context;
@@ -37,6 +48,7 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
         holder.userStrID.setText(list.get(position).getUserStrID());
         holder.commentText.setText(list.get(position).getComment());
         holder.uploadTime.setText(list.get(position).getUploadTime());
+        holder.userPic.setImageBitmap(list.get(position).getUserPicture());
     }
 
     @Override
@@ -55,6 +67,38 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
             uploadTime = (TextView) itemView.findViewById(R.id.textView_comment_time);
             commentText = (TextView) itemView.findViewById(R.id.textView_comment_comment);
             userPic = (ImageView) itemView.findViewById(R.id.imageView_comment_userPic);
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    final int index = getAdapterPosition();
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                            .setTitle("삭제하시겠습니까")
+                            .setPositiveButton("삭제", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    if(PUBLIC_APP_DATA.getUserID()==list.get(index).getUserID()){
+                                        new DeleteCommentAsync().setDeleteCommentCallback(new DeleteCommentAsync.DeleteCommentCallback() {
+                                            @Override
+                                            public void onResult(int result) {
+
+                                            }
+                                        }).execute(list.get(index).getCommentID());
+                                        adapter.notifyItemRemoved(index);
+                                        list.remove(index);
+                                    }
+                                    else{
+                                        Toast.makeText(context, "내 댓글이 아닙니다", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            })
+                            .setNegativeButton("취소", null);
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                    return false;
+                }
+            });
         }
     }
 }

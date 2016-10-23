@@ -17,6 +17,12 @@
         app:expanded="false"
         android:theme="@style/AppTheme.AppBarOverlay"
         >
+        <android.support.v7.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:title="테스트"
+            android:id="@+id/my_toolbar"
+            />
         <android.support.design.widget.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -25,6 +31,7 @@
             app:scrimAnimationDuration="400"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             android:id="@+id/collapseToolbar"
+            android:visibility="gone"
             >
             <android.support.v4.view.ViewPager
                 android:layout_width="match_parent"
@@ -63,13 +70,7 @@
                     android:layout_weight="1"/>
 
             </LinearLayout>
-            <android.support.v7.widget.Toolbar
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:title="테스트"
-                app:layout_collapseMode="pin"
-                android:id="@+id/my_toolbar"
-                />
+
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 

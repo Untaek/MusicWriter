@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -87,21 +88,12 @@ public class SharedMusicViewActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        NativeClass.releaseAll();
-        super.onDestroy();
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shared_music_view);
 
         data = (SheetData) getIntent().getSerializableExtra("data");
         NoteParser noteParser = new NoteParser(data.getNote());
-        NativeClass.createEngine();
-        NativeClass.createBefferQueueAudioPlayer();
-        NativeClass.createBufferFromAsset(getAssets(), "");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
@@ -126,11 +118,11 @@ public class SharedMusicViewActivity extends AppCompatActivity {
 
         textView_commentCount = (TextView) findViewById(R.id.textView_comment_header);
         commentRecyclerView = (RecyclerView) findViewById(R.id.recycler_comment);
-        commentRecyclerAdapter = new CommentRecyclerAdapter(getApplicationContext(), commentList);
+        commentRecyclerAdapter = new CommentRecyclerAdapter(this, commentList);
         commentRecyclerView.setAdapter(commentRecyclerAdapter);
         commentLinearLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         commentRecyclerView.setLayoutManager(commentLinearLayoutManager);
-        new LoadComments(commentList, commentRecyclerAdapter, textView_commentCount).execute(data.getId());
+        new LoadComments(commentList, commentRecyclerAdapter, textView_commentCount, this).execute(data.getId());
 
 
         TextView textView_title = (TextView) findViewById(R.id.textView_title);
@@ -155,7 +147,7 @@ public class SharedMusicViewActivity extends AppCompatActivity {
                                 }
                             }
                             try {
-                                Thread.sleep(Sounds.getDuration(noteList.get(i).duration));
+                                Thread.sleep(Sounds.getDuration(noteList.get(i).duration, data.getTempo()));
                                 NativeClass.setStopBufferQueue();
                             } catch (InterruptedException e) { // 정지버튼 클릭
                                 NativeClass.setStopBufferQueue();
@@ -262,7 +254,7 @@ public class SharedMusicViewActivity extends AppCompatActivity {
         sheetRecyView.setPadding(260,0,0,0);
 
         sheetBaseLinear = (LinearLayout) findViewById(R.id.sheetBaseLinear);
-        baseSheet = new BaseSheet(this, noteParser.getBeats());
+        baseSheet = new BaseSheet(this, noteParser.getBeats(), data.getTempo());
         sheetBaseLinear.addView(baseSheet);
 
         for(int i=0; i<noteParser.getNoteLength(); i++) {

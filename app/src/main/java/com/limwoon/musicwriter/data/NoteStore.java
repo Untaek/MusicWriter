@@ -1,11 +1,9 @@
 package com.limwoon.musicwriter.data;
 
-import android.os.Handler;
 import android.util.Log;
 
-import com.limwoon.musicwriter.MusicWriteActivity;
 import com.limwoon.musicwriter.draw.NoteRecyclerAdapter;
-import com.limwoon.musicwriter.draw.NoteRestExam;
+import com.limwoon.musicwriter.draw.NoteBitmapMaker;
 
 import java.util.ArrayList;
 
@@ -69,7 +67,7 @@ public class NoteStore {
         noteRecyclerAdapter.index=pos;
         list.set(pos, tempData);
         noteRecyclerAdapter.notifyItemChanged(pos);
-        totalNoteDuration+= NoteRestExam.beats[tempData.duration];
+        totalNoteDuration+= NoteBitmapMaker.beats[tempData.duration];
        // if(totalNoteDuration >=beat){
        //     totalNoteDuration =0;
        //     tempData = new NoteData();
@@ -82,7 +80,7 @@ public class NoteStore {
         noteRecyclerAdapter.noteData=tempData;
         list.add(tempData);
         noteRecyclerAdapter.notifyItemChanged(pos);
-        totalNoteDuration+= NoteRestExam.beats[tempData.duration];
+        totalNoteDuration+= NoteBitmapMaker.beats[tempData.duration];
         pos++;
         if(totalNoteDuration >=beat){
             totalNoteDuration =0;

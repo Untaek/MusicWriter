@@ -74,6 +74,7 @@ public class SheetRecyListAdapter extends RecyclerView.Adapter<SheetRecyListAdap
                         DefineSQL.COLUMN_NAME_AUTHOR,
                         DefineSQL.COLUMN_NAME_BEATS,
                         DefineSQL.COLUMN_NAME_NOTE,
+                        DefineSQL.COLUMN_NAME_TEMPO
                 };
 
                 cursor = db.query(
@@ -96,12 +97,14 @@ public class SheetRecyListAdapter extends RecyclerView.Adapter<SheetRecyListAdap
                         int ID = cursor.getInt(cursor.getColumnIndexOrThrow(DefineSQL._ID));
                         String title = cursor.getString(cursor.getColumnIndexOrThrow(DefineSQL.COLUMN_NAME_TITLE));
                         String author = cursor.getString(cursor.getColumnIndexOrThrow(DefineSQL.COLUMN_NAME_AUTHOR));
+                        int tempo = cursor.getInt(cursor.getColumnIndexOrThrow(DefineSQL.COLUMN_NAME_TEMPO));
                         Intent intent = new Intent(context, MusicViewActivity.class);
                         intent.putExtra("id", ID);
                         intent.putExtra("beats", beat);
                         intent.putExtra("musicData", musicData);
                         intent.putExtra("title", title);
                         intent.putExtra("author", author);
+                        intent.putExtra("tempo", tempo);
                         context.startActivity(intent);
 
                         break;
@@ -111,12 +114,14 @@ public class SheetRecyListAdapter extends RecyclerView.Adapter<SheetRecyListAdap
                         int IDs = cursor.getInt(cursor.getColumnIndexOrThrow(DefineSQL._ID));
                         String title2 = cursor.getString(cursor.getColumnIndexOrThrow(DefineSQL.COLUMN_NAME_TITLE));
                         String author2 = cursor.getString(cursor.getColumnIndexOrThrow(DefineSQL.COLUMN_NAME_AUTHOR));
+                        int tempo2 = cursor.getInt(cursor.getColumnIndexOrThrow(DefineSQL.COLUMN_NAME_TEMPO));
                         Intent intentMod = new Intent(context, MusicWriteActivity.class);
                         intentMod.putExtra("isEdit", true);
                         intentMod.putExtra("id", sheetList.get(pos).getId());
                         intentMod.putExtra("beatIndex", beats);
                         intentMod.putExtra("title", title2);
                         intentMod.putExtra("author", author2);
+                        intentMod.putExtra("tempo", tempo2);
                         context.startActivity(intentMod);
 
                         break;

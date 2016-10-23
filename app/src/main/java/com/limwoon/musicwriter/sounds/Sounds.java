@@ -27,17 +27,20 @@ public class Sounds {
         return (float)Math.pow(2, (double)(tone)/12.0);
     }
 
-    public static int getDuration(int duration){
+    public static int getDuration(int duration, int tempo){
+        int min = 60000;
+        int basicspeed = min/tempo;
+
         if(duration==0){
-            return 150;
+            return basicspeed/4;
         }else if(duration==1){
-            return 300;
+            return basicspeed/2;
         }else if(duration==2){
-            return 600;
+            return basicspeed;
         }else if(duration==3){
-            return 1200;
+            return basicspeed*2;
         }else if(duration==4){
-            return 2400;
+            return basicspeed*4;
         }
         return 1000;
     }

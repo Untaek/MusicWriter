@@ -38,6 +38,7 @@
             android:scrollbarAlwaysDrawHorizontalTrack="true"
             android:scrollbars="horizontal"
             android:fadeScrollbars="false"
+            android:paddingTop="50dp"
             >
 
             <FrameLayout

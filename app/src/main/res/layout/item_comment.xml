@@ -3,7 +3,9 @@
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingBottom="10dp"
-    android:paddingTop="8dp">
+    android:paddingTop="8dp"
+    android:clickable="true"
+    style="@style/Widget.AppCompat.Button.Borderless.Colored">
 
     <ImageView
         android:layout_width="match_parent"

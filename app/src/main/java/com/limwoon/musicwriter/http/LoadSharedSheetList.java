@@ -2,6 +2,7 @@ package com.limwoon.musicwriter.http;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 import com.limwoon.musicwriter.data.SheetData;
@@ -32,9 +33,15 @@ public class LoadSharedSheetList extends AsyncTask<Integer, Void, Integer> {
 
     ArrayList<SheetData> list;
     SharedSheetRecyclerAdapter adapter;
+    String query = "'";
+    TextView textView_result;
 
-    int sort;
-    int fav;
+    public LoadSharedSheetList(ArrayList<SheetData> list, SharedSheetRecyclerAdapter adapter, String query, TextView result) {
+        this.list = list;
+        this.adapter = adapter;
+        this.query = query;
+        this.textView_result = result;
+    }
 
     public LoadSharedSheetList(ArrayList<SheetData> list, SharedSheetRecyclerAdapter adapter){
         this.list = list;
@@ -59,7 +66,7 @@ public class LoadSharedSheetList extends AsyncTask<Integer, Void, Integer> {
         // 게시된 악보 불러오기를 위함
 
         try {
-            String message = "page="+page+"&sort="+sort+"&userID="+userID;
+            String message = "page="+page+"&sort="+sort+"&userID="+userID+"&query="+query;
             URL url = new URL(PUBLIC_APP_DATA.getServerUrl()+"loadsharedsheetlist.php");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
@@ -94,6 +101,7 @@ public class LoadSharedSheetList extends AsyncTask<Integer, Void, Integer> {
                 long comments = jsonObject.getLong("comments");
                 long likes = jsonObject.getLong("likes");
                 long id = jsonObject.getLong("sheetID");
+                int tempo = jsonObject.getInt("tempo");
 
                 note = note.substring(1, note.length()-1);
 
@@ -106,6 +114,7 @@ public class LoadSharedSheetList extends AsyncTask<Integer, Void, Integer> {
                 sheetData.setUploadUserID(uploadUserID);
                 sheetData.setComments(comments);
                 sheetData.setLikes(likes);
+                sheetData.setTempo(tempo);
                 list.add(sheetData);
             }
 
@@ -126,5 +135,14 @@ public class LoadSharedSheetList extends AsyncTask<Integer, Void, Integer> {
         super.onPostExecute(integer);
         SharedListPagerFragment.listLoading = false;
         adapter.notifyDataSetChanged();
+
+        if(textView_result!=null){
+            if(list.size()>0) {
+                textView_result.setText("검색 결과");
+            }
+            else{
+                textView_result.setText("검색된 결과가 없습니다");
+            }
+        }
     }
 }
