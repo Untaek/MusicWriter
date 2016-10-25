@@ -63,7 +63,10 @@
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:id="@+id/content_container"
+        android:scrollbars="vertical"
+        android:fadeScrollbars="false">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -161,11 +164,18 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="4dp">
+                android:padding="4dp"
+                android:orientation="vertical">
                 <android.support.v7.widget.RecyclerView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/recycler_comment"/>
+                    android:id="@+id/recycler_comment"
+                    />
+                <ProgressBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="?android:attr/progressBarStyle"
+                    android:id="@+id/progress_bar_loading_comment"/>
             </LinearLayout>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>

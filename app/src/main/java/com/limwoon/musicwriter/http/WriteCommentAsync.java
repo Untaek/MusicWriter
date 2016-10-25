@@ -87,7 +87,7 @@ public class WriteCommentAsync extends AsyncTask<Bundle, Void, Integer> {
     @Override
     protected void onPostExecute(Integer integer) {
         list.clear();
-        new LoadComments(list, adapter, textView, textView.getContext()).execute(bundle.getLong("sheetID"));
+        new LoadComments(list, adapter, textView, textView.getContext()).execute(bundle.getLong("sheetID"), (long)0);
         super.onPostExecute(integer);
     }
 }

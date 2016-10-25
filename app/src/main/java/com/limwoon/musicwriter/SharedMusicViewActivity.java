@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatSeekBar;
@@ -20,6 +21,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +41,7 @@ import com.limwoon.musicwriter.http.DisLikeSheetAsync;
 import com.limwoon.musicwriter.http.FavoriteSheetAsync;
 import com.limwoon.musicwriter.http.LikeSheetAsync;
 import com.limwoon.musicwriter.http.LoadComments;
+import com.limwoon.musicwriter.http.LoadSharedSheetList;
 import com.limwoon.musicwriter.http.SendNotiAsync;
 import com.limwoon.musicwriter.http.WriteCommentAsync;
 import com.limwoon.musicwriter.list.CommentRecyclerAdapter;
@@ -60,6 +63,8 @@ public class SharedMusicViewActivity extends AppCompatActivity {
     RecyclerView commentRecyclerView;
     CommentRecyclerAdapter commentRecyclerAdapter;
     LinearLayoutManager commentLinearLayoutManager;
+    NestedScrollView nestedScrollView;
+    ProgressBar progressBar_loadingComment;
 
     SheetData data;
     static public boolean userLikeState;
@@ -69,6 +74,7 @@ public class SharedMusicViewActivity extends AppCompatActivity {
     TextView textView_commentCount;
     Button button_writeComment;
     EditText editText_writeComment;
+    static public boolean commentLoading = false;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -122,8 +128,10 @@ public class SharedMusicViewActivity extends AppCompatActivity {
         commentRecyclerView.setAdapter(commentRecyclerAdapter);
         commentLinearLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         commentRecyclerView.setLayoutManager(commentLinearLayoutManager);
-        new LoadComments(commentList, commentRecyclerAdapter, textView_commentCount, this).execute(data.getId());
-
+        new LoadComments(commentList, commentRecyclerAdapter, textView_commentCount, this).execute(data.getId(), (long)0);
+        commentRecyclerView.setNestedScrollingEnabled(false);
+        nestedScrollView = (NestedScrollView) findViewById(R.id.content_container);
+        progressBar_loadingComment = (ProgressBar) findViewById(R.id.progress_bar_loading_comment);
 
         TextView textView_title = (TextView) findViewById(R.id.textView_title);
         TextView textView_author = (TextView) findViewById(R.id.textView_author);
@@ -241,6 +249,45 @@ public class SharedMusicViewActivity extends AppCompatActivity {
             public void onClick(View v) {
                 AppBarLayout appbarLayout = (AppBarLayout) findViewById(R.id.appbar);
                 appbarLayout.setExpanded(false);
+            }
+        });
+
+        commentRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int lastItem = commentLinearLayoutManager.findLastVisibleItemPosition();
+                int itemCount = commentLinearLayoutManager.getItemCount();
+                if(lastItem >= itemCount-2 && dy>0 && !commentLoading && commentList.size()%7==0){
+                    commentLoading=true;
+                    new LoadComments(commentList, commentRecyclerAdapter, null, getApplicationContext()).execute(data.getId(), (long)itemCount/7);
+                }
+                Log.d("comm", "onScrolled: "+itemCount);
+            }
+        });
+
+        nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                Log.d("y", "onScrollChange: "+scrollY);
+                Log.d("oldy", "onScrollChange: "+oldScrollY);
+                Log.d("height", "onScrollChange: "+ (commentRecyclerView.getHeight()-v.getMaxScrollAmount()));
+                int lastItem = commentLinearLayoutManager.findLastVisibleItemPosition();
+                int itemCount = commentLinearLayoutManager.getItemCount();
+                if(lastItem >= itemCount-2 && (commentRecyclerView.getHeight()-v.getMaxScrollAmount())-oldScrollY<0 && !commentLoading && commentList.size()%7==0){
+                    commentLoading=true;
+                    new LoadComments(commentList, commentRecyclerAdapter, null, getApplicationContext()).setCommentStateCallback(new LoadComments.CommentStateCallback() {
+                        @Override
+                        public void loadCompleted(int num) {
+                            if(num==7)
+                                progressBar_loadingComment.setVisibility(View.INVISIBLE);
+                            else
+                                progressBar_loadingComment.setVisibility(View.GONE);
+                        }
+                    }).execute(data.getId(), (long)itemCount/7);
+                    progressBar_loadingComment.setVisibility(View.VISIBLE);
+                }
+
             }
         });
 

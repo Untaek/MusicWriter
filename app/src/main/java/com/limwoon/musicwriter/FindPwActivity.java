@@ -30,9 +30,11 @@ public class FindPwActivity extends AppCompatActivity {
                     Toast.makeText(getBaseContext(), "빈 칸을 모두 입력해주세요", Toast.LENGTH_SHORT).show();
                 }
                 else{
-                    FindPwAsync findPwAsync = new FindPwAsync(getBaseContext());
+                    FindPwAsync findPwAsync = new FindPwAsync(FindPwActivity.this);
                     findPwAsync.execute(s);
                 }
+                Func.closeKeyboard(FindPwActivity.this, editText_id);
+                Func.closeKeyboard(FindPwActivity.this, editText_email);
             }
         });
     }
