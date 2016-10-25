@@ -9,6 +9,8 @@ import android.widget.Toast;
 
 import com.limwoon.musicwriter.http.account.SignInAsync;
 
+import java.util.regex.Pattern;
+
 public class SignInActivity extends AppCompatActivity {
 
     String id= null;
@@ -44,6 +46,15 @@ public class SignInActivity extends AppCompatActivity {
                 pw2 = editTextPw2.getText().toString();
                 email = editTextEmail.getText().toString();
 
+                Pattern idPattern = Pattern.compile("[a-zA-Z0-9]{4,16}");
+                Pattern pwPattern = Pattern.compile("[a-zA-Z0-9]{}");
+
+                if(idPattern.matcher(id).matches()){
+                    Toast.makeText(activity, "매치", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(activity, "안매치", Toast.LENGTH_SHORT).show();
+                }
+
                 if(!id.equals("") && !pw1.equals("") && !pw2.equals("") && !email.equals("")) {
                     if(pw1.equals(pw2)){
                         correctPw = pw1;
@@ -55,11 +66,11 @@ public class SignInActivity extends AppCompatActivity {
                         task.execute(bundle);
                     }
                     else {
-                        Toast.makeText(getBaseContext(), "비밀번호를 확인해주세요", Toast.LENGTH_SHORT).show();
+                        //oast.makeText(getBaseContext(), "비밀번호를 확인해주세요", Toast.LENGTH_SHORT).show();
                     }
                 }
                 else{
-                    Toast.makeText(getBaseContext(), "빈 칸을 모두 입력해주세요", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getBaseContext(), "빈 칸을 모두 입력해주세요", Toast.LENGTH_SHORT).show();
                 }
 
             }

@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.limwoon.musicwriter.SharedMusicViewActivity;
 import com.limwoon.musicwriter.data.CommentData;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 import com.limwoon.musicwriter.image.UserPicture;
@@ -45,6 +46,17 @@ public class LoadComments extends AsyncTask<Long, Void, Integer> {
     CommentRecyclerAdapter commentRecyclerAdapter;
     TextView textView_count;
     Context context;
+    String count;
+    CommentStateCallback callback;
+
+    public interface CommentStateCallback{
+        void loadCompleted(int num);
+    }
+
+    public LoadComments setCommentStateCallback(CommentStateCallback callback){
+        this.callback = callback;
+        return this;
+    }
 
     public LoadComments(ArrayList<CommentData> commentList, CommentRecyclerAdapter commentRecyclerAdapter, @Nullable TextView textView_count, Context context) {
         this.commentList = commentList;
@@ -52,11 +64,14 @@ public class LoadComments extends AsyncTask<Long, Void, Integer> {
         this.textView_count = textView_count;
         this.context = context;
     }
+    long sheetIDa;
+    long page;
+    JSONArray jsonArray;
 
     @Override
     protected Integer doInBackground(Long... sheetIdAndPage) {
-        long sheetIDa = sheetIdAndPage[0];
-        long page = 0;
+        sheetIDa = sheetIdAndPage[0];
+        page = sheetIdAndPage[1];
 
         String message = "sheetID="+sheetIDa+"&page="+page;
         try {
@@ -78,8 +93,9 @@ public class LoadComments extends AsyncTask<Long, Void, Integer> {
             String json = reader.readLine();
 
             JSONObject jsonObject = new JSONObject(json);
+            count = jsonObject.getString("count");
             String today = jsonObject.getString("today");
-            JSONArray jsonArray = jsonObject.getJSONArray("comments");
+            jsonArray = jsonObject.getJSONArray("comments");
             Log.d(TAG, "doInBackground: "+ jsonArray);
 
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
@@ -155,12 +171,13 @@ public class LoadComments extends AsyncTask<Long, Void, Integer> {
     @Override
     protected void onPostExecute(Integer integer) {
 
+        SharedMusicViewActivity.commentLoading = false;
         if(textView_count!=null){
-            textView_count.setText("댓글 ("+commentList.size()+")");
+            textView_count.setText("댓글 ("+count+")");
         }
 
         UserPicture userPicture = new UserPicture(context);
-        for(int i=0; i<commentList.size(); i++){
+        for(int i=(int)page*7; i<commentList.size(); i++){
             Bitmap pic = userPicture.getUserPicBitmapFromCache("user_" + commentList.get(i).getUserID() + "_pic.jpg");
             if(!userPicture.isNotFound() || commentList.get(i).getUserPicUrl().equals("0")){
                 commentList.get(i).setUserPicture(pic);
@@ -171,9 +188,9 @@ public class LoadComments extends AsyncTask<Long, Void, Integer> {
         }
 
         commentRecyclerAdapter.notifyDataSetChanged();
-
-
-
+        if(this.callback!=null){
+            callback.loadCompleted(jsonArray.length());
+        }
         super.onPostExecute(integer);
     }
 }
