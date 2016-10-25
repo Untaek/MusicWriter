@@ -1,5 +1,6 @@
 package com.limwoon.musicwriter.http.account;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -32,12 +33,20 @@ public class FindPwAsync extends AsyncTask<String, Void, Integer> {
     OutputStream os;
 
     Context context;
+    ProgressDialog.Builder builder;
     public FindPwAsync(Context context){
         this.context=context;
     }
 
     @Override
     protected void onPreExecute() {
+        builder = new ProgressDialog.Builder(context)
+                .setTitle("이메일을 보내는 중입니다..")
+                .setMessage("....");
+
+        ProgressDialog dialog = (ProgressDialog) builder.create();
+        dialog.show();
+
         super.onPreExecute();
     }
 
@@ -83,13 +92,6 @@ public class FindPwAsync extends AsyncTask<String, Void, Integer> {
         }
 
         return result;
-    }
-
-    @Override
-    protected void onProgressUpdate(Void... values) {
-
-
-        super.onProgressUpdate(values);
     }
 
     @Override
