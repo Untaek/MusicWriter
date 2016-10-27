@@ -66,7 +66,7 @@ public class SignInActivity extends AppCompatActivity {
                         task.execute(bundle);
                     }
                     else {
-                        //oast.makeText(getBaseContext(), "비밀번호를 확인해주세요", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getBaseContext(), "비밀번호를 확인해주세요", Toast.LENGTH_SHORT).show();
                     }
                 }
                 else{

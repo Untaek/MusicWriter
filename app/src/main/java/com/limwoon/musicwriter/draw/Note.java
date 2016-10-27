@@ -38,12 +38,16 @@ public class Note extends View {
     int numOfNote =0;
     int lastOfNote = 0;
     int firstOfNote = -1;
+    boolean direction = false;
+    int directionHigh;
+    int directionLow;
 
     int x = 70;
     int y = 160;
 
     float rectX;
     float rectY;
+    int thirdLineY = 308;
 
     private void init(){
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -99,6 +103,7 @@ public class Note extends View {
                 lastOfNote=i;
                 numOfNote++;
             }
+
         }
 
         for(int i=0; i<6; i++) {
@@ -192,8 +197,15 @@ public class Note extends View {
 
                 centerX[i] = (int) rect.centerX();
                 centerY[i] = (int) rect.centerY();
+
+                if(directionHigh<centerY[i]-thirdLineY) directionHigh = centerY[i]-thirdLineY;
+                if(directionLow>centerY[i]-thirdLineY) directionLow = centerY[i]-thirdLineY;
             }
         }
+        if(Math.abs(directionHigh) > Math.abs(directionLow)){
+            direction=true;
+        }
+
         for(int i=0; i<6; i++){
             if (note[i] != -1 && !noteData.rest) {
                 if(i==0 && note[0]==2 ||note[0]==4 ||note[0]==6 ||note[0]==9 ||note[0]==11 ||note[0]==14 || note[0]==16 ||note[0]==18){
@@ -227,16 +239,15 @@ public class Note extends View {
                         canvas.drawBitmap(NoteBitmapMaker.emptyNoteBlankBitmap, centerX[i]-28, centerY[i]-30, null);
                     }
 
-                    canvas.drawLine(centerX[i]+27, centerY[firstOfNote], centerX[i]+27, centerY[lastOfNote], linePaint);
-                    canvas.drawLine(centerX[i]+27, centerY[lastOfNote], centerX[i]+27, centerY[lastOfNote]-126, linePaint);
-                    if(i==lastOfNote && duration<=1){
-                        if(duration<=3 && !isRest && i>=4 || note[0]>=19 || note[1]>=14 || note[2]>=9 || note[3]>=4){
-                            canvas.drawBitmap(NoteBitmapMaker.bitmapsHearsRev[duration], centerX[i]-73, centerY[i]-22, null);
-                        }else{
-                            canvas.drawBitmap(NoteBitmapMaker.bitmapsHears[duration], centerX[i]-58, centerY[i]-140, null);
-                        }
+                    if(i==lastOfNote && duration<=1 && direction) {
+                        canvas.drawBitmap(NoteBitmapMaker.bitmapsHears[duration], centerX[i] - 58, centerY[i] - 140, null);
+                        canvas.drawLine(centerX[i]+27, centerY[firstOfNote], centerX[i]+27, centerY[lastOfNote], linePaint);
+                        canvas.drawLine(centerX[i]+27, centerY[lastOfNote], centerX[i]+27, centerY[lastOfNote]-126, linePaint);
                     }
-
+                    else if(i==firstOfNote && duration<=1 && !direction){
+                        canvas.drawBitmap(NoteBitmapMaker.bitmapsHearsRev[duration], centerX[i] - 80, centerY[i] - 22, null);
+                        canvas.drawLine(centerX[i]-26, centerY[firstOfNote], centerX[i]-26, centerY[lastOfNote], linePaint);
+                    }
                 }
                 else{   // 음표 하나일 때
                     if(duration<=3 && !isRest && i>=4 || note[0]>=19 || note[1]>=14 || note[2]>=9 || note[3]>=4){
