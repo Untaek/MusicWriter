@@ -235,17 +235,28 @@ public class Note extends View {
                     if(duration<=2){
                         canvas.drawBitmap(NoteBitmapMaker.emptyNoteBlackBitmap, centerX[i]-28, centerY[i]-29, null);
                     }
-                    else{
+                    else if(duration==3){
                         canvas.drawBitmap(NoteBitmapMaker.emptyNoteBlankBitmap, centerX[i]-28, centerY[i]-30, null);
                     }
+                    else if(duration==4){
+                        canvas.drawBitmap(NoteBitmapMaker.bitmaps[4], centerX[i]-28, centerY[i]-30, null);
+                    }
 
-                    if(i==lastOfNote && duration<=1 && direction) {
-                        canvas.drawBitmap(NoteBitmapMaker.bitmapsHears[duration], centerX[i] - 58, centerY[i] - 140, null);
+                    if(i==lastOfNote && direction) {
+                        if(duration<=1){
+                            canvas.drawBitmap(NoteBitmapMaker.bitmapsHears[duration], centerX[i] - 58, centerY[i] - 140, null);
+                        }
                         canvas.drawLine(centerX[i]+27, centerY[firstOfNote], centerX[i]+27, centerY[lastOfNote], linePaint);
                         canvas.drawLine(centerX[i]+27, centerY[lastOfNote], centerX[i]+27, centerY[lastOfNote]-126, linePaint);
                     }
-                    else if(i==firstOfNote && duration<=1 && !direction){
-                        canvas.drawBitmap(NoteBitmapMaker.bitmapsHearsRev[duration], centerX[i] - 80, centerY[i] - 22, null);
+                    else if(i==firstOfNote && !direction){
+                        if(duration<=1){
+                            canvas.drawBitmap(NoteBitmapMaker.bitmapsHearsRev[duration], centerX[i] - 80, centerY[i] - 22, null);
+                        }
+                        else if(duration==3){
+                            canvas.drawLine(centerX[i]-26, centerY[lastOfNote], centerX[i]-26, centerY[firstOfNote]+126, linePaint);
+
+                        }
                         canvas.drawLine(centerX[i]-26, centerY[firstOfNote], centerX[i]-26, centerY[lastOfNote], linePaint);
                     }
                 }

@@ -67,7 +67,7 @@ public class UserPicture {
         } catch (FileNotFoundException e) {
             Log.d("TAG", "onCreate: notFound " + imageName);
             notFound=true;
-            b = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_account_circle_black_48dp);
+            b = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_account_circle_white_48dp);
         } catch (IOException e) {
             e.printStackTrace();
         }
