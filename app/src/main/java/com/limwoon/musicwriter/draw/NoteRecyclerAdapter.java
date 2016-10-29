@@ -21,12 +21,15 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
 
     Context context;
     ArrayList<NoteData> list;
-    LayoutInflater inflater;
-    public NoteData noteData;
     public int index;
+    NotifyListener listener;
 
-    public int getIndex() {
-        return index;
+    public interface NotifyListener{
+        void onNotified(int index);
+    }
+
+    public void setNotifyListener(NotifyListener listener){
+        this.listener = listener;
     }
 
     public void setIndex(int index) {
@@ -36,29 +39,35 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
     public NoteRecyclerAdapter(Context context, ArrayList<NoteData> list){
         this.context=context;
         this.list=list;
-        inflater = (LayoutInflater)context.getSystemService
-                (Context.LAYOUT_INFLATER_SERVICE);
         index=0;
     }
 
 
+
     @Override
     public itemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        //LinearLayout v = (LinearLayout) inflater.from(context).inflate(R.layout.note, parent, false);
-        View note = null;
-
-        try {
-            note = new Note(context, list.get(index));
-        }catch (IndexOutOfBoundsException e){
-            e.printStackTrace();
-        }
-        index++;
-
-        return new itemHolder(note);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note, parent, false);
+        return new itemHolder(view);
     }
+
 
     @Override
     public void onBindViewHolder(itemHolder holder, int position) {
+        if(holder.note.getChildCount()==0){
+            View v;
+            if(list.get(position).isBind && position>0 && position+1<list.size()){
+                v = new Note(context, list.get(position), list.get(position-1), list.get(position+1));
+            }else if(list.get(position).isBind && position>0 && position+1>=list.size()) {
+                v = new Note(context, list.get(position), list.get(position - 1), null);
+            }else if(list.get(position).isBind && position==0){
+                v = new Note(context, list.get(position), null, list.get(position+1));
+            }
+            else{
+                v = new Note(context, list.get(position));
+            }
+            holder.note.addView(v);
+            Log.d("position", "onBindViewHolder: " + position);
+        }
     }
 
     @Override
@@ -66,9 +75,13 @@ public class NoteRecyclerAdapter extends RecyclerView.Adapter<NoteRecyclerAdapte
         return list.size();
     }
 
-    public static class itemHolder extends RecyclerView.ViewHolder{
-        public itemHolder(View itemView) {
+
+
+    class itemHolder extends RecyclerView.ViewHolder{
+        LinearLayout note;
+        itemHolder(View itemView) {
             super(itemView);
+            note = (LinearLayout) itemView.findViewById(R.id.note);
         }
     }
 }

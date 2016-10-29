@@ -118,7 +118,6 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                 this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawerLayout.setDrawerListener(toggle);
         toggle.syncState();
-
     }
 
     @Override

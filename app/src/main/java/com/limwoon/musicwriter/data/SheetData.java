@@ -1,5 +1,7 @@
 package com.limwoon.musicwriter.data;
 
+import android.os.Bundle;
+
 import java.io.Serializable;
 
 /**
@@ -16,6 +18,8 @@ public class SheetData implements Serializable {
     private String uploadUserStrID;
     private long uploadUserID;
     private int tempo;
+
+    Bundle noteBundle;
 
     public int getTempo() {
         return tempo;

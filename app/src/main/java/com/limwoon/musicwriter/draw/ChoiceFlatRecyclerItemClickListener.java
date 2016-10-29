@@ -101,6 +101,7 @@ public class ChoiceFlatRecyclerItemClickListener implements RecyclerView.OnItemT
             noteStore.cacheNote(selectedStringNum, position);
             Toast.makeText(context ,position+ "번 플랫 선택", Toast.LENGTH_SHORT).show();
 
+
             if(selectedStringNum == 0)
                 checkBox1.setChecked(true);
             else if(selectedStringNum ==1)

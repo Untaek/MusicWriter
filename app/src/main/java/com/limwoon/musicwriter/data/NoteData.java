@@ -9,6 +9,7 @@ public class NoteData {
     public boolean node = false; // 마디 인지?
     public boolean rest = false; // 쉼표 인지?
     public boolean isBind = false; // 묶여있는가
+    public boolean isPrev = false;
 
     public boolean isAddBtn() {
         return isAddBtn;

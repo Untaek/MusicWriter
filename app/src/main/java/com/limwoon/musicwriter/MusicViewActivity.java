@@ -26,6 +26,7 @@ import android.widget.TextView;
 import com.limwoon.musicwriter.SQLite.DefineSQL;
 import com.limwoon.musicwriter.SQLite.SheetDbHelper;
 import com.limwoon.musicwriter.data.NoteData;
+import com.limwoon.musicwriter.data.NoteStore;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 import com.limwoon.musicwriter.draw.BaseSheet;
 import com.limwoon.musicwriter.draw.NoteRecyclerAdapter;
@@ -40,7 +41,7 @@ import java.util.ArrayList;
 public class MusicViewActivity extends AppCompatActivity {
 
     Intent intentData;
-    int id;
+    long id;
     int beats;
     String title;
     String author;
@@ -57,6 +58,7 @@ public class MusicViewActivity extends AppCompatActivity {
     HorizontalScrollView horizontalScrollView;
 
     NoteParser noteParser;
+    NoteStore noteStore;
 
     int i;
     ImageView btnPlayMusic;
@@ -74,7 +76,6 @@ public class MusicViewActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //NoteBitmapMaker noteBitmapMaker = new NoteBitmapMaker(this);
 
         // 디비에서 정보 가져오기, 기본적인 정보들 변수에 넣기
         intentData = getIntent();
@@ -101,14 +102,26 @@ public class MusicViewActivity extends AppCompatActivity {
         sheetBaseLinear.addView(baseSheet);
 
         // 리스트에 하나씩 넣으면서 악보 그리기
+        noteStore = new NoteStore(noteList, sheetRecyAdapter, beats);
         for (int i = 0; i < noteParser.getNoteLength(); i++) {
-            noteList.add(noteParser.getNoteAt(i));
-            sheetRecyAdapter.notifyItemChanged(i);
+            noteStore.setTempData(noteParser.getNoteAt(i));
+            if(!noteStore.getTempData().node)
+                noteStore.saveNote(i);
         }
+        if(noteList.get(noteList.size()-1).node){
+            noteList.remove(noteList.size()-1);
+        }
+
         for (int j = 0; j < noteList.size() / 4; j++) {
             sheetAppender = new SheetAppender(getApplicationContext());
             sheetBaseLinear.addView(sheetAppender);
         }
+
+        sheetBaseLinear.removeViewAt(sheetBaseLinear.getChildCount()-1);
+        int sheetWidth = sheetBaseLinear.getChildCount()*600;
+        int noteWidth = linearLayoutManager.getItemCount()*150;
+        sheetAppender = new SheetAppender(getApplicationContext(), true, noteWidth-sheetWidth+100);
+        sheetBaseLinear.addView(sheetAppender);
 
         horizontalScrollView = (HorizontalScrollView) findViewById(R.id.horizontalScrollView);
         TextView textViewTitle = (TextView) findViewById(R.id.textViewTitle);
@@ -339,14 +352,13 @@ public class MusicViewActivity extends AppCompatActivity {
         if(item.getItemId()==R.id.action_edit){
             Log.d("id", ""+id);
 
-            Intent intent = new Intent(getApplicationContext(),MusicWriteActivity.class);
+            Intent intent = new Intent(getApplicationContext(), MusicWriteActivity.class);
             intent.putExtra("isEdit", true);
             intent.putExtra("id", id);
             intent.putExtra("beatIndex", beats);
             intent.putExtra("title", title);
             intent.putExtra("author", author);
             intent.putExtra("tempo", tempo);
-            Log.d("beats", ""+beats);
             startActivity(intent);
 
             overridePendingTransition(R.anim.activity_slide_left, R.anim.activity_slide_left_gone);

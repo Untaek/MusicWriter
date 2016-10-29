@@ -21,8 +21,7 @@ public class ChoiceFlatRecyclerAdapter extends RecyclerView.Adapter<ChoiceFlatRe
     Context context;
     ArrayList<ChoiceFlatData> list;
     RecyclerView rv;
-    View.OnClickListener onClick;
-    int selectedpos=0;
+    int selectedPos=-1;
 
     public ChoiceFlatRecyclerAdapter(Context context, ArrayList<ChoiceFlatData> list, RecyclerView rv){
         this.context=context;
@@ -40,6 +39,11 @@ public class ChoiceFlatRecyclerAdapter extends RecyclerView.Adapter<ChoiceFlatRe
     @Override
     public void onBindViewHolder(final ItemHolder holder, final int position) {
         holder.flatTextView.setText(list.get(position).getFlat()+" 번 플랫");
+        if(list.get(position).isSelected()){
+            holder.itemView.setBackgroundColor(Color.BLUE);
+        }else{
+            holder.itemView.setBackgroundColor(Color.WHITE);
+        }
     }
 
     @Override
@@ -50,10 +54,23 @@ public class ChoiceFlatRecyclerAdapter extends RecyclerView.Adapter<ChoiceFlatRe
     public class ItemHolder extends RecyclerView.ViewHolder{
         TextView flatTextView;
 
-        public ItemHolder(View itemView) {
+        public ItemHolder(final View itemView) {
             super(itemView);
             flatTextView = (TextView) itemView.findViewById(R.id.textview_choice_flat);
-
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    selectedPos=getAdapterPosition();
+                    for(int i=0;i<list.size();i++){
+                        if(i == selectedPos) continue;
+                        if(list.get(i).isSelected()) {
+                            list.get(i).setSelected(false);
+                        }
+                    }
+                    itemView.setBackgroundColor(Color.BLUE);
+                    rv.getAdapter().notifyDataSetChanged();
+                }
+            });
         }
     }
 }

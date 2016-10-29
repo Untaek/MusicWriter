@@ -56,7 +56,7 @@ public class MusicWriteActivity extends AppCompatActivity {
     public static int beatIndex;
 
     // DB
-    long id=-1;
+    long id = -1;
     Cursor cursor;
     String title;
     String author;
@@ -109,7 +109,18 @@ public class MusicWriteActivity extends AppCompatActivity {
     SeekBar musicSeekBar;
     boolean isPlay = false;
     Thread playThread;
-    int musicProgress =0;
+    int musicProgress = 0;
+
+    private void setFlatSelector(int num) {
+        if (noteStore.getTempData().tone[num] != -1)
+            flatList.get(noteStore.getTempData().tone[num]).setSelected(true);
+
+        for (int i = 0; i < 6; i++) {
+            if (i != num && noteStore.getTempData().tone[i] != -1 && noteStore.getTempData().tone[i] != noteStore.getTempData().tone[num])
+                flatList.get(noteStore.getTempData().tone[i]).setSelected(false);
+        }
+        choiceFlatRecyclerAdapter.notifyDataSetChanged();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,7 +130,7 @@ public class MusicWriteActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if(getIntent().getIntExtra("beatIndex", -1)!=-1){
+        if (getIntent().getIntExtra("beatIndex", -1) != -1) {
             beatIndex = getIntent().getIntExtra("beatIndex", -1);
             tempo = getIntent().getIntExtra("tempo", -1);
         }
@@ -132,7 +143,7 @@ public class MusicWriteActivity extends AppCompatActivity {
         noteAdapter = new NoteRecyclerAdapter(this, noteList);
         noteStore = new NoteStore(noteList, noteAdapter, beatIndex);
 
-        // BaseSheet 생성후 LinearLayout에 붙임
+        // BaseSheet 생성후 LinearLayout 에 붙임
         musicBaseSheet = new BaseSheet(this, beatIndex, tempo);
         sheetWrapView = (LinearLayout) findViewById(R.id.music_sheet_wrapper);
         sheetWrapView.addView(musicBaseSheet);
@@ -147,7 +158,9 @@ public class MusicWriteActivity extends AppCompatActivity {
         noteRecyclerView.setAdapter(noteAdapter);
         noteRecyclerView.addOnItemTouchListener(noteRecyclerClickListener);
 
-        if(id!=-1){
+        noteRecyclerView.getRecycledViewPool().setMaxRecycledViews(0, 0);
+
+        if (id != -1) {
             NoteParser noteParser;
             SheetDbHelper dbHelper = new SheetDbHelper(this);
             SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -163,22 +176,23 @@ public class MusicWriteActivity extends AppCompatActivity {
             cursor = db.query(
                     DefineSQL.TABLE_NAME,
                     columns,
-                    DefineSQL._ID+"="+id,null,null,null,null
+                    DefineSQL._ID + "=" + id, null, null, null, null
             );
             cursor.moveToFirst();
             noteParser = new NoteParser(cursor.getString(cursor.getColumnIndexOrThrow(DefineSQL.COLUMN_NAME_NOTE)));
 
-            beatIndex=noteParser.getBeats();
+            beatIndex = noteParser.getBeats();
 
             // 리스트에 하나씩 넣으면서 악보 그리기
-            for(int i=0; i<noteParser.getNoteLength(); i++) {
-                noteStore.cacheIsRest(noteParser.getNoteAt(i).rest);
-                noteStore.cacheDuration(noteParser.getNoteAt(i).duration);
-                noteStore.cacheTone(noteParser.getNoteAt(i).tone);
-                if(noteParser.getNoteAt(i).node) continue;
-                noteStore.saveNote();
+            for (int i = 0; i < noteParser.getNoteLength(); i++) {
+                noteStore.setTempData(noteParser.getNoteAt(i));
+                if(!noteStore.getTempData().node){
+                    noteStore.saveNote(i);
+                    noteStore.cursor++;
+                }
             }
-            for(int j=0; j<noteList.size()/4; j++){
+            noteStore.setTempData(new NoteData());
+            for (int j = 0; j < noteList.size() / 4; j++) {
                 sheetAppender = new SheetAppender(getApplicationContext());
                 sheetWrapView.addView(sheetAppender);
             }
@@ -186,11 +200,10 @@ public class MusicWriteActivity extends AppCompatActivity {
         horizontalScrollView = (HorizontalScrollView) findViewById(R.id.horizontalScrollView);
 
         // 음악 재생
-
         btnPlayMusic = (ImageView) findViewById(R.id.btnMusicPlay);
         musicSeekBar = (SeekBar) findViewById(R.id.music_seek_bar);
 
-        musicSeekBar.setMax(noteList.size()-1);
+        musicSeekBar.setMax(noteList.size() - 1);
 
         final View.OnTouchListener onTouchListener = new View.OnTouchListener() {
             @Override
@@ -202,50 +215,51 @@ public class MusicWriteActivity extends AppCompatActivity {
         btnPlayMusic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!isPlay){
+                if (!isPlay) {
                     musicSeekBar.setAlpha(0.7f);
                     musicSeekBar.setOnTouchListener(onTouchListener);
                     btnPlayMusic.setImageResource(R.drawable.ic_pause_black_36dp);
                     isPlay = true;
-                    if(musicProgress==noteList.size()-1) musicProgress=0;
+                    if (musicProgress == noteList.size() - 1) musicProgress = 0;
                     playThread = new Thread(new Runnable() {
                         @Override
-                        public void run(){
-                            for(i=musicProgress; i<noteList.size(); i++){
-                                musicProgress=i;
+                        public void run() {
+                            for (i = musicProgress; i < noteList.size(); i++) {
+                                musicProgress = i;
+                                for (int j = 0; j < 6; j++) {
+                                    if (noteList.get(i).tone[j] != -1) {
+                                        NativeClass.setPlayingBufferQueue(j, noteList.get(i).tone[j]);
+                                        Log.d("TTT", "runnote: " + noteList.get(i).tone[j]);
+                                    }
+                                }
                                 horizontalScrollView.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        horizontalScrollView.smoothScrollTo(150*i-150,0);
+                                        horizontalScrollView.smoothScrollTo(150 * i - 150, 0);
                                     }
                                 });
                                 noteRecyclerView.getChildAt(i).post(new Runnable() {
                                     @Override
                                     public void run() {
                                         try {
-                                            noteRecyclerView.getChildAt(i-2).setBackgroundColor(Color.alpha(0));
-                                        }catch (NullPointerException e){
-                                            Log.d("jumpChild","yes");
+                                            noteRecyclerView.getChildAt(i - 2).setBackgroundColor(Color.alpha(0));
+                                        } catch (NullPointerException e) {
+                                            Log.d("jumpChild", "yes");
                                         }
                                         try {
-                                            noteRecyclerView.getChildAt(i-1).setBackgroundColor(Color.alpha(0));
-                                        }catch (NullPointerException e){
-                                            Log.d("jumpChild","yes");
+                                            noteRecyclerView.getChildAt(i - 1).setBackgroundColor(Color.alpha(0));
+                                        } catch (NullPointerException e) {
+                                            Log.d("jumpChild", "yes");
                                         }
                                         try {
                                             noteRecyclerView.getChildAt(i).setBackgroundColor(Color.GREEN);
-                                        }catch (NullPointerException e){
-                                            Log.d("Song end","end");
+                                        } catch (NullPointerException e) {
+                                            Log.d("Song end", "end");
                                         }
                                     }
                                 });
-                                if(noteList.get(i).node) continue;
-                                for(int j=0; j<6; j++){
-                                    if(noteList.get(i).tone[j]!=-1){
-                                        NativeClass.setPlayingBufferQueue(j, noteList.get(i).tone[j]);
-                                        Log.d("TTT", "runnote: "+noteList.get(i).tone[j]);
-                                    }
-                                }
+                                if (noteList.get(i).node) continue;
+
                                 try {
                                     Thread.sleep(Sounds.getDuration(noteList.get(i).duration, tempo));
                                     NativeClass.setStopBufferQueue();
@@ -259,19 +273,18 @@ public class MusicWriteActivity extends AppCompatActivity {
                                     });
                                     break;
                                 }
-                                if(i==noteList.size()-1){
-                                    if(i>1)
-                                    noteRecyclerView.getChildAt(i-1).post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            try {
-                                                noteRecyclerView.getChildAt(i-1).setBackgroundColor(Color.alpha(0));
-                                            }catch (NullPointerException e){
-                                                Log.d("nullpointer", ""+i);
-
+                                if (i == noteList.size() - 1) {
+                                    if (i > 1)
+                                        noteRecyclerView.getChildAt(i - 1).post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                try {
+                                                    noteRecyclerView.getChildAt(i - 1).setBackgroundColor(Color.alpha(0));
+                                                } catch (NullPointerException e) {
+                                                    Log.d("nullpointer", "" + i);
+                                                }
                                             }
-                                        }
-                                    });
+                                        });
                                 }
                                 musicSeekBar.post(new Runnable() {
                                     @Override
@@ -279,7 +292,7 @@ public class MusicWriteActivity extends AppCompatActivity {
                                         musicSeekBar.setProgress(i);
                                     }
                                 });
-                                if(playThread.isInterrupted()) break;
+                                if (playThread.isInterrupted()) break;
                             }
                             musicSeekBar.setOnTouchListener(null);
                             isPlay = false;
@@ -298,12 +311,12 @@ public class MusicWriteActivity extends AppCompatActivity {
                         }
                     });
                     playThread.start();
-                }else{
+                } else {
                     musicSeekBar.setAlpha(1);
                     musicSeekBar.setOnTouchListener(null);
                     isPlay = false;
                     btnPlayMusic.setImageResource(R.drawable.ic_play_arrow_black_36dp);
-                    if(playThread!=null){
+                    if (playThread != null) {
                         playThread.interrupt();
                     }
                 }
@@ -313,30 +326,21 @@ public class MusicWriteActivity extends AppCompatActivity {
         musicSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, final int i, boolean b) {
-                if(b){
+                if (b) {
                     horizontalScrollView.post(new Runnable() {
                         @Override
                         public void run() {
-                            horizontalScrollView.smoothScrollTo(150*i-150,0);
+                            horizontalScrollView.smoothScrollTo(150 * i - 150, 0);
                         }
                     });
                     musicProgress = i;
                 }
             }
-
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-
-            }
-
+            public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStopTrackingTouch(SeekBar seekBar) {}
         });
-
-
 
 
         /////////////////////////////////////////////////
@@ -432,38 +436,48 @@ public class MusicWriteActivity extends AppCompatActivity {
             }
         };
 
+    View.OnClickListener string_containerClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.checkbox_1st_string_container:
+                    textViewString.setText("1번 줄");
 
-        View.OnClickListener string_containerClick = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                switch (view.getId()) {
-                    case R.id.checkbox_1st_string_container:
-                        textViewString.setText("1번 줄");
-                        choiceFlatRecyclerItemClickListener.selectedStringNum = 0;
-                        break;
-                    case R.id.checkbox_2nd_string_container:
-                        textViewString.setText("2번 줄");
-                        choiceFlatRecyclerItemClickListener.selectedStringNum = 1;
-                        break;
-                    case R.id.checkbox_3rd_string_container:
-                        textViewString.setText("3번 줄");
-                        choiceFlatRecyclerItemClickListener.selectedStringNum = 2;
-                        break;
-                    case R.id.checkbox_4th_string_container:
-                        textViewString.setText("4번 줄");
-                        choiceFlatRecyclerItemClickListener.selectedStringNum = 3;
-                        break;
-                    case R.id.checkbox_5th_string_container:
-                        textViewString.setText("5번 줄");
-                        choiceFlatRecyclerItemClickListener.selectedStringNum = 4;
-                        break;
-                    case R.id.checkbox_6th_string_container:
-                        textViewString.setText("6번 줄");
-                        choiceFlatRecyclerItemClickListener.selectedStringNum = 5;
-                        break;
-                }
+                    choiceFlatRecyclerItemClickListener.selectedStringNum = 0;
+                    setFlatSelector(0);
+                    break;
+                case R.id.checkbox_2nd_string_container:
+                    textViewString.setText("2번 줄");
+
+                    choiceFlatRecyclerItemClickListener.selectedStringNum = 1;
+                    setFlatSelector(1);
+                    break;
+                case R.id.checkbox_3rd_string_container:
+                    textViewString.setText("3번 줄");
+
+                    choiceFlatRecyclerItemClickListener.selectedStringNum = 2;
+                    setFlatSelector(2);
+                    break;
+                case R.id.checkbox_4th_string_container:
+                    textViewString.setText("4번 줄");
+
+                    choiceFlatRecyclerItemClickListener.selectedStringNum = 3;
+                    setFlatSelector(3);
+                    break;
+                case R.id.checkbox_5th_string_container:
+                    textViewString.setText("5번 줄");
+
+                    choiceFlatRecyclerItemClickListener.selectedStringNum = 4;
+                    setFlatSelector(4);
+                    break;
+                case R.id.checkbox_6th_string_container:
+                    textViewString.setText("6번 줄");
+
+                    choiceFlatRecyclerItemClickListener.selectedStringNum = 5;
+                    setFlatSelector(5);
             }
-        };
+        }
+    };
 
         string_1_container.setOnClickListener(string_containerClick);
         string_2_container.setOnClickListener(string_containerClick);
@@ -487,10 +501,10 @@ public class MusicWriteActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (noteStore.isHasCache()) {
                     noteStore.cacheDuration(duration);
-                    noteStore.saveNote(noteRecyclerClickListener.clickedPosition);
+                    noteStore.saveNote(noteStore.cursor);
+                    noteStore.cursor++;
 
                     int backSize = sheetWrapView.getMeasuredWidth();
-                    Log.d("backsize", ""+backSize);
                     if (noteList.size() > 1 && backSize - noteList.size()*150 <=600) {
                         sheetAppender = new SheetAppender(getApplicationContext());
                         sheetWrapView.addView(sheetAppender);
@@ -504,6 +518,9 @@ public class MusicWriteActivity extends AppCompatActivity {
                     checkBox6th.setChecked(false);
 
                     musicSeekBar.setMax(noteList.size()-1);
+                    for(int i=0; i<flatList.size(); i++)
+                        flatList.get(i).setSelected(false);
+                    choiceFlatRecyclerAdapter.notifyDataSetChanged();
                 } else {
                     Toast.makeText(getApplicationContext(), "넣을 음을 선택 해주세요", Toast.LENGTH_SHORT).show();
                 }
@@ -515,13 +532,13 @@ public class MusicWriteActivity extends AppCompatActivity {
             public void onClick(View view) {
                 noteStore.cacheIsRest(true);
                 noteStore.cacheDuration(duration);
-                noteStore.saveNote(noteRecyclerClickListener.clickedPosition);
+                noteStore.saveNote(noteStore.cursor);
+                noteStore.cursor++;
 
-                int size = noteRecyclerView.getMeasuredHeight() + noteRecyclerView.getMeasuredWidth() -900;
-                if (noteList.size() > 1 && size/150 - noteList.size() <=2) {
+                int backSize = sheetWrapView.getMeasuredWidth();
+                if (noteList.size() > 1 && backSize - noteList.size()*150 <=600) {
                     sheetAppender = new SheetAppender(getApplicationContext());
                     sheetWrapView.addView(sheetAppender);
-
                 }
                 checkBox1st.setChecked(false);
                 checkBox2nd.setChecked(false);

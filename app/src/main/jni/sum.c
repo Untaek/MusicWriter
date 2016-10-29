@@ -141,7 +141,7 @@ LOGI("%d done", i);
 
 JNIEXPORT void JNICALL Java_com_limwoon_musicwriter_NativeClass_setPlayingBufferQueue
 (JNIEnv *env, jclass cls, jint tone, jint pitch){
-(*player[tone]->bqPlayerPlay)->SetPlayState(player[tone]->bqPlayerPlay, SL_PLAYSTATE_PLAYING );
+(*player[tone]->bqPlayerPlay)->SetPlayState(player[tone]->bqPlayerPlay, SL_PLAYSTATE_PLAYING);
 (*player[tone]->playbackRateItf)->SetRate(player[tone]->playbackRateItf, 1000*pow(2, pitch/12.0));
 (*player[tone]->bqPlayerBufferQueue)->Enqueue(
 (player[tone]->bqPlayerBufferQueue),

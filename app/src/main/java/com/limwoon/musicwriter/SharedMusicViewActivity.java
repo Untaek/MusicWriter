@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
@@ -29,6 +30,7 @@ import android.widget.Toast;
 import com.limwoon.musicwriter.data.CommentData;
 import com.limwoon.musicwriter.data.NoteData;
 import com.limwoon.musicwriter.data.NoteParser;
+import com.limwoon.musicwriter.data.NoteStore;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 import com.limwoon.musicwriter.data.SheetData;
 import com.limwoon.musicwriter.draw.BaseSheet;
@@ -58,13 +60,19 @@ public class SharedMusicViewActivity extends AppCompatActivity {
     LinearLayout sheetBaseLinear;
     BaseSheet baseSheet;
     SheetAppender sheetAppender;
+    SeekBar seekBar_music;
+    HorizontalScrollView horizontalScrollView_sheet;
+    Button button_play;
+    Thread playThread;
+    boolean isPlay = false;
+    int musicProgress;
+    int playPos;
 
     ArrayList<CommentData> commentList = new ArrayList<>();
     RecyclerView commentRecyclerView;
     CommentRecyclerAdapter commentRecyclerAdapter;
     LinearLayoutManager commentLinearLayoutManager;
     NestedScrollView nestedScrollView;
-    ProgressBar progressBar_loadingComment;
 
     SheetData data;
     static public boolean userLikeState;
@@ -74,6 +82,7 @@ public class SharedMusicViewActivity extends AppCompatActivity {
     TextView textView_commentCount;
     Button button_writeComment;
     EditText editText_writeComment;
+    ProgressBar progressBar_loadingComment;
     static public boolean commentLoading = false;
 
     @Override
@@ -124,14 +133,18 @@ public class SharedMusicViewActivity extends AppCompatActivity {
 
         textView_commentCount = (TextView) findViewById(R.id.textView_comment_header);
         commentRecyclerView = (RecyclerView) findViewById(R.id.recycler_comment);
+        progressBar_loadingComment = (ProgressBar) findViewById(R.id.progress_bar_loading_comment);
+        commentRecyclerView.setNestedScrollingEnabled(false);
+
         commentRecyclerAdapter = new CommentRecyclerAdapter(this, commentList);
         commentRecyclerView.setAdapter(commentRecyclerAdapter);
         commentLinearLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         commentRecyclerView.setLayoutManager(commentLinearLayoutManager);
         new LoadComments(commentList, commentRecyclerAdapter, textView_commentCount, this).execute(data.getId(), (long)0);
-        commentRecyclerView.setNestedScrollingEnabled(false);
-        nestedScrollView = (NestedScrollView) findViewById(R.id.content_container);
-        progressBar_loadingComment = (ProgressBar) findViewById(R.id.progress_bar_loading_comment);
+
+        seekBar_music = (SeekBar) findViewById(R.id.music_seek_bar);
+        horizontalScrollView_sheet = (HorizontalScrollView) findViewById(R.id.horizontalScrollView_sheet);
+        button_play = (Button) findViewById(R.id.button_play);
 
         TextView textView_title = (TextView) findViewById(R.id.textView_title);
         TextView textView_author = (TextView) findViewById(R.id.textView_author);
@@ -141,6 +154,7 @@ public class SharedMusicViewActivity extends AppCompatActivity {
         textView_author.setText("작곡자: "+data.getAuthor());
         textView_description.setText("");
 
+        /*
         findViewById(R.id.button_play).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -165,6 +179,134 @@ public class SharedMusicViewActivity extends AppCompatActivity {
                     }
                 });
                 playThread.start();
+            }
+        });
+        */
+
+        seekBar_music.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, final int i, boolean b) {
+                if (b) {
+                    horizontalScrollView_sheet.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            horizontalScrollView_sheet.smoothScrollTo(150 * i - 150, 0);
+                        }
+                    });
+                    musicProgress = i;
+                }
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+
+        button_play.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!isPlay) {
+                    seekBar_music.setAlpha(0.7f);
+                    //seekBar_music.setOnTouchListener(onTouchListener);
+                   // button_play.setImageResource(R.drawable.ic_pause_black_48dp);
+                    isPlay = true;
+                    if (musicProgress == noteList.size() - 1) musicProgress = 0;
+                    playThread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (playPos = musicProgress; playPos < noteList.size(); playPos++) {
+                                musicProgress = playPos;
+                                horizontalScrollView_sheet.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        horizontalScrollView_sheet.smoothScrollTo(150 * playPos - 150, 0);
+                                    }
+                                });
+                                sheetRecyView.getChildAt(playPos).post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            sheetRecyView.getChildAt(playPos - 2).setBackgroundColor(Color.alpha(0));
+                                        } catch (NullPointerException e) {
+                                            Log.d("jumpChild", "yes");
+                                        }
+                                        try {
+                                            sheetRecyView.getChildAt(playPos - 1).setBackgroundColor(Color.alpha(0));
+                                        } catch (NullPointerException e) {
+                                            Log.d("jumpChild", "yes");
+                                        }
+                                        try {
+                                            sheetRecyView.getChildAt(playPos).setBackgroundColor(Color.GREEN);
+                                        } catch (NullPointerException e) {
+                                            Log.d("Song end", "end");
+                                        }
+                                    }
+                                });
+                                if (noteList.get(playPos).node) continue;
+                                for (int j = 0; j < 6; j++) {
+                                    if (noteList.get(playPos).tone[j] != -1) {
+                                        NativeClass.setPlayingBufferQueue(j, noteList.get(playPos).tone[j]);
+                                    }
+                                }
+                                try {
+                                    Thread.sleep(Sounds.getDuration(noteList.get(playPos).duration, data.getTempo())); //////////////////////////
+                                    NativeClass.setStopBufferQueue();
+                                } catch (InterruptedException e) { // 정지버튼 클릭
+                                    NativeClass.setStopBufferQueue();
+                                    sheetRecyView.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            sheetRecyView.getChildAt(musicProgress).setBackgroundColor(Color.alpha(0));
+                                        }
+                                    });
+                                    break;
+                                }
+                                if (playPos == noteList.size() - 1) {
+                                    sheetRecyView.getChildAt(playPos - 1).post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                sheetRecyView.getChildAt(playPos - 1).setBackgroundColor(Color.alpha(0));
+                                            } catch (NullPointerException e) {
+                                                Log.d("nullpointer", "" + playPos);
+                                            }
+                                        }
+                                    });
+                                }
+                                seekBar_music.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        seekBar_music.setProgress(playPos);
+                                    }
+                                });
+                                if (playThread.isInterrupted()) break;
+                            }
+                            seekBar_music.setOnTouchListener(null);
+                            isPlay = false;
+                            seekBar_music.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    seekBar_music.setAlpha(1);
+                                }
+                            });
+                            button_play.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //button_play.setImageResource(R.drawable.ic_play_arrow_black_48dp);
+                                }
+                            });
+                        }
+                    });
+                    playThread.start();
+                } else {
+                    seekBar_music.setAlpha(1);
+                    seekBar_music.setOnTouchListener(null);
+                    isPlay = false;
+                    //button_play.setImageResource(R.drawable.ic_play_arrow_black_48dp);
+                    if (playThread != null) {
+                        playThread.interrupt();
+                    }
+                }
             }
         });
 
@@ -266,12 +408,10 @@ public class SharedMusicViewActivity extends AppCompatActivity {
             }
         });
 
+        nestedScrollView = (NestedScrollView) findViewById(R.id.content_container);
         nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                Log.d("y", "onScrollChange: "+scrollY);
-                Log.d("oldy", "onScrollChange: "+oldScrollY);
-                Log.d("height", "onScrollChange: "+ (commentRecyclerView.getHeight()-v.getMaxScrollAmount()));
                 int lastItem = commentLinearLayoutManager.findLastVisibleItemPosition();
                 int itemCount = commentLinearLayoutManager.getItemCount();
                 if(lastItem >= itemCount-2 && (commentRecyclerView.getHeight()-v.getMaxScrollAmount())-oldScrollY<0 && !commentLoading && commentList.size()%7==0){
@@ -303,14 +443,22 @@ public class SharedMusicViewActivity extends AppCompatActivity {
         sheetBaseLinear = (LinearLayout) findViewById(R.id.sheetBaseLinear);
         baseSheet = new BaseSheet(this, noteParser.getBeats(), data.getTempo());
         sheetBaseLinear.addView(baseSheet);
+        NoteStore noteStore = new NoteStore(noteList, sheetRecyAdapter, noteParser.getBeats());
 
-        for(int i=0; i<noteParser.getNoteLength(); i++) {
-            noteList.add(noteParser.getNoteAt(i));
-            sheetRecyAdapter.notifyItemChanged(i);
+        for (int i = 0; i < noteParser.getNoteLength(); i++) {
+            noteStore.setTempData(noteParser.getNoteAt(i));
+            if(!noteStore.getTempData().node)
+                noteStore.saveNote(i);
         }
         for(int j=0; j<noteList.size()/4; j++){
             sheetAppender = new SheetAppender(getApplicationContext());
             sheetBaseLinear.addView(sheetAppender);
         }
+
+        sheetBaseLinear.removeViewAt(sheetBaseLinear.getChildCount()-1);
+        int sheetWidth = sheetBaseLinear.getChildCount()*600;
+        int noteWidth = linearLayoutManager.getItemCount()*150;
+        sheetAppender = new SheetAppender(getApplicationContext(), true, noteWidth-sheetWidth+100);
+        sheetBaseLinear.addView(sheetAppender);
     }
 }

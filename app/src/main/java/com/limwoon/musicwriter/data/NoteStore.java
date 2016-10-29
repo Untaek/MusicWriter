@@ -3,7 +3,6 @@ package com.limwoon.musicwriter.data;
 import android.util.Log;
 
 import com.limwoon.musicwriter.draw.NoteRecyclerAdapter;
-import com.limwoon.musicwriter.draw.NoteBitmapMaker;
 
 import java.util.ArrayList;
 
@@ -19,18 +18,42 @@ public class NoteStore {
     private NoteData tempData = new NoteData();
     private NoteRecyclerAdapter noteRecyclerAdapter;
     private int totalNoteDuration =0;
-    public int pos =0;
-    int beat;
+    public int cursor = 0;
+    private int beat;
+    StoreCallBack callBack;
+
+    public interface StoreCallBack{
+        void onStored(int index);
+        void onNodePutted(int index);
+    }
+
+    public int getBeat() {
+        return beat;
+    }
+
+    public int getTotalNoteDuration() {
+        return totalNoteDuration;
+    }
+
+    public void setTotalNoteDuration(int totalNoteDuration) {
+        this.totalNoteDuration = totalNoteDuration;
+    }
+
+    public NoteData getTempData() {
+        return tempData;
+    }
+
+    public void setTempData(NoteData tempData) {
+        this.tempData = tempData;
+    }
 
     public NoteStore(ArrayList<NoteData> list, NoteRecyclerAdapter noteRecyclerAdapter, int beat){
         this.list = list;
         this.noteRecyclerAdapter = noteRecyclerAdapter;
-        //beat= MusicWriteActivity.beatIndex;
         this.beat= beat;
         if(beat==0) this.beat=8;
         else if (beat==1) this.beat=12;
         else if (beat==2) this.beat=16;
-        //init();
     }
 
     public int getLength(){
@@ -59,44 +82,53 @@ public class NoteStore {
 
     // 임시 배열에 저장되어있는 데이터(노트)를 리스트에 추가한다
     public void saveNote(int pos){
-        if(pos==-1) {
-            saveNote();
-            return;
-        }
-        noteRecyclerAdapter.noteData=tempData;
-        noteRecyclerAdapter.index=pos;
-        list.set(pos, tempData);
-        noteRecyclerAdapter.notifyItemChanged(pos);
-        totalNoteDuration+= NoteBitmapMaker.beats[tempData.duration];
-       // if(totalNoteDuration >=beat){
-       //     totalNoteDuration =0;
-       //     tempData = new NoteData();
-       //     saveNode();
-       // }
+        list.add(pos, tempData);
+        if(!tempData.node)
+            noteRecyclerAdapter.notifyDataSetChanged();
+        int duration = (int)Math.pow(2.0, (double)tempData.duration);
+        totalNoteDuration += duration;
         tempData = new NoteData();
+
+        if(pos>0){
+            NoteData prev = list.get(pos-1);
+            NoteData curr = list.get(pos);
+
+            if(!prev.isBind && !curr.isBind && prev.duration==1 && curr.duration==1 && !prev.node && !curr.node){
+                prev.isBind = true;
+                prev.isPrev = true;
+                curr.isBind = true;
+
+                list.remove(pos);
+                list.remove(pos-1);
+                list.add(pos-1, prev);
+                list.add(pos, curr);
+            }else if(!prev.isBind && !curr.isBind && prev.duration==0 && curr.duration==0 && !prev.node && !curr.node) {
+                prev.isBind = true;
+                prev.isPrev = true;
+                curr.isBind = true;
+
+                list.remove(pos);
+                list.remove(pos - 1);
+                list.add(pos - 1, prev);
+                list.add(pos, curr);
+            }
+        }
+
+        if(getTotalNoteDuration() >= getBeat()) {
+            cursor++;
+            saveNode(pos + 1);
+            setTotalNoteDuration(0);
+        }
+        Log.d("cursor", "saveNote: "+cursor);
     }
 
-    public void saveNote(){
-        noteRecyclerAdapter.noteData=tempData;
-        list.add(tempData);
-        noteRecyclerAdapter.notifyItemChanged(pos);
-        totalNoteDuration+= NoteBitmapMaker.beats[tempData.duration];
-        pos++;
-        if(totalNoteDuration >=beat){
-            totalNoteDuration =0;
-            tempData = new NoteData();
-            saveNode();
-        }
+    public void saveNode(int pos){
         tempData = new NoteData();
-    }
-
-    public void saveNode(){
         tempData.node=true;
-        noteRecyclerAdapter.noteData=tempData;
-        list.add(tempData);
+        list.add(pos, tempData);
         tempData = new NoteData();
-        Log.d("saveNote pos", ""+pos);
-        pos++;
+        noteRecyclerAdapter.notifyItemInserted(pos);
+        Log.d("cursor", "saveNode: "+cursor);
     }
 
     //임시 저장한 노트를 초기화 한다.
@@ -113,28 +145,5 @@ public class NoteStore {
         }
         if(tempData.node || tempData.rest) return true;
         return false;
-    }
-
-    // 리스트 아이템 하나를 삭제한다
-    public void delNote(int pos){
-        try {
-            list.remove(pos);
-        }catch (NullPointerException e){
-            return;
-        }
-    }
-    // 리스트 최 후입 아이템을 삭제한다
-    public void delNote(){
-        try {
-            list.remove(list.size()-1);
-        }catch (NullPointerException e){
-            return;
-        }
-    }
-
-    private void init(){
-        tempData.setAddBtn(true);
-        list.add(tempData);
-        noteRecyclerAdapter.notifyItemChanged(pos);
     }
 }
