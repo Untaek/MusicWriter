@@ -450,6 +450,11 @@ public class SharedMusicViewActivity extends AppCompatActivity {
             if(!noteStore.getTempData().node)
                 noteStore.saveNote(i);
         }
+
+        if(noteList.get(noteList.size()-1).node){
+            noteList.remove(noteList.size()-1);
+        }
+
         for(int j=0; j<noteList.size()/4; j++){
             sheetAppender = new SheetAppender(getApplicationContext());
             sheetBaseLinear.addView(sheetAppender);
