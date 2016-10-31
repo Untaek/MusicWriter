@@ -27,6 +27,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -237,6 +239,7 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
         RecyclerView favoriteRecyclerView;
         SharedSheetRecyclerAdapter favSharedSheetRecyclerAdapter;
         LinearLayoutManager favoriteLinearLayoutManager;
+        Animation animation_riseUp;
 
         @Override
         public View onCreateView(final LayoutInflater inflater, ViewGroup container,
@@ -252,6 +255,34 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                     spinnerSelectBeats = (Spinner) rootView.findViewById(R.id.spinner_select_beats);
                     seekBar_tempo = (SeekBar) rootView.findViewById(R.id.seekBar_tempo);
                     textView_tempo = (TextView) rootView.findViewById(R.id.textView_tempo);
+
+                    Button button_goTempo = (Button) rootView.findViewById(R.id.go_tempo);
+                    Button button_startEarly = (Button) rootView.findViewById(R.id.btn_select_bakja_early);
+                    Button button_goBackBakja = (Button) rootView.findViewById(R.id.button_back_to_bakja);
+                    final LinearLayout layout_tempo = (LinearLayout) rootView.findViewById(R.id.tempo_container);
+                    final LinearLayout layout_bakja = (LinearLayout) rootView.findViewById(R.id.bakja_container);
+                    animation_riseUp = AnimationUtils.loadAnimation(rootView.getContext(), R.anim.rise_up);
+
+
+                    button_goTempo.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            layout_tempo.setVisibility(View.VISIBLE);
+                            layout_bakja.setVisibility(View.GONE);
+                            layout_tempo.animate().alphaBy(0).alpha(1).setDuration(500).start();
+
+                        }
+                    });
+                    button_goBackBakja.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            layout_tempo.setVisibility(View.GONE);
+                            layout_bakja.setVisibility(View.VISIBLE);
+                            layout_bakja.animate().alphaBy(0).alpha(1).setDuration(300).start();
+                        }
+                    });
+
+
 
                     ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(inflater.getContext(),
                             R.array.beats_array, android.R.layout.simple_spinner_item);

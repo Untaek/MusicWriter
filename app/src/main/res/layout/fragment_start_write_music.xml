@@ -4,63 +4,151 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_padding_bottom"
+    android:paddingLeft="@dimen/activity_padding_left"
+    android:paddingRight="@dimen/activity_padding_right"
+    android:paddingTop="@dimen/activity_padding_top"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.limwoon.musicwriter.MainNavActivity"
-
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="박자"
-        android:textSize="30sp"
-        android:id="@+id/textView_select_bakja"
-        android:layout_gravity="center"/>
-
-    <Spinner
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/spinner_select_beats"
-        android:layout_gravity="center_horizontal"
-        android:spinnerMode="dialog"
-        android:padding="30dp"
-        />
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/bakja_container">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="박자"
+                android:textSize="24sp"
+                android:id="@+id/textView_select_bakja"
+                android:textStyle="bold" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:text="템포"
-        android:gravity="center"
-        android:textColor="#000"/>
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/spinner_select_beats"
+                android:layout_gravity="center_horizontal"
+                android:spinnerMode="dialog"
+                android:padding="30dp"
+                android:visibility="gone"
+                />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_marginTop="12dp">
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:text="2/4 박자"
+                    android:gravity="left|center"
+                    android:id="@+id/button_choose_beat_2"
+                    android:layout_marginBottom="4dp"/>
 
-    <SeekBar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="150"
-        android:progress="75"
-        android:id="@+id/seekBar_tempo" />
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:text="3/4 박자"
+                    android:gravity="left|center"
+                    android:id="@+id/button_choose_beat_3"
+                    android:layout_marginBottom="4dp"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="125"
-        android:textSize="24sp"
-        android:id="@+id/textView_tempo"/>
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="46dp"
+                    android:text="4/4 박자"
+                    android:gravity="left|center"
+                    android:id="@+id/button_choose_beat_4"
+                    android:layout_marginBottom="12dp"/>
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/myButtonStyle_primary"
+                    android:text="템포 조절하기"
+                    android:id="@+id/go_tempo"
+                    android:layout_marginTop="60dp"
+                    />
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="바로 작곡 시작"
+                    android:id="@+id/btn_select_bakja_early"
+                    android:layout_gravity="center"
+                    android:theme="@style/myButtonStyle_primary"
+                    />
+            </LinearLayout>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="작곡 시작"
-        android:textSize="30sp"
-        android:id="@+id/btn_select_bakja"
-        android:layout_gravity="center"
-        android:layout_marginTop="30dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/tempo_container"
+            android:visibility="gone">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="뒤로 돌아가기"
+                android:theme="@style/myButtonStyle_primary"
+                android:id="@+id/button_back_to_bakja"
+                />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="24sp"
+                    android:text="템포"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:text="삼각형을 움직여보세요"
+                    android:layout_marginLeft="16dp"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="125"
+                android:textSize="24sp"
+                android:id="@+id/textView_tempo"
+                android:layout_marginTop="16dp"/>
+
+            <SeekBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="150"
+                android:progress="75"
+                android:id="@+id/seekBar_tempo"
+                android:layout_marginTop="12dp"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="작곡 시작"
+                android:textSize="18sp"
+                android:id="@+id/btn_select_bakja"
+                android:layout_gravity="center"
+                android:layout_marginTop="30dp"
+                android:paddingLeft="14dp"
+                android:paddingRight="14dp"
+                android:theme="@style/myButtonStyle_primary"
+                />
+        </LinearLayout>
+    </FrameLayout>
+
+
 
 </LinearLayout>

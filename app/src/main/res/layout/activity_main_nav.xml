@@ -21,9 +21,7 @@
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimary"
                 android:id="@+id/toolbar"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:title="작곡 앱" />
             <android.support.design.widget.TabLayout
                 android:id="@+id/tabs"
