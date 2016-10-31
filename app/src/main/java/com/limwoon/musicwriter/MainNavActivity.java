@@ -6,14 +6,17 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -26,6 +29,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -51,6 +55,8 @@ import com.limwoon.musicwriter.list.SharedSheetRecyclerAdapter;
 import com.limwoon.musicwriter.list.SheetRecyListAdapter;
 import com.limwoon.musicwriter.list.SheetRecyListItemClickListener;
 import com.limwoon.musicwriter.user.UserCheck;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -221,6 +227,8 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
         View rootView;
         SeekBar seekBar_tempo;
         TextView textView_tempo;
+        LinearLayout layout_tempo;
+        LinearLayout layout_bakja;
 
         //악보리스트
         RecyclerView recyclerViewMySheet;
@@ -239,7 +247,7 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
         RecyclerView favoriteRecyclerView;
         SharedSheetRecyclerAdapter favSharedSheetRecyclerAdapter;
         LinearLayoutManager favoriteLinearLayoutManager;
-        Animation animation_riseUp;
+
 
         @Override
         public View onCreateView(final LayoutInflater inflater, ViewGroup container,
@@ -257,19 +265,25 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                     textView_tempo = (TextView) rootView.findViewById(R.id.textView_tempo);
 
                     Button button_goTempo = (Button) rootView.findViewById(R.id.go_tempo);
-                    Button button_startEarly = (Button) rootView.findViewById(R.id.btn_select_bakja_early);
+                    final Button button_startEarly = (Button) rootView.findViewById(R.id.btn_select_bakja_early);
                     Button button_goBackBakja = (Button) rootView.findViewById(R.id.button_back_to_bakja);
-                    final LinearLayout layout_tempo = (LinearLayout) rootView.findViewById(R.id.tempo_container);
-                    final LinearLayout layout_bakja = (LinearLayout) rootView.findViewById(R.id.bakja_container);
-                    animation_riseUp = AnimationUtils.loadAnimation(rootView.getContext(), R.anim.rise_up);
+                    final TextView textView_selectedBakja = (TextView) rootView.findViewById(R.id.textView_selected_bakja);
+                    final Button button_chooseBeat2 = (Button) rootView.findViewById(R.id.button_choose_beat_2);
+                    final Button button_chooseBeat3 = (Button) rootView.findViewById(R.id.button_choose_beat_3);
+                    final Button button_chooseBeat4 = (Button) rootView.findViewById(R.id.button_choose_beat_4);
+                    layout_tempo = (LinearLayout) rootView.findViewById(R.id.tempo_container);
+                    layout_bakja = (LinearLayout) rootView.findViewById(R.id.bakja_container);
+                    final Animation animation_riseUp = AnimationUtils.loadAnimation(rootView.getContext(), R.anim.rise_up);
 
+                    FloatingActionButton fabRight = (FloatingActionButton) rootView.findViewById(R.id.fab_right);
+                    FloatingActionButton fabLeft = (FloatingActionButton) rootView.findViewById(R.id.fab_left);
 
                     button_goTempo.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             layout_tempo.setVisibility(View.VISIBLE);
                             layout_bakja.setVisibility(View.GONE);
-                            layout_tempo.animate().alphaBy(0).alpha(1).setDuration(500).start();
+                            layout_tempo.startAnimation(animation_riseUp);
 
                         }
                     });
@@ -278,10 +292,60 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                         public void onClick(View view) {
                             layout_tempo.setVisibility(View.GONE);
                             layout_bakja.setVisibility(View.VISIBLE);
-                            layout_bakja.animate().alphaBy(0).alpha(1).setDuration(300).start();
+                            layout_bakja.startAnimation(animation_riseUp);
                         }
                     });
 
+                    button_chooseBeat2.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            textView_selectedBakja.setText("2/4 박자");
+                            button_startEarly.setEnabled(true);
+                            button_startEarly.setAlpha(1);
+                            button_chooseBeat3.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
+                            button_chooseBeat4.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
+                            v.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                        }
+                    });
+                    button_chooseBeat3.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            textView_selectedBakja.setText("3/4 박자");
+                            button_startEarly.setEnabled(true);
+                            button_startEarly.setAlpha(1);
+                            button_chooseBeat2.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
+                            button_chooseBeat4.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
+                            v.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                        }
+                    });
+                    button_chooseBeat4.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            textView_selectedBakja.setText("4/4 박자");
+                            button_startEarly.setEnabled(true);
+                            button_startEarly.setAlpha(1);
+                            button_chooseBeat2.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
+                            button_chooseBeat3.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
+                            v.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                        }
+                    });
+
+                    fabRight.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            layout_tempo.setVisibility(View.VISIBLE);
+                            layout_bakja.setVisibility(View.GONE);
+                            layout_tempo.startAnimation(animation_riseUp);
+                        }
+                    });
+                    fabLeft.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            layout_tempo.setVisibility(View.GONE);
+                            layout_bakja.setVisibility(View.VISIBLE);
+                            layout_bakja.startAnimation(animation_riseUp);
+                        }
+                    });
 
 
                     ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(inflater.getContext(),

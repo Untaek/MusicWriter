@@ -117,11 +117,17 @@ public class MusicViewActivity extends AppCompatActivity {
             sheetBaseLinear.addView(sheetAppender);
         }
 
-        sheetBaseLinear.removeViewAt(sheetBaseLinear.getChildCount()-1);
-        int sheetWidth = sheetBaseLinear.getChildCount()*600;
-        int noteWidth = linearLayoutManager.getItemCount()*150;
-        sheetAppender = new SheetAppender(getApplicationContext(), true, noteWidth-sheetWidth+100);
-        sheetBaseLinear.addView(sheetAppender);
+        if(sheetBaseLinear.getChildCount()!=1){
+            sheetBaseLinear.removeViewAt(sheetBaseLinear.getChildCount()-1);
+            int sheetWidth = sheetBaseLinear.getChildCount()*600;
+            int noteWidth = linearLayoutManager.getItemCount()*150;
+            sheetAppender = new SheetAppender(getApplicationContext(), true, noteWidth-sheetWidth+100);
+            sheetBaseLinear.addView(sheetAppender);
+        }else{
+            sheetAppender = new SheetAppender(getApplicationContext(), true, 100);
+            sheetBaseLinear.addView(sheetAppender);
+        }
+
 
         horizontalScrollView = (HorizontalScrollView) findViewById(R.id.horizontalScrollView);
         TextView textViewTitle = (TextView) findViewById(R.id.textViewTitle);
