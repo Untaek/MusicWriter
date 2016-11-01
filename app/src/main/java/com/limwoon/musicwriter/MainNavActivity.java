@@ -277,6 +277,8 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
 
                     FloatingActionButton fabRight = (FloatingActionButton) rootView.findViewById(R.id.fab_right);
                     FloatingActionButton fabLeft = (FloatingActionButton) rootView.findViewById(R.id.fab_left);
+                    final LinearLayout fabLeft_wrap = (LinearLayout) rootView.findViewById(R.id.fab_left_wrapper);
+                    LinearLayout fabRight_wrap = (LinearLayout) rootView.findViewById(R.id.fab_right_wrapper);
 
                     button_goTempo.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -333,9 +335,15 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                     fabRight.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            if(layout_tempo.getVisibility() == View.VISIBLE){
+                                startActivity(new Intent(getContext(), MusicWriteActivity.class));
+                            }
                             layout_tempo.setVisibility(View.VISIBLE);
                             layout_bakja.setVisibility(View.GONE);
                             layout_tempo.startAnimation(animation_riseUp);
+                            if(layout_bakja.getVisibility() == View.GONE){
+                                fabLeft_wrap.setVisibility(View.VISIBLE);
+                            }
                         }
                     });
                     fabLeft.setOnClickListener(new View.OnClickListener() {
@@ -344,6 +352,7 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                             layout_tempo.setVisibility(View.GONE);
                             layout_bakja.setVisibility(View.VISIBLE);
                             layout_bakja.startAnimation(animation_riseUp);
+                            fabLeft_wrap.setVisibility(View.GONE);
                         }
                     });
 

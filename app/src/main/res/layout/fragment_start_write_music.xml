@@ -102,8 +102,6 @@
                         />
                 </LinearLayout>
 
-
-
             </LinearLayout>
 
         </LinearLayout>
@@ -202,7 +200,8 @@
         app:layout_anchor="@id/frame_root"
         app:layout_anchorGravity="bottom|right"
         android:orientation="vertical"
-        android:layout_margin="36dp">
+        android:padding="36dp"
+        android:id="@+id/fab_right_wrapper">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -225,7 +224,9 @@
         app:layout_anchor="@id/frame_root"
         app:layout_anchorGravity="bottom|left"
         android:orientation="vertical"
-        android:layout_margin="36dp">
+        android:padding="36dp"
+        android:id="@+id/fab_left_wrapper"
+        android:visibility="gone">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -238,7 +239,6 @@
             android:src="@drawable/ic_go_back_white"
             android:layout_gravity="bottom|start"
             />
-
     </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>
