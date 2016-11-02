@@ -212,7 +212,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/fab_right"
-            android:src="@drawable/ic_go_back_white"
+            android:src="@drawable/ic_mode_edit_black_24dp"
             android:layout_gravity="bottom|end"
             />
 
@@ -236,7 +236,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/fab_left"
-            android:src="@drawable/ic_go_back_white"
+            android:src="@drawable/ic_arrow_back_black_24dp"
             android:layout_gravity="bottom|start"
             />
     </LinearLayout>

@@ -77,6 +77,7 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
     Button buttonLogin;
     ImageView userImage;
     Bitmap userPicBitmap;
+    Button button_logout;
 
     // 유저 이미지 처리 //
     UserPicture userPicture;
@@ -112,6 +113,7 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
         textViewUserEmail = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.nav_header_userEmail);
         buttonLogin = (Button) mNavigationView.getHeaderView(0).findViewById(R.id.nav_header_loginBtn);
         userImage = (ImageView) mNavigationView.getHeaderView(0).findViewById(R.id.imageView_user_picture);
+        button_logout = (Button) findViewById(R.id.button_menu_logout);
 
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,6 +121,27 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
                 mDrawerLayout.closeDrawer(GravityCompat.START);
+            }
+        });
+
+        button_logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainNavActivity.this)
+                        .setTitle("로그아웃 확인")
+                        .setMessage("정말 로그아웃 하시겠습니까?")
+                        .setPositiveButton("로그아웃", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                new UserCheck(MainNavActivity.this).logout();
+                                mDrawerLayout.closeDrawer(GravityCompat.START);
+                                myFragmentPagerAdapter.notifyDataSetChanged();
+                                onResume();
+                            }
+                        })
+                        .setNegativeButton("아니오", null);
+                AlertDialog dialog = dialogBuilder.create();
+                dialog.show();
             }
         });
 
@@ -146,12 +169,14 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                     userImage.setImageBitmap(userPicBitmap);
                 }
             });
+            button_logout.setVisibility(View.VISIBLE);
         }
         else {
             linearUserInfContainer.setVisibility(View.INVISIBLE);
             buttonLogin.setVisibility(View.VISIBLE);
             mNavigationView.getMenu().setGroupVisible(R.id.nav_group_user, false);
             userImage.setImageResource(R.drawable.ic_account_circle_white_48dp);
+            button_logout.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -165,25 +190,6 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
         switch (id){
             case R.id.nav_menu_shared_sheet:
                 startActivity(new Intent(this, SharedSheetActivity.class));
-                break;
-            case R.id.nav_menu_logout:
-                Log.d("z", "onNavigationItemSelected: "+item);
-
-                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this)
-                        .setTitle("로그아웃 확인")
-                        .setMessage("정말 로그아웃 하시겠습니까?")
-                        .setPositiveButton("로그아웃", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                new UserCheck(MainNavActivity.this).logout();
-                                mDrawerLayout.closeDrawer(GravityCompat.START);
-                                myFragmentPagerAdapter.notifyDataSetChanged();
-                                onResume();
-                            }
-                        })
-                        .setNegativeButton("아니오", null);
-                AlertDialog dialog = dialogBuilder.create();
-                dialog.show();
                 break;
             case R.id.nav_menu_user_information:
                 startActivity(new Intent(this, UserInfActivity.class));

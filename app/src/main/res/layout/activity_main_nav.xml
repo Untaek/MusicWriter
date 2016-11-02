@@ -35,20 +35,36 @@
             android:layout_height="match_parent"
             android:id="@+id/container"
             >
-
         </android.support.v4.view.ViewPager>
     </LinearLayout>
 
     <android.support.design.widget.NavigationView
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="wrap_content"
+        android:layout_width="240dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:id="@+id/navigationview_main"
-        app:itemTextColor="@color/black"
+        app:itemTextColor="@color/colorPrimaryLight"
         android:fitsSystemWindows="true"
         app:menu="@menu/activity_main_nav_drawer"
         app:headerLayout="@layout/nav_header"
-        />
+        app:itemBackground="@color/colorPrimary"
+        android:background="@color/colorPrimary"
+        >
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="로그아웃"
+            android:layout_gravity="bottom"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:padding="16dp"
+            android:drawableLeft="@drawable/ic_power_settings_new_black_24dp"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:id="@+id/button_menu_logout"
+            android:gravity="left"
+            android:drawablePadding="30dp"
+            />
+    </android.support.design.widget.NavigationView>
 </android.support.v4.widget.DrawerLayout>
