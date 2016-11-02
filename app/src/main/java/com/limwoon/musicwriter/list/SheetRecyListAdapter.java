@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -78,7 +79,7 @@ public class SheetRecyListAdapter extends RecyclerView.Adapter<SheetRecyListAdap
 
     @Override
     public void onBindViewHolder(CustomHolder holder, int position) {
-        holder.titleTextView.setText("곡명 : " + sheetList.get(position).getTitle());
+        holder.titleTextView.setText(sheetList.get(position).getTitle());
         myOnClickListener(holder.btnView, position);
         myOnClickListener(holder.btnModify, position);
         myOnClickListener(holder.btnDelete, position);
@@ -188,17 +189,17 @@ public class SheetRecyListAdapter extends RecyclerView.Adapter<SheetRecyListAdap
 
     public static final class CustomHolder extends RecyclerView.ViewHolder{
         TextView titleTextView;
-        TextView btnView;
-        TextView btnModify;
-        TextView btnDelete;
+        ImageView btnView;
+        ImageView btnModify;
+        ImageView btnDelete;
 
         public CustomHolder(View itemView) {
             super(itemView);
 
             titleTextView = (TextView) itemView.findViewById(R.id.testTextView);
-            btnView= (TextView) itemView.findViewById(R.id.btn_view);
-            btnModify= (TextView) itemView.findViewById(R.id.btn_modify);
-            btnDelete= (TextView) itemView.findViewById(R.id.btn_delete);
+            btnView= (ImageView) itemView.findViewById(R.id.btn_view);
+            btnModify= (ImageView) itemView.findViewById(R.id.btn_modify);
+            btnDelete= (ImageView) itemView.findViewById(R.id.btn_delete);
         }
     }
 }

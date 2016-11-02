@@ -49,8 +49,8 @@
         android:fitsSystemWindows="true"
         app:menu="@menu/activity_main_nav_drawer"
         app:headerLayout="@layout/nav_header"
-        app:itemBackground="@color/colorPrimary"
         android:background="@color/colorPrimary"
+        app:itemIconTint="@color/colorPrimaryLight"
         >
         <Button
             android:layout_width="match_parent"

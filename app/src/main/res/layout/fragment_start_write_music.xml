@@ -11,16 +11,16 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="@dimen/activity_padding_bottom"
-        android:paddingLeft="@dimen/activity_padding_left"
-        android:paddingRight="@dimen/activity_padding_right"
-        android:paddingTop="@dimen/activity_padding_top"
         android:id="@+id/frame_root">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:id="@+id/bakja_container">
+            android:id="@+id/bakja_container"
+            android:paddingBottom="@dimen/activity_padding_bottom"
+            android:paddingLeft="@dimen/activity_padding_left"
+            android:paddingRight="@dimen/activity_padding_right"
+            android:paddingTop="@dimen/activity_padding_top">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -76,32 +76,6 @@
                     android:id="@+id/button_choose_beat_4"
                     android:layout_marginBottom="12dp"
                     android:theme="@style/myButtonStyle"/>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-                    <Button
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:theme="@style/myButtonStyle_primary"
-                        android:text="템포 조절하기"
-                        android:id="@+id/go_tempo"
-                        android:layout_marginTop="60dp"
-
-                        />
-                    <Button
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="바로 작곡 시작"
-                        android:id="@+id/btn_select_bakja_early"
-                        android:layout_gravity="center"
-                        android:theme="@style/myButtonStyle_primary"
-                        android:enabled="false"
-                        android:alpha="0.4"
-                        />
-                </LinearLayout>
-
             </LinearLayout>
 
         </LinearLayout>
@@ -110,26 +84,45 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:id="@+id/tempo_container"
+            android:paddingBottom="@dimen/activity_padding_bottom"
+            android:paddingLeft="@dimen/activity_padding_left"
+            android:paddingRight="@dimen/activity_padding_right"
+            android:paddingTop="@dimen/activity_padding_top"
             android:visibility="gone">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:gravity="end">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:text="박자 "
+                    android:textStyle="bold"
+                    android:layout_gravity="end"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:text="2/4"
+                    android:layout_marginLeft="16dp"
+                    android:id="@+id/textView_selected_bakja"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="24sp"
                 android:text="템포"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:layout_marginTop="12dp"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="125"
-                android:textSize="24sp"
-                android:id="@+id/textView_tempo"
-                android:layout_marginLeft="16dp"/>
+
             </LinearLayout>
             <Button
                 android:layout_width="wrap_content"
@@ -140,25 +133,16 @@
                 android:layout_gravity="end"
                 android:visibility="gone"
                 />
-            <LinearLayout
-                android:layout_width="match_parent"
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="16dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="24sp"
-                    android:text="설정된 박자 : "
-                    android:textStyle="bold"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:text="123123123"
-                    android:layout_marginLeft="16dp"
-                    android:id="@+id/textView_selected_bakja"/>
-            </LinearLayout>
+                android:layout_gravity="center"
+                android:text="125"
+                android:textSize="20sp"
+                android:id="@+id/textView_tempo"
+                android:layout_marginTop="24dp"
+                />
 
             <SeekBar
                 android:layout_width="match_parent"
@@ -166,17 +150,27 @@
                 android:max="150"
                 android:progress="75"
                 android:id="@+id/seekBar_tempo"
-                android:layout_marginTop="24dp"/>
-
-
+                android:layout_marginTop="16dp"
+                android:padding="8dp"
+                />
+            <SeekBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="150"
+                android:progress="75"
+                android:id="@+id/seekBar_tempo_sub"
+                android:layout_marginTop="24dp"
+                android:thumb="@drawable/ic_navigation_black_24dp"
+                android:padding="8dp"
+                />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:text="삼각형을 움직여보세요"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"/>
+                android:text="화살표를 움직여보세요"
+                android:layout_marginTop="24dp"
+                android:layout_gravity="center"/>
 
             <Button
                 android:layout_width="wrap_content"
@@ -205,15 +199,17 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="템포 설정하기"
-            android:id="@+id/taaaa"
+            android:text="템포 설정"
+            android:id="@+id/textView_fab_above"
+            android:layout_gravity="center"
             />
         <android.support.design.widget.FloatingActionButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/fab_right"
-            android:src="@drawable/ic_mode_edit_black_24dp"
+            android:src="@drawable/ic_arrow_forward_black_24dp"
             android:layout_gravity="bottom|end"
+            android:layout_margin="10dp"
             />
 
     </LinearLayout>
@@ -230,7 +226,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="박자 다시 정하기"
+            android:text="박자 재설정"
             />
         <android.support.design.widget.FloatingActionButton
             android:layout_width="wrap_content"
@@ -238,6 +234,7 @@
             android:id="@+id/fab_left"
             android:src="@drawable/ic_arrow_back_black_24dp"
             android:layout_gravity="bottom|start"
+            android:layout_margin="10dp"
             />
     </LinearLayout>
 

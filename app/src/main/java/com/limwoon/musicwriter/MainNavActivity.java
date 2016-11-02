@@ -17,6 +17,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -52,6 +53,7 @@ import com.limwoon.musicwriter.http.LoadFavoriteListAsync;
 import com.limwoon.musicwriter.image.UserPicture;
 import com.limwoon.musicwriter.list.FavoriteSheetRecyclerAdapter;
 import com.limwoon.musicwriter.list.SharedSheetRecyclerAdapter;
+import com.limwoon.musicwriter.list.SheetRecyDivider;
 import com.limwoon.musicwriter.list.SheetRecyListAdapter;
 import com.limwoon.musicwriter.list.SheetRecyListItemClickListener;
 import com.limwoon.musicwriter.user.UserCheck;
@@ -230,6 +232,7 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
         Button btnStart;
         Spinner spinnerSelectBeats;
         int beatIndex;
+        int tempo;
         View rootView;
         SeekBar seekBar_tempo;
         TextView textView_tempo;
@@ -239,7 +242,6 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
         //악보리스트
         RecyclerView recyclerViewMySheet;
         SheetRecyListAdapter sheetRecyListAdapter;
-        SheetRecyListItemClickListener sheetRecyListItemClickListener;
         LinearLayoutManager linearLayoutManager;
         ArrayList<SheetData> sheetList;
 
@@ -269,9 +271,11 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                     spinnerSelectBeats = (Spinner) rootView.findViewById(R.id.spinner_select_beats);
                     seekBar_tempo = (SeekBar) rootView.findViewById(R.id.seekBar_tempo);
                     textView_tempo = (TextView) rootView.findViewById(R.id.textView_tempo);
+                    tempo=125;
+                    seekBar_tempo.setProgress(tempo-50);
+                    final SeekBar seekBar_tempoSub = (SeekBar) rootView.findViewById(R.id.seekBar_tempo_sub);
+                    seekBar_tempoSub.setProgressDrawable(getResources().getDrawable(R.drawable.button_toggle));
 
-                    Button button_goTempo = (Button) rootView.findViewById(R.id.go_tempo);
-                    final Button button_startEarly = (Button) rootView.findViewById(R.id.btn_select_bakja_early);
                     Button button_goBackBakja = (Button) rootView.findViewById(R.id.button_back_to_bakja);
                     final TextView textView_selectedBakja = (TextView) rootView.findViewById(R.id.textView_selected_bakja);
                     final Button button_chooseBeat2 = (Button) rootView.findViewById(R.id.button_choose_beat_2);
@@ -281,20 +285,12 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                     layout_bakja = (LinearLayout) rootView.findViewById(R.id.bakja_container);
                     final Animation animation_riseUp = AnimationUtils.loadAnimation(rootView.getContext(), R.anim.rise_up);
 
-                    FloatingActionButton fabRight = (FloatingActionButton) rootView.findViewById(R.id.fab_right);
+                    final FloatingActionButton fabRight = (FloatingActionButton) rootView.findViewById(R.id.fab_right);
                     FloatingActionButton fabLeft = (FloatingActionButton) rootView.findViewById(R.id.fab_left);
                     final LinearLayout fabLeft_wrap = (LinearLayout) rootView.findViewById(R.id.fab_left_wrapper);
-                    LinearLayout fabRight_wrap = (LinearLayout) rootView.findViewById(R.id.fab_right_wrapper);
+                    final LinearLayout fabRight_wrap = (LinearLayout) rootView.findViewById(R.id.fab_right_wrapper);
+                    final TextView textView_fabRightAbove = (TextView) rootView.findViewById(R.id.textView_fab_above);
 
-                    button_goTempo.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            layout_tempo.setVisibility(View.VISIBLE);
-                            layout_bakja.setVisibility(View.GONE);
-                            layout_tempo.startAnimation(animation_riseUp);
-
-                        }
-                    });
                     button_goBackBakja.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -308,8 +304,7 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                         @Override
                         public void onClick(View v) {
                             textView_selectedBakja.setText("2/4 박자");
-                            button_startEarly.setEnabled(true);
-                            button_startEarly.setAlpha(1);
+                            beatIndex=0;
                             button_chooseBeat3.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
                             button_chooseBeat4.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
                             v.setBackgroundColor(getResources().getColor(R.color.colorAccent));
@@ -319,8 +314,7 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                         @Override
                         public void onClick(View v) {
                             textView_selectedBakja.setText("3/4 박자");
-                            button_startEarly.setEnabled(true);
-                            button_startEarly.setAlpha(1);
+                            beatIndex=1;
                             button_chooseBeat2.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
                             button_chooseBeat4.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
                             v.setBackgroundColor(getResources().getColor(R.color.colorAccent));
@@ -330,8 +324,7 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                         @Override
                         public void onClick(View v) {
                             textView_selectedBakja.setText("4/4 박자");
-                            button_startEarly.setEnabled(true);
-                            button_startEarly.setAlpha(1);
+                            beatIndex=2;
                             button_chooseBeat2.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
                             button_chooseBeat3.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
                             v.setBackgroundColor(getResources().getColor(R.color.colorAccent));
@@ -342,14 +335,18 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                         @Override
                         public void onClick(View v) {
                             if(layout_tempo.getVisibility() == View.VISIBLE){
-                                startActivity(new Intent(getContext(), MusicWriteActivity.class));
+                                Intent intent = new Intent(getContext(), MusicWriteActivity.class);
+                                intent.putExtra("beatIndex", beatIndex);
+                                intent.putExtra("tempo", tempo);
+                                startActivity(intent);
+                            }else{
+                                fabLeft_wrap.setVisibility(View.VISIBLE);
+                                fabRight.setImageResource(R.drawable.ic_mode_edit_black_24dp);
+                                textView_fabRightAbove.setText("작곡 시작");
+                                layout_tempo.startAnimation(animation_riseUp);
                             }
                             layout_tempo.setVisibility(View.VISIBLE);
                             layout_bakja.setVisibility(View.GONE);
-                            layout_tempo.startAnimation(animation_riseUp);
-                            if(layout_bakja.getVisibility() == View.GONE){
-                                fabLeft_wrap.setVisibility(View.VISIBLE);
-                            }
                         }
                     });
                     fabLeft.setOnClickListener(new View.OnClickListener() {
@@ -359,6 +356,8 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                             layout_bakja.setVisibility(View.VISIBLE);
                             layout_bakja.startAnimation(animation_riseUp);
                             fabLeft_wrap.setVisibility(View.GONE);
+                            fabRight.setImageResource(R.drawable.ic_arrow_forward_black_24dp);
+                            textView_fabRightAbove.setText("템포 설정");
                         }
                     });
 
@@ -381,18 +380,36 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                     seekBar_tempo.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                         @Override
                         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                            seekBar_tempoSub.setProgress(progress);
+                            tempo=progress+50;
+                            textView_tempo.setText(String.valueOf(tempo));
+
+                            int barWidth = seekBar.getMeasuredWidth();
+                            int numX_pos = (barWidth/seekBar.getMax())*seekBar.getProgress();
+                            numX_pos += 140;
+                            if(tempo<100){
+                                textView_tempo.setX(numX_pos+12);
+                            }else{
+                                textView_tempo.setX(numX_pos-28);
+                            }
+
+                        }
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {}
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {}
+                    });
+                    seekBar_tempoSub.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                            seekBar_tempo.setProgress(progress);
                             textView_tempo.setText(progress+50+"");
+                            tempo=progress+50;
                         }
-
                         @Override
-                        public void onStartTrackingTouch(SeekBar seekBar) {
-
-                        }
-
+                        public void onStartTrackingTouch(SeekBar seekBar) {}
                         @Override
-                        public void onStopTrackingTouch(SeekBar seekBar) {
-
-                        }
+                        public void onStopTrackingTouch(SeekBar seekBar) {}
                     });
 
                     btnStart.setOnClickListener(new View.OnClickListener() {
@@ -410,11 +427,14 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                     rootView = inflater.inflate(R.layout.fragment_sheet_list_local, container, false);
 
                     recyclerViewMySheet = (RecyclerView) rootView.findViewById(R.id.recycler_my_sheet);
+                    recyclerViewMySheet.addItemDecoration(new SheetRecyDivider());
                     sheetList = new ArrayList<>();
                     sheetRecyListAdapter = new SheetRecyListAdapter(sheetList, rootView.getContext());
                     linearLayoutManager = new LinearLayoutManager(rootView.getContext(), LinearLayoutManager.VERTICAL, true);
                     recyclerViewMySheet.setLayoutManager(linearLayoutManager);
                     recyclerViewMySheet.setAdapter(sheetRecyListAdapter);
+
+
                     break;
 
                 case 3:
@@ -493,7 +513,6 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                     sheetData.setTitle(cursor.getString(cursor.getColumnIndexOrThrow(DefineSQL.COLUMN_NAME_TITLE)));
                     sheetData.setTempo(cursor.getInt(cursor.getColumnIndexOrThrow(DefineSQL.COLUMN_NAME_TEMPO)));
                     sheetList.add(sheetData);
-                    Log.d("sheetList",""+ sheetData.getId());
                     cursor.moveToNext();
                 }
                 sheetRecyListAdapter.notifyDataSetChanged();

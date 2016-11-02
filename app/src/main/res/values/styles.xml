@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@color/colorPrimary</item>
         <item name="android:buttonStyle">@style/myButtonStyle</item>
     </style>
 
@@ -13,8 +14,8 @@
         <item name="colorControlHighlight">#a7d</item>
         <item name="colorButtonNormal">@color/colorPrimaryLight</item>
         <item name="android:textColor">@color/black</item>
-
     </style>
+
     <style name="myButtonStyle_primary" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorControlHighlight">@color/colorPrimaryLight</item>
         <item name="colorButtonNormal">@color/colorAccent</item>

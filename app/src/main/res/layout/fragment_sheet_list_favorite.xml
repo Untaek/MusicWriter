@@ -11,14 +11,22 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="로그인 해주세요"
+                android:text="앱이름"
                 android:textSize="24sp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="로그인이 필요한 서비스입니다"
+                android:textSize="14sp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="32dp"/>
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="로그인하기"
                 android:id="@+id/favorite_login"
-                android:textSize="24sp"/>
+                android:textSize="24sp"
+                android:theme="@style/myButtonStyle"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"

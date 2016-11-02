@@ -13,14 +13,16 @@
             android:drawableLeft="@drawable/ic_menu_gallery"
             android:text="갤러리에서 선택"
             android:id="@+id/choice_from_gallery"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:theme="@style/myButtonStyle"/>
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/ic_menu_camera"
             android:text="카메라로 찍기"
             android:id="@+id/choice_from_camera"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:theme="@style/myButtonStyle"/>
     </LinearLayout>
 
     <Button
@@ -29,12 +31,14 @@
         android:drawableLeft="@drawable/com_facebook_button_icon_blue"
         android:text="내 페이스북 사진 가져오기"
         android:id="@+id/choice_from_facebook"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:theme="@style/myButtonStyle"/>
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/choice_clear_picture"
         android:drawableLeft="@drawable/ic_menu_manage"
-        android:text="이미지 해제하기"/>
+        android:text="이미지 해제하기"
+        android:theme="@style/myButtonStyle"/>
 
 </LinearLayout>
