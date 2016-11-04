@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:contentScrim="@color/colorPrimary"
+            app:contentScrim="@color/colorPrimarySharedSheet"
             android:background="#FFF"
             >
             <HorizontalScrollView
@@ -31,7 +31,7 @@
                 android:background="#FFF"
                 android:layout_marginTop="50dp"
                 >
-                <RelativeLayout
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/sheetwrapper">
@@ -40,16 +40,17 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:id="@+id/viewSheetRecycler"
+                        android:paddingLeft="100dp"
                         >
 
                     </android.support.v7.widget.RecyclerView>
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:id="@+id/sheetBaseLinear"
                         android:orientation="horizontal">
                     </LinearLayout>
-                </RelativeLayout>
+                </FrameLayout>
             </HorizontalScrollView>
             <android.support.v7.widget.Toolbar
                 android:layout_width="match_parent"

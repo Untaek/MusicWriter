@@ -1,18 +1,27 @@
 package com.limwoon.musicwriter.list;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+import com.limwoon.musicwriter.LoginActivity;
 import com.limwoon.musicwriter.MusicViewActivity;
 import com.limwoon.musicwriter.NativeClass;
 import com.limwoon.musicwriter.R;
@@ -21,6 +30,8 @@ import com.limwoon.musicwriter.data.NoteData;
 import com.limwoon.musicwriter.data.NoteParser;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 import com.limwoon.musicwriter.data.SheetData;
+import com.limwoon.musicwriter.http.DisFavoriteSheetAsync;
+import com.limwoon.musicwriter.http.FavoriteSheetAsync;
 import com.limwoon.musicwriter.sounds.Sounds;
 
 import org.json.JSONArray;
@@ -37,6 +48,7 @@ public class SharedSheetRecyclerAdapter extends RecyclerView.Adapter<SharedSheet
 
     ArrayList<SheetData> list;
     Context context;
+    Fragment fragment;
 
     public ArrayList<SheetData> getList() {
         return list;
@@ -51,20 +63,31 @@ public class SharedSheetRecyclerAdapter extends RecyclerView.Adapter<SharedSheet
         this.context=context;
     }
 
+    public SharedSheetRecyclerAdapter(ArrayList<SheetData> list, Context context, Fragment fragment) {
+        this.list = list;
+        this.context = context;
+        this.fragment = fragment;
+    }
 
     @Override
     public CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from (parent.getContext ()).inflate (R.layout.cardview_shared_sheet_list, parent, false);
-        return new CustomViewHolder(v, list, context);
+        return new CustomViewHolder(v, list, context, fragment);
     }
 
     @Override
     public void onBindViewHolder(CustomViewHolder holder, int position) {
         holder.title.setText(list.get(position).getTitle());
         holder.author.setText(list.get(position).getAuthor());
-        holder.comments.setText("댓글 "+ list.get(position).getComments());
-        holder.likes.setText("추천 " + list.get(position).getLikes());
+        holder.comments.setText(String.valueOf(list.get(position).getComments()));
+        holder.likes.setText(String.valueOf(list.get(position).getLikes()));
         holder.date.setText(list.get(position).getUploadTime());
+        if(list.get(position).isFavorite()){
+            holder.favorite.setImageResource(R.drawable.star_fill);
+        }else{
+            holder.favorite.setImageResource(R.drawable.star_blank);
+
+        }
     }
 
     @Override
@@ -79,25 +102,34 @@ public class SharedSheetRecyclerAdapter extends RecyclerView.Adapter<SharedSheet
         TextView comments;
         TextView likes;
         TextView date;
-        Button play;
-        Button viewSheet;
+        ImageView play;
+        ImageView viewSheet;
+        ImageView favorite;
         ArrayList<SheetData> list;
         Context context;
+        Activity activity;
+        Fragment fragment;
+        boolean isPlay;
+        boolean isFavorite;
 
-        public CustomViewHolder(View itemView, ArrayList<SheetData> list, Context context) {
+        public CustomViewHolder(View itemView, ArrayList<SheetData> list, Context context, Fragment fragment) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.shared_card_title);
             author = (TextView) itemView.findViewById(R.id.shared_card_author);
             comments = (TextView) itemView.findViewById(R.id.textView_card_sharedList_comments);
             likes = (TextView) itemView.findViewById(R.id.textView_card_sharedList_likes);
             date = (TextView) itemView.findViewById(R.id.textView_date);
-            play = (Button) itemView.findViewById(R.id.button_play_in_list);
-            viewSheet = (Button) itemView.findViewById(R.id.button_view_sheet_in_list);
+            play = (ImageView) itemView.findViewById(R.id.button_play_in_list);
+            viewSheet = (ImageView) itemView.findViewById(R.id.button_view_sheet_in_list);
+            favorite = (ImageView) itemView.findViewById(R.id.imageView_favorite_in_list);
 
             this.list = list;
             this.context = context;
+            this.activity = (Activity) context;
+            this.fragment = fragment;
             play.setOnClickListener(this);
             viewSheet.setOnClickListener(this);
+            favorite.setOnClickListener(this);
         }
         ArrayList<NoteData> notes;
 
@@ -105,7 +137,7 @@ public class SharedSheetRecyclerAdapter extends RecyclerView.Adapter<SharedSheet
         public void onClick(View v) {
             final int index = getAdapterPosition();
             String jsonStr = list.get(index).getNote();
-            if(v==play){
+            if(v==play && !isPlay){
                 NoteParser noteParser = new NoteParser(jsonStr);
                 notes = new ArrayList<>();
                 for(int i=0; i<noteParser.getNoteLength(); i++) {
@@ -115,8 +147,15 @@ public class SharedSheetRecyclerAdapter extends RecyclerView.Adapter<SharedSheet
                 Thread playThread = new Thread(new Runnable() {
                     @Override
                     public void run(){
+                        play.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                play.setImageResource(R.drawable.ic_pause_black_24dp);
+                            }
+                        });
+                        isPlay=true;
                         try {
-                            Thread.sleep(500);
+                            Thread.sleep(200);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -133,20 +172,62 @@ public class SharedSheetRecyclerAdapter extends RecyclerView.Adapter<SharedSheet
                                 NativeClass.setStopBufferQueue();
 
                             } catch (InterruptedException e) { // 정지버튼 클릭
+                                play.setImageResource(R.drawable.ic_play_arrow_black_24dp);
+                                isPlay=false;
                                 NativeClass.setStopBufferQueue();
                                 break;
                             }
                         }
+                        play.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                play.setImageResource(R.drawable.ic_play_arrow_black_24dp);
+                            }
+                        });
+                        isPlay=false;
                     }
                 });
                 playThread.start();
 
             }
             else if(v==viewSheet){
-                Intent intent = new Intent(context, SharedMusicViewActivity.class);
+                Intent intent = new Intent(activity, SharedMusicViewActivity.class);
                 intent.putExtra("data", list.get(index));
-                Bundle bundle = new Bundle();
-                context.startActivity(intent);
+                intent.putExtra("pos", index);
+
+                if(fragment!=null){
+                    fragment.startActivityForResult(intent, 1);
+                }else{
+                    activity.startActivityForResult(intent, 1);
+                }
+            }
+            else if(v==favorite){
+                if(PUBLIC_APP_DATA.isLogin()){
+                    isFavorite=list.get(index).isFavorite();
+                    if(!isFavorite){
+                        favorite.setImageResource(R.drawable.star_fill);
+                        list.get(index).setIsFavorite(!isFavorite);
+                        new FavoriteSheetAsync().execute(list.get(index).getId());
+                    }
+                    else{
+                        favorite.setImageResource(R.drawable.star_blank);
+                        list.get(index).setIsFavorite(!isFavorite);
+                        new DisFavoriteSheetAsync().execute(list.get(index).getId());
+                    }
+                }
+                else{
+                    AlertDialog dialog = new AlertDialog.Builder(context)
+                            .setMessage("로그인이 필요합니다")
+                            .setPositiveButton("로그인", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Intent intent = new Intent(context, LoginActivity.class);
+                                    context.startActivity(intent);
+                                }
+                            })
+                            .setNegativeButton("취소", null).create();
+                    dialog.show();
+                }
             }
         }
     }

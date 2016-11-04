@@ -14,13 +14,27 @@
         android:layout_height="wrap_content"
         android:id="@+id/toolbar"
         android:background="?colorPrimary"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        app:titleMarginStart="90dp"
+        />
+
+    <Switch
+        android:text="푸시 알림"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/switch_push"
+        android:textSize="14sp"
+        android:padding="8dp"
+        android:layout_gravity="end"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
         />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp">
+        android:padding="40dp">
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
@@ -29,12 +43,19 @@
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/ic_account_circle_white_48dp"
                 android:id="@+id/imageView_user_picture_inf"
-                android:minHeight="160dp"
-                android:minWidth="160dp"
-                android:maxHeight="160dp"
-                android:maxWidth="160dp"
+                android:minHeight="100dp"
+                android:minWidth="100dp"
+                android:maxHeight="100dp"
+                android:maxWidth="100dp"
                 android:background="#BBDEFB"
                 />
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_menu_camera"
+                android:labelFor="@id/imageView_user_picture_inf"
+                android:layout_gravity="bottom|end"
+                android:tint="@color/colorPrimaryLight"/>
             <ProgressBar
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -44,94 +65,107 @@
                 android:visibility="invisible"
                 />
         </FrameLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:paddingLeft="16dp">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="게시한 악보의 수"
-                android:textSize="18sp"
-                android:layout_weight="1"
-                android:gravity="center_vertical"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:id="@+id/textView_info_sheets"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="받은 추천 수"
-                android:textSize="18sp"
-                android:layout_weight="1"
-                android:gravity="center_vertical"/>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:id="@+id/textView_info_likes"/>
-        </LinearLayout>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="이름"
-                android:textSize="18sp"
-                android:layout_weight="5"/>
+            android:layout_marginLeft="24dp"
+            android:gravity="bottom">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="닉네임(이름)"
                 android:textSize="18sp"
-                android:layout_weight="2"
                 android:id="@+id/textView_info_name"
+                android:layout_marginBottom="6dp"
+                android:textStyle="bold"
                 />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="email"
+                android:textSize="12sp"
+                android:id="@+id/textView_info_email"/>
+
         </LinearLayout>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="16dp">
-        <Button
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp">
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="대표 이미지 정하기"
-            android:textSize="22sp"
-            android:id="@+id/button_change_pic"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"/>
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="비밀번호 변경하기"
-            android:textSize="22sp"
-            android:id="@+id/button_change_pw"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            />
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@drawable/inf_drawable"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="6dp">
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="게시한 악보"
+                    android:textSize="16sp"
+                    android:gravity="end"
+                    android:layout_marginRight="16dp"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:id="@+id/textView_info_sheets"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:text="받은 추천"
+                    android:textSize="16sp"
+                    android:gravity="end"
+                    android:layout_marginRight="16dp"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:id="@+id/textView_info_likes"/>
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 
-    <Switch
-        android:text="푸시 알림 받기"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/switch_push"
-        android:textSize="22sp"
-        android:padding="8dp"
-        
-        />
+        android:orientation="vertical"
+        android:paddingRight="24dp">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="비밀번호 변경"
+            android:textSize="14sp"
+            android:id="@+id/button_change_pw"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_gravity="end"
+            />
+    </LinearLayout>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="대표 이미지 정하기"
+        android:textSize="14sp"
+        android:id="@+id/button_change_pic"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        android:visibility="gone"/>
+
 
 </LinearLayout>

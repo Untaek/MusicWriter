@@ -1,8 +1,10 @@
 package com.limwoon.musicwriter.list;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,11 +12,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.limwoon.musicwriter.R;
+import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 import com.limwoon.musicwriter.data.SheetData;
+import com.limwoon.musicwriter.http.ListStateListener;
 import com.limwoon.musicwriter.http.LoadSharedSheetList;
+import com.limwoon.musicwriter.http.RefreshListItem;
 
 import java.util.ArrayList;
 
@@ -40,6 +46,7 @@ public class SharedListPagerFragment extends Fragment {
     RecyclerView mRecyclerView;
     SharedSheetRecyclerAdapter mRecyclerAdapter;
     LinearLayoutManager mLinearLayoutManager;
+    SwipeRefreshLayout mSwipeRefreshLayout;
 
     //좋아요
     static public boolean listLoading2=false;
@@ -47,6 +54,7 @@ public class SharedListPagerFragment extends Fragment {
     RecyclerView mRecyclerView2;
     SharedSheetRecyclerAdapter mRecyclerAdapter2;
     LinearLayoutManager mLinearLayoutManager2;
+    SwipeRefreshLayout mSwipeRefreshLayout2;
 
     //게시된 내 악보
     static public boolean listLoading3=false;
@@ -54,6 +62,7 @@ public class SharedListPagerFragment extends Fragment {
     RecyclerView mRecyclerView3;
     SharedSheetRecyclerAdapter mRecyclerAdapter3;
     LinearLayoutManager mLinearLayoutManager3;
+    SwipeRefreshLayout mSwipeRefreshLayout3;
 
     static final int SORT_NEW = 0;
     static final int SORT_LIKE = 1;
@@ -71,11 +80,46 @@ public class SharedListPagerFragment extends Fragment {
             textView_title.setText("최근 게시된 악보");
             sheetList = new ArrayList<>();
             mRecyclerView = (RecyclerView) mView.findViewById(R.id.recycler_shared_sheet);
-            mRecyclerAdapter = new SharedSheetRecyclerAdapter(sheetList, container.getContext());
+            mRecyclerAdapter = new SharedSheetRecyclerAdapter(sheetList, container.getContext(), this);
             mRecyclerView.setAdapter(mRecyclerAdapter);
             mLinearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
             mRecyclerView.setLayoutManager(mLinearLayoutManager);
-            new LoadSharedSheetList(sheetList, mRecyclerAdapter).execute(0, SORT_NEW, LOAD_DEFAULT); // 최신순
+            mRecyclerView.addItemDecoration(new SheetRecyDivider());
+            mSwipeRefreshLayout = (SwipeRefreshLayout) mView.findViewById(R.id.refresh_layout);
+            mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorAccent));
+            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    sheetList.clear();
+                    new LoadSharedSheetList(sheetList, mRecyclerAdapter)
+                            .setListStateListener(new ListStateListener() {
+                        @Override
+                        public void onLoaded() {
+                            mSwipeRefreshLayout.setRefreshing(false);
+                        }
+
+                                @Override
+                                public void onLoaded(SheetData sheetData) {
+
+                                }
+                            }).execute(0, SORT_NEW, LOAD_DEFAULT); // 최신순
+
+                }
+            });
+            final ProgressBar progressBar_loading = (ProgressBar) mView.findViewById(R.id.progress_loading);
+
+            new LoadSharedSheetList(sheetList, mRecyclerAdapter)
+                    .setListStateListener(new ListStateListener() {
+                        @Override
+                        public void onLoaded() {
+                            progressBar_loading.setVisibility(View.INVISIBLE);
+                        }
+
+                        @Override
+                        public void onLoaded(SheetData sheetData) {
+
+                        }
+                    }).execute(0, SORT_NEW, LOAD_DEFAULT); // 최신순
 
             mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
@@ -98,11 +142,45 @@ public class SharedListPagerFragment extends Fragment {
             textView_title.setText("추천을 많이 받은 악보");
             sheetList2 = new ArrayList<>();
             mRecyclerView2 = (RecyclerView) mView.findViewById(R.id.recycler_shared_sheet);
-            mRecyclerAdapter2 = new SharedSheetRecyclerAdapter(sheetList2, container.getContext());
+            mRecyclerAdapter2 = new SharedSheetRecyclerAdapter(sheetList2, container.getContext(), this);
             mRecyclerView2.setAdapter(mRecyclerAdapter2);
             mLinearLayoutManager2 = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
             mRecyclerView2.setLayoutManager(mLinearLayoutManager2);
-            new LoadSharedSheetList(sheetList2, mRecyclerAdapter2).execute(0, SORT_LIKE, LOAD_DEFAULT); //좋아요 순
+            mRecyclerView2.addItemDecoration(new SheetRecyDivider());
+            mSwipeRefreshLayout2 = (SwipeRefreshLayout) mView.findViewById(R.id.refresh_layout);
+            mSwipeRefreshLayout2.setColorSchemeColors(getResources().getColor(R.color.colorAccent));
+            mSwipeRefreshLayout2.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    sheetList2.clear();
+                    new LoadSharedSheetList(sheetList2, mRecyclerAdapter2)
+                            .setListStateListener(new ListStateListener() {
+                                @Override
+                                public void onLoaded() {
+                                    mSwipeRefreshLayout2.setRefreshing(false);
+                                }
+
+                                @Override
+                                public void onLoaded(SheetData sheetData) {
+
+                                }
+                            }).execute(0, SORT_LIKE, LOAD_DEFAULT); //좋아요 순
+
+                }
+            });
+            final ProgressBar progressBar_loading2 = (ProgressBar) mView.findViewById(R.id.progress_loading);
+            new LoadSharedSheetList(sheetList2, mRecyclerAdapter2)
+                    .setListStateListener(new ListStateListener() {
+                        @Override
+                        public void onLoaded() {
+                            progressBar_loading2.setVisibility(View.INVISIBLE);
+                        }
+
+                        @Override
+                        public void onLoaded(SheetData sheetData) {
+
+                        }
+                    }).execute(0, SORT_LIKE, LOAD_DEFAULT); //좋아요 순
 
             mRecyclerView2.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
@@ -126,11 +204,45 @@ public class SharedListPagerFragment extends Fragment {
             textView_title.setText("내가 게시한 악보");
             sheetList3 = new ArrayList<>();
             mRecyclerView3 = (RecyclerView) mView.findViewById(R.id.recycler_shared_sheet);
-            mRecyclerAdapter3 = new SharedSheetRecyclerAdapter(sheetList3, container.getContext());
+            mRecyclerAdapter3 = new SharedSheetRecyclerAdapter(sheetList3, container.getContext(), this);
             mRecyclerView3.setAdapter(mRecyclerAdapter3);
             mLinearLayoutManager3 = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
             mRecyclerView3.setLayoutManager(mLinearLayoutManager3);
-            new LoadSharedSheetList(sheetList3, mRecyclerAdapter3).execute(0, SORT_LIKE, LOAD_MYSHEET); //좋아요 순
+            mRecyclerView3.addItemDecoration(new SheetRecyDivider());
+            mSwipeRefreshLayout3 = (SwipeRefreshLayout) mView.findViewById(R.id.refresh_layout);
+            mSwipeRefreshLayout3.setColorSchemeColors(getResources().getColor(R.color.colorAccent));
+            mSwipeRefreshLayout3.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    sheetList3.clear();
+                    new LoadSharedSheetList(sheetList3, mRecyclerAdapter3)
+                            .setListStateListener(new ListStateListener() {
+                                @Override
+                                public void onLoaded() {
+                                    mSwipeRefreshLayout3.setRefreshing(false);
+                                }
+
+                                @Override
+                                public void onLoaded(SheetData sheetData) {
+
+                                }
+                            }).execute(0, SORT_NEW, LOAD_MYSHEET); // 내 거
+
+                }
+            });
+            final ProgressBar progressBar_loading3 = (ProgressBar) mView.findViewById(R.id.progress_loading);
+            new LoadSharedSheetList(sheetList3, mRecyclerAdapter3)
+                    .setListStateListener(new ListStateListener() {
+                        @Override
+                        public void onLoaded() {
+                            progressBar_loading3.setVisibility(View.INVISIBLE);
+                        }
+
+                        @Override
+                        public void onLoaded(SheetData sheetData) {
+
+                        }
+                    }).execute(0, SORT_NEW, LOAD_MYSHEET); // 내 거
 
             mRecyclerView3.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
@@ -152,9 +264,55 @@ public class SharedListPagerFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        //sheetList.clear();
-       // new LoadSharedSheetList(sheetList, mRecyclerAdapter).execute(0);
-        super.onResume();
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        int fragNum = getArguments().getInt("num");
+        long sheetID = data.getLongExtra("id", -1);
+        final int index = data.getIntExtra("pos", -1);
+        Log.d("data", "onActivityResult: "+data.getLongExtra("id", -1));
+        if(fragNum==1){
+            new RefreshListItem(sheetList, index)
+                    .setOnListStateListener(new ListStateListener() {
+                        @Override
+                        public void onLoaded() {
+
+                        }
+
+                        @Override
+                        public void onLoaded(SheetData sheetData) {
+                            sheetList.set(index, sheetData);
+                            mRecyclerAdapter.notifyDataSetChanged();
+                        }
+                    }).execute(sheetID, PUBLIC_APP_DATA.getUserID());
+        }else if(fragNum==2){
+            new RefreshListItem(sheetList2, index)
+                    .setOnListStateListener(new ListStateListener() {
+                        @Override
+                        public void onLoaded() {
+
+                        }
+
+                        @Override
+                        public void onLoaded(SheetData sheetData) {
+                            sheetList2.set(index, sheetData);
+                            mRecyclerAdapter2.notifyDataSetChanged();
+                        }
+                    }).execute(sheetID, PUBLIC_APP_DATA.getUserID());
+        }else if(fragNum==3){
+            new RefreshListItem(sheetList3, index)
+                    .setOnListStateListener(new ListStateListener() {
+                        @Override
+                        public void onLoaded() {
+
+                        }
+
+                        @Override
+                        public void onLoaded(SheetData sheetData) {
+                            sheetList3.set(index, sheetData);
+                            mRecyclerAdapter3.notifyDataSetChanged();
+                        }
+                    }).execute(sheetID, PUBLIC_APP_DATA.getUserID());
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

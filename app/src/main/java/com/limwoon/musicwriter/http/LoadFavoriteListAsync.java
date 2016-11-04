@@ -22,7 +22,11 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import static android.content.ContentValues.TAG;
 
@@ -34,10 +38,16 @@ public class LoadFavoriteListAsync extends AsyncTask<Bundle, Void, Integer> {
 
     ArrayList<SheetData> list;
     SharedSheetRecyclerAdapter adapter;
+    ListStateListener mListStateListener;
 
     public LoadFavoriteListAsync(ArrayList<SheetData> list, SharedSheetRecyclerAdapter adapter) {
         this.list = list;
         this.adapter = adapter;
+    }
+
+    public LoadFavoriteListAsync setListStateListener(ListStateListener listener){
+        this.mListStateListener=listener;
+        return this;
     }
 
     @Override
@@ -62,10 +72,14 @@ public class LoadFavoriteListAsync extends AsyncTask<Bundle, Void, Integer> {
             BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 
             String json = reader.readLine();
-            Log.d("favjson", "doInBackground: " + json);
+            JSONObject jsonResponse = new JSONObject(json);
+            Log.d(TAG, "doInBackground: "+ jsonResponse);
 
-            JSONArray jsonArray = new JSONArray(json);
-            Log.d(TAG, "doInBackground: " + jsonArray);
+            String today = jsonResponse.getString("today");
+            JSONArray jsonArray = jsonResponse.getJSONArray("list");
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
+            Date date_today =  dateFormat.parse(today);
+
             for(int i=0; i<jsonArray.length(); i++){
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String title = jsonObject.getString("title");
@@ -81,25 +95,39 @@ public class LoadFavoriteListAsync extends AsyncTask<Bundle, Void, Integer> {
 
                 note = note.substring(1, note.length()-1);
 
+                Date date_comment = dateFormat.parse(uploadTime);
+                Log.d("date_today", "doInBackground: "+ date_today.getTime());
+                Log.d("date_today", "doInBackground: "+ date_today);
+                Log.d("date_comment", "doInBackground: "+date_comment.getTime());
+                Log.d("date_comment", "doInBackground: "+date_comment);
+                long todayMill = date_today.getTime();
+                long uploadMill = date_comment.getTime();
+                long time = (todayMill - uploadMill)/1000;
+                String timeStr = null;
+                if(time < 60){
+                    timeStr = "방금 전";
+                }else if(time <60*60){
+                    timeStr = time/60 + "분 전";
+                }else if(time < 60*60*24){
+                    timeStr = time/(60*60) + "시간 전";
+                }else if(time < 60*60*24*30){
+                    timeStr = time/(60*60*24) + "일 전";
+                }
+
                 SheetData sheetData = new SheetData();
                 sheetData.setId(id);
                 sheetData.setTitle(title);
                 sheetData.setAuthor(author);
                 sheetData.setNote(note);
-                sheetData.setUploadTime(uploadTime);
+                sheetData.setUploadTime(timeStr);
                 sheetData.setUploadUserStrID(uploadUserID);
                 sheetData.setComments(comments);
                 sheetData.setLikes(likes);
                 sheetData.setTempo(tempo);
+                sheetData.setIsFavorite(true);
                 list.add(sheetData);
             }
-/*
-            while(true){
-                String line = reader.readLine();
-                Log.d("favorites", "doInBackground: "+ line);
-                if(line==null) break;
-            }
-*/
+
         return null;
     } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -111,6 +139,8 @@ public class LoadFavoriteListAsync extends AsyncTask<Bundle, Void, Integer> {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
 
         return  null;
@@ -120,5 +150,8 @@ public class LoadFavoriteListAsync extends AsyncTask<Bundle, Void, Integer> {
     protected void onPostExecute(Integer integer) {
         super.onPostExecute(integer);
         adapter.notifyDataSetChanged();
+        if(mListStateListener!=null){
+            mListStateListener.onLoaded();
+        }
     }
 }

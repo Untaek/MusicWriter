@@ -21,6 +21,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 import com.limwoon.musicwriter.http.LoadUserInfoAsync;
 import com.limwoon.musicwriter.http.LoadUserPicBitmapFromURLAsync;
@@ -40,6 +42,7 @@ public class UserInfActivity extends AppCompatActivity {
     boolean isFill = true;
     UserPicture userPicture;
     TextView textView_userStrID;
+    TextView textView_userEmail;
     Switch switch_push;
 
     @Override
@@ -65,6 +68,11 @@ public class UserInfActivity extends AppCompatActivity {
 
         textView_userStrID = (TextView) findViewById(R.id.textView_info_name);
         textView_userStrID.setText(PUBLIC_APP_DATA.getUserStrID());
+        textView_userEmail = (TextView) findViewById(R.id.textView_info_email);
+        textView_userEmail.setText(PUBLIC_APP_DATA.getUserEmail());
+        YoYo.with(Techniques.FadeInDown)
+                .duration(500)
+                .playOn(imageView_userPic);
 
         Button button_changepw = (Button) findViewById(R.id.button_change_pw);
         final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_change_pic);
@@ -79,7 +87,7 @@ public class UserInfActivity extends AppCompatActivity {
         Bitmap userPicBitmap = userPicture.getUserPicBitmapFromCache(PUBLIC_APP_DATA.getImageName());
         imageView_userPic.setImageBitmap(userPicBitmap);
 
-        findViewById(R.id.button_change_pic).setOnClickListener(new View.OnClickListener() {
+        imageView_userPic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 View view = getLayoutInflater().inflate(R.layout.choice_select_pic, null);

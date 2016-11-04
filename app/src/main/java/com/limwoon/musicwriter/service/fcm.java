@@ -83,6 +83,7 @@ public class fcm extends FirebaseMessagingService {
             long comments = jsonObject.getLong("comments");
             long likes = jsonObject.getLong("likes");
             long id = jsonObject.getLong("sheetID");
+            int tempo = jsonObject.getInt("tempo");
 
             note = note.substring(1, note.length() - 1);
 
@@ -95,6 +96,7 @@ public class fcm extends FirebaseMessagingService {
             sheetData.setUploadUserID(uploadUserID);
             sheetData.setComments(comments);
             sheetData.setLikes(likes);
+            sheetData.setTempo(tempo);
 
             Intent resultIntent = new Intent(this, SharedMusicViewActivity.class);
             resultIntent.putExtra("data", sheetData);

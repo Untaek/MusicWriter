@@ -22,7 +22,7 @@
         android:scrollbars="horizontal"
         android:fadeScrollbars="false"
         android:id="@+id/horizontalScrollView">
-        <RelativeLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/sheetwrapper">
@@ -31,6 +31,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/viewSheetRecycler"
+                android:paddingLeft="100dp"
                 >
 
             </android.support.v7.widget.RecyclerView>
@@ -40,7 +41,7 @@
                 android:id="@+id/sheetBaseLinear"
                 android:orientation="horizontal">
             </LinearLayout>
-        </RelativeLayout>
+        </FrameLayout>
     </HorizontalScrollView>
 
     <LinearLayout

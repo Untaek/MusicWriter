@@ -110,6 +110,7 @@ public class SharedSheetActivity extends AppCompatActivity {
                 break;
             case R.id.shared_menu_search:
                 startActivity(new Intent(this, SearchSheetActivity.class));
+                overridePendingTransition(R.anim.activity_slide_down, android.R.anim.fade_out);
                 break;
         }
         return super.onOptionsItemSelected(item);

@@ -57,7 +57,8 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".SharedSheetActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppThemeSharedSheet"
+            android:label="다른 악보들">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainNavActivity" />
@@ -65,10 +66,7 @@
         <activity android:name=".TestActivityMustDelete" />
         <activity
             android:name=".SharedMusicViewActivity"
-            android:theme="@style/AppTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".SharedSheetActivity" />
+            android:theme="@style/AppThemeSharedSheet">
         </activity>
 
         <service android:name=".service.fcm">
@@ -82,7 +80,8 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".SearchSheetActivity"></activity>
+        <activity android:name=".SearchSheetActivity"
+            android:theme="@style/AppThemeSharedSheet"></activity>
     </application>
 
 </manifest>

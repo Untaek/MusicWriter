@@ -129,6 +129,7 @@ public class MusicWriteActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (getIntent().getIntExtra("beatIndex", -1) != -1) {
             beatIndex = getIntent().getIntExtra("beatIndex", -1);
@@ -612,7 +613,7 @@ public class MusicWriteActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.action_save_new) {
             View editVIew = getLayoutInflater().inflate(R.layout.dialog_save_new, null);
             final EditText editText = (EditText) editVIew.findViewById(R.id.editText_title);
-
+            editText.findFocus();
             AlertDialog dialog = new AlertDialog.Builder(this)
                     .setTitle("제목을 입력해주세요")
                     .setPositiveButton("저장", new DialogInterface.OnClickListener() {
@@ -736,6 +737,8 @@ public class MusicWriteActivity extends AppCompatActivity {
             }catch (JSONException e){
                 e.printStackTrace();
             }
+        }else if(item.getItemId() == android.R.id.home){
+            finish();
         }
 
 

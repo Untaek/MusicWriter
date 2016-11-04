@@ -84,7 +84,7 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
                                             public void onResult(int result) {
 
                                             }
-                                        }).execute(list.get(index).getCommentID());
+                                        }).execute(list.get(index).getCommentID(), list.get(index).getSheetID());
                                         adapter.notifyItemRemoved(index);
                                         list.remove(index);
                                     }

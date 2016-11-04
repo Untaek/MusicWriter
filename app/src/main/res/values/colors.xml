@@ -2,9 +2,16 @@
 <resources>
     <color name="colorPrimary">#6d4c41</color>
     <color name="colorPrimaryDark">#6d4c41</color>
-    <color name="colorAccent">#837722</color>
+    <color name="colorAccent">#ff7b89</color>
     <color name="colorPrimaryLight">#efede5</color>
     <color name="colorButton">#94efeb</color>
+
+    <color name="colorPrimarySharedSheet">#69a3c1</color>
+    <color name="colorAccentSharedSheet">#ff7b89</color>
+    <color name="colorSharedSheetTitle">#795548</color>
+    <color name="colorSharedSheetSub">#a1887f</color>
+
+
     <color name="black">#000</color>
     <color name="orange">#FA0</color>
     <color name="white">#FFF</color>

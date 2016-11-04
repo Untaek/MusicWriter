@@ -92,32 +92,20 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         // 회원가입 버튼 클릭
-        findViewById(R.id.textBtn_sign_in).setOnTouchListener(new View.OnTouchListener() {
+        findViewById(R.id.textBtn_sign_in).setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN){
-                    v.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
-                }else if(event.getAction() == MotionEvent.ACTION_UP){
-                    v.setBackgroundColor(0);
-                    Intent intent = new Intent(activity, SignInActivity.class);
-                    startActivity(intent);
-                }
-                return true;
+            public void onClick(View view) {
+                Intent intent = new Intent(activity, SignInActivity.class);
+                startActivity(intent);
             }
         });
 
         // 비밀번호 찾기
-        findViewById(R.id.textBtn_find_pw).setOnTouchListener(new View.OnTouchListener() {
+        findViewById(R.id.textBtn_find_pw).setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN){
-                    v.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
-                }else if(event.getAction() == MotionEvent.ACTION_UP){
-                    v.setBackgroundColor(0);
-                    Intent intent = new Intent(activity, FindPwActivity.class);
-                    startActivity(intent);
-                }
-                return false;
+            public void onClick(View view) {
+                Intent intent = new Intent(activity, FindPwActivity.class);
+                startActivity(intent);
             }
         });
 

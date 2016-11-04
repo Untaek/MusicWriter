@@ -18,8 +18,15 @@ public class SheetData implements Serializable {
     private String uploadUserStrID;
     private long uploadUserID;
     private int tempo;
+    private boolean isFavorite;
 
-    Bundle noteBundle;
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setIsFavorite(boolean isFavorite) {
+        this.isFavorite = isFavorite;
+    }
 
     public int getTempo() {
         return tempo;

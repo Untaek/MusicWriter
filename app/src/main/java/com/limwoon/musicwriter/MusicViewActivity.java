@@ -95,7 +95,6 @@ public class MusicViewActivity extends AppCompatActivity {
 
         sheetRecyView.setAdapter(sheetRecyAdapter);
         sheetRecyView.setLayoutManager(linearLayoutManager);
-        sheetRecyView.setPadding(260, 0, 0, 0);
 
         sheetBaseLinear = (LinearLayout) findViewById(R.id.sheetBaseLinear);
         baseSheet = new BaseSheet(this, beats, tempo);
@@ -121,7 +120,7 @@ public class MusicViewActivity extends AppCompatActivity {
             sheetBaseLinear.removeViewAt(sheetBaseLinear.getChildCount()-1);
             int sheetWidth = sheetBaseLinear.getChildCount()*600;
             int noteWidth = linearLayoutManager.getItemCount()*150;
-            sheetAppender = new SheetAppender(getApplicationContext(), true, noteWidth-sheetWidth+100);
+            sheetAppender = new SheetAppender(getApplicationContext(), true, noteWidth-sheetWidth+200);
             sheetBaseLinear.addView(sheetAppender);
         }else{
             sheetAppender = new SheetAppender(getApplicationContext(), true, 100);
@@ -203,7 +202,7 @@ public class MusicViewActivity extends AppCompatActivity {
                                     });
                                     break;
                                 }
-                                if (i == noteList.size() - 1) {
+                                if (i == noteList.size() - 1 && noteList.size()>1) {
                                     sheetRecyView.getChildAt(i - 1).post(new Runnable() {
                                         @Override
                                         public void run() {

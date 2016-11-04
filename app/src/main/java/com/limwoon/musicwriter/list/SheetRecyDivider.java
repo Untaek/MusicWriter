@@ -36,8 +36,16 @@ public class SheetRecyDivider extends RecyclerView.ItemDecoration {
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
-        outRect.top = 10;
-        if(parent.getChildLayoutPosition(view)==0)
-            outRect.bottom = 14;
+
+        if(((LinearLayoutManager)parent.getLayoutManager()).getReverseLayout()){
+            outRect.top = 10;
+            if(parent.getChildLayoutPosition(view)==0)
+                outRect.bottom = 14;
+        }else{
+            outRect.top = 10;
+            if(parent.getChildLayoutPosition(view)==state.getItemCount()-1)
+                outRect.bottom = 14;
+        }
+
     }
 }

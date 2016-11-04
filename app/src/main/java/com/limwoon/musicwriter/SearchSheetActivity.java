@@ -34,7 +34,9 @@ public class SearchSheetActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == android.R.id.home){
+
             finish();
+            overridePendingTransition(android.R.anim.fade_in, R.anim.activity_slide_up);
         }
         else if(item.getItemId() == R.id.search){
             list.clear();

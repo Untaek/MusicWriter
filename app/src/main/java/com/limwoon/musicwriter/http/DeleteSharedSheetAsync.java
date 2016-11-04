@@ -1,7 +1,6 @@
 package com.limwoon.musicwriter.http;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 
@@ -18,15 +17,15 @@ import java.net.URL;
  * Created by 운택 on 2016-10-22.
  */
 
-public class DeleteCommentAsync extends AsyncTask<Long, Void, Integer> {
+public class DeleteSharedSheetAsync extends AsyncTask<Long, Void, Integer> {
 
-    public interface DeleteCommentCallback{
+    public interface DeleteSharedSheetCallback {
         void onResult(int result);
     }
 
-    private DeleteCommentCallback callback;
+    private DeleteSharedSheetCallback callback;
 
-    public DeleteCommentAsync setDeleteCommentCallback(DeleteCommentCallback callback){
+    public DeleteSharedSheetAsync setDeleteSharedSheetCallback(DeleteSharedSheetCallback callback){
         this.callback = callback;
         return this;
     }
@@ -35,8 +34,8 @@ public class DeleteCommentAsync extends AsyncTask<Long, Void, Integer> {
     protected Integer doInBackground(Long... params) {
         int result = 10;
         try {
-            String message = "commentid="+params[0] + "&sheetid="+params[1];
-            URL url = new URL(PUBLIC_APP_DATA.getServerUrl()+"deletecomment.php");
+            String message = "sheetid="+params[0] + "&userid="+params[1];
+            URL url = new URL(PUBLIC_APP_DATA.getServerUrl()+"deletesharedsheet.php");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
@@ -63,7 +62,8 @@ public class DeleteCommentAsync extends AsyncTask<Long, Void, Integer> {
     @Override
     protected void onPostExecute(Integer result) {
         if(result==1){
-            callback.onResult(result);
+            if(callback!= null)
+                callback.onResult(result);
         }
         super.onPostExecute(result);
     }

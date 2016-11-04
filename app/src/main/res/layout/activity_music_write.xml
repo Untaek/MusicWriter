@@ -13,11 +13,12 @@
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
         <android.support.v7.widget.Toolbar
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:id="@+id/toolbar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:id="@+id/toolbar"
+            app:titleMarginStart="90dp"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
     </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -49,9 +50,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:paddingLeft="100dp"
-                    >
-
-                </android.support.v7.widget.RecyclerView>
+                    />
                 <LinearLayout
                     android:id="@+id/music_sheet_wrapper"
                     android:layout_width="wrap_content"
@@ -60,9 +59,6 @@
                     >
 
                 </LinearLayout>
-
-
-
 
             </FrameLayout>
         </HorizontalScrollView>

@@ -1,11 +1,15 @@
 package com.limwoon.musicwriter;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatSeekBar;
@@ -38,6 +42,7 @@ import com.limwoon.musicwriter.draw.NoteRecyclerAdapter;
 import com.limwoon.musicwriter.draw.SheetAppender;
 import com.limwoon.musicwriter.http.CheckFavorite;
 import com.limwoon.musicwriter.http.CheckLike;
+import com.limwoon.musicwriter.http.DeleteSharedSheetAsync;
 import com.limwoon.musicwriter.http.DisFavoriteSheetAsync;
 import com.limwoon.musicwriter.http.DisLikeSheetAsync;
 import com.limwoon.musicwriter.http.FavoriteSheetAsync;
@@ -85,8 +90,15 @@ public class SharedMusicViewActivity extends AppCompatActivity {
     ProgressBar progressBar_loadingComment;
     static public boolean commentLoading = false;
 
+    Intent resultIntent = new Intent();
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.shared_music_view_menu, menu);
+        if(PUBLIC_APP_DATA.getUserID()!= data.getUploadUserID()){
+            menu.getItem(0).setVisible(false);
+        }
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -94,11 +106,37 @@ public class SharedMusicViewActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id){
-            case android.R.id.home : finish();
+            case android.R.id.home :
+                setResult(1, resultIntent);
+                finish();
+                break;
+            case R.id.menu_shared_sheet_delete :
+                AlertDialog dialog = new AlertDialog.Builder(this)
+                        .setMessage("정말 삭제하시겠습니까?")
+                        .setPositiveButton("삭제", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(final DialogInterface dialogInterface, int i) {
+                                final ProgressDialog progressDialog = new ProgressDialog(SharedMusicViewActivity.this);progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                                progressDialog.show();
+                                new DeleteSharedSheetAsync()
+                                        .setDeleteSharedSheetCallback(new DeleteSharedSheetAsync.DeleteSharedSheetCallback() {
+                                            @Override
+                                            public void onResult(int result) {
+                                                progressDialog.dismiss();
+                                                resultIntent.putExtra("deleted", true);
+                                                setResult(1, resultIntent);
+                                                finish();
+                                            }
+                                        })
+                                        .execute(data.getId(), PUBLIC_APP_DATA.getUserID());
+                            }
+                        })
+                        .setNegativeButton("취소", null)
+                        .create();
+                dialog.show();
                 break;
 
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -106,8 +144,10 @@ public class SharedMusicViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shared_music_view);
-
         data = (SheetData) getIntent().getSerializableExtra("data");
+        resultIntent.putExtra("pos", getIntent().getIntExtra("pos", -1));
+        resultIntent.putExtra("id", data.getId());
+
         NoteParser noteParser = new NoteParser(data.getNote());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -146,6 +186,7 @@ public class SharedMusicViewActivity extends AppCompatActivity {
         horizontalScrollView_sheet = (HorizontalScrollView) findViewById(R.id.horizontalScrollView_sheet);
         button_play = (Button) findViewById(R.id.button_play);
 
+
         TextView textView_title = (TextView) findViewById(R.id.textView_title);
         TextView textView_author = (TextView) findViewById(R.id.textView_author);
         TextView textView_description = (TextView) findViewById(R.id.textView_description);
@@ -154,34 +195,6 @@ public class SharedMusicViewActivity extends AppCompatActivity {
         textView_author.setText("작곡자: "+data.getAuthor());
         textView_description.setText("");
 
-        /*
-        findViewById(R.id.button_play).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Thread playThread = new Thread(new Runnable() {
-                    @Override
-                    public void run(){
-                        for(int i=0; i<noteList.size(); i++) {
-                            if (noteList.get(i).node) continue;
-                            for (int j = 0; j < 6; j++) {
-                                if (noteList.get(i).tone[j] != -1) {
-                                    NativeClass.setPlayingBufferQueue(j, noteList.get(i).tone[j]);
-                                }
-                            }
-                            try {
-                                Thread.sleep(Sounds.getDuration(noteList.get(i).duration, data.getTempo()));
-                                NativeClass.setStopBufferQueue();
-                            } catch (InterruptedException e) { // 정지버튼 클릭
-                                NativeClass.setStopBufferQueue();
-                                break;
-                            }
-                        }
-                    }
-                });
-                playThread.start();
-            }
-        });
-        */
 
         seekBar_music.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -319,12 +332,14 @@ public class SharedMusicViewActivity extends AppCompatActivity {
                         Toast.makeText(SharedMusicViewActivity.this, "추천 했습니다", Toast.LENGTH_SHORT).show();
                         button_like.setText("추천했습니다");
                         userLikeState=false;
+                        resultIntent.putExtra("like", data.getLikes()+1);
                     }
                     else{
                         new DisLikeSheetAsync().execute(data.getId());
                         Toast.makeText(SharedMusicViewActivity.this, "추천을 취소했습니다", Toast.LENGTH_SHORT).show();
                         button_like.setText("추천");
                         userLikeState=true;
+                        resultIntent.putExtra("like", data.getLikes()-1);
                     }
 
                 }else{
@@ -342,12 +357,14 @@ public class SharedMusicViewActivity extends AppCompatActivity {
                         Toast.makeText(SharedMusicViewActivity.this, "즐겨찾기에 추가 했습니다", Toast.LENGTH_SHORT).show();
                         button_favorite.setText("즐겨찾기 되었습니다");
                         userFavoriteState=false;
+                        resultIntent.putExtra("favorite", userFavoriteState);
                     }
                     else{
                         new DisFavoriteSheetAsync().execute(data.getId());
                         Toast.makeText(SharedMusicViewActivity.this, "즐겨찾기를 취소했습니다", Toast.LENGTH_SHORT).show();
                         button_favorite.setText("즐겨찾기");
                         userFavoriteState=true;
+                        resultIntent.putExtra("favorite", userFavoriteState);
                     }
                 }else{
                     Toast.makeText(SharedMusicViewActivity.this, "로그인 해주세요", Toast.LENGTH_SHORT).show();
@@ -364,6 +381,7 @@ public class SharedMusicViewActivity extends AppCompatActivity {
                         bundle.putString("comment", editText_writeComment.getText().toString());
                         bundle.putLong("sheetID", data.getId());
                         bundle.putLong("userID", PUBLIC_APP_DATA.getUserID());
+                        resultIntent.putExtra("comment", commentList.size()+1);
 
                         new WriteCommentAsync(commentList, commentRecyclerAdapter, textView_commentCount).execute(bundle);
                         if(data.getUploadUserID() != PUBLIC_APP_DATA.getUserID()){
@@ -438,12 +456,12 @@ public class SharedMusicViewActivity extends AppCompatActivity {
 
         sheetRecyView.setAdapter(sheetRecyAdapter);
         sheetRecyView.setLayoutManager(linearLayoutManager);
-        sheetRecyView.setPadding(260,0,0,0);
 
         sheetBaseLinear = (LinearLayout) findViewById(R.id.sheetBaseLinear);
         baseSheet = new BaseSheet(this, noteParser.getBeats(), data.getTempo());
         sheetBaseLinear.addView(baseSheet);
         NoteStore noteStore = new NoteStore(noteList, sheetRecyAdapter, noteParser.getBeats());
+        seekBar_music.setMax(noteParser.getNoteLength()-1);
 
         for (int i = 0; i < noteParser.getNoteLength(); i++) {
             noteStore.setTempData(noteParser.getNoteAt(i));
@@ -464,7 +482,7 @@ public class SharedMusicViewActivity extends AppCompatActivity {
             sheetBaseLinear.removeViewAt(sheetBaseLinear.getChildCount()-1);
             int sheetWidth = sheetBaseLinear.getChildCount()*600;
             int noteWidth = linearLayoutManager.getItemCount()*150;
-            sheetAppender = new SheetAppender(getApplicationContext(), true, noteWidth-sheetWidth+100);
+            sheetAppender = new SheetAppender(getApplicationContext(), true, noteWidth-sheetWidth+200);
             sheetBaseLinear.addView(sheetAppender);
         }else{
             sheetAppender = new SheetAppender(getApplicationContext(), true, 100);

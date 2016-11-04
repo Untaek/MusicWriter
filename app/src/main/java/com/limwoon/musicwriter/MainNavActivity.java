@@ -15,6 +15,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.DividerItemDecoration;
@@ -39,6 +40,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -49,7 +51,9 @@ import com.limwoon.musicwriter.SQLite.DefineSQL;
 import com.limwoon.musicwriter.SQLite.SheetDbHelper;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 import com.limwoon.musicwriter.data.SheetData;
+import com.limwoon.musicwriter.http.ListStateListener;
 import com.limwoon.musicwriter.http.LoadFavoriteListAsync;
+import com.limwoon.musicwriter.http.RefreshListItem;
 import com.limwoon.musicwriter.image.UserPicture;
 import com.limwoon.musicwriter.list.FavoriteSheetRecyclerAdapter;
 import com.limwoon.musicwriter.list.SharedSheetRecyclerAdapter;
@@ -256,6 +260,32 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
         SharedSheetRecyclerAdapter favSharedSheetRecyclerAdapter;
         LinearLayoutManager favoriteLinearLayoutManager;
 
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            super.onActivityResult(requestCode, resultCode, data);
+            Log.d(TAG, "onActivityResult: " + data);
+            int fragNum = getArguments().getInt(ARG_SECTION_NUMBER);
+            long sheetID = data.getLongExtra("id", -1);
+            final int index = data.getIntExtra("pos", -1);
+            if(fragNum==3){
+                new RefreshListItem(favoriteList, index)
+                        .setOnListStateListener(new ListStateListener() {
+                            @Override
+                            public void onLoaded() {
+
+                            }
+
+                            @Override
+                            public void onLoaded(SheetData sheetData) {
+                                favoriteList.set(index, sheetData);
+                                if(!favoriteList.get(index).isFavorite()){
+                                    favoriteList.remove(index);
+                                }
+                                favSharedSheetRecyclerAdapter.notifyDataSetChanged();
+                            }
+                        }).execute(sheetID, PUBLIC_APP_DATA.getUserID());
+            }
+        }
 
         @Override
         public View onCreateView(final LayoutInflater inflater, ViewGroup container,
@@ -440,19 +470,39 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                 case 3:
                     rootView = inflater.inflate(R.layout.fragment_sheet_list_favorite, container, false);
 
-
                     favoriteRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_favorite);
-                    favSharedSheetRecyclerAdapter = new SharedSheetRecyclerAdapter(favoriteList, getContext());
+                    favSharedSheetRecyclerAdapter = new SharedSheetRecyclerAdapter(favoriteList, getContext(), this);
                     favoriteRecyclerView.setAdapter(favSharedSheetRecyclerAdapter);
                     favoriteLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
                     favoriteRecyclerView.setLayoutManager(favoriteLinearLayoutManager);
+                    favoriteRecyclerView.addItemDecoration(new SheetRecyDivider());
+
+                    final SwipeRefreshLayout refreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refresh_layout);
+                    refreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorAccent));
+                    refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                        @Override
+                        public void onRefresh() {
+                            favoriteList.clear();
+                            new LoadFavoriteListAsync(favoriteList, favSharedSheetRecyclerAdapter).setListStateListener(new ListStateListener() {
+                                @Override
+                                public void onLoaded() {
+                                    refreshLayout.setRefreshing(false);
+                                }
+
+                                @Override
+                                public void onLoaded(SheetData sheetData) {
+
+                                }
+                            }).execute();
+
+                        }
+                    });
 
                     LinearLayout loginContainer = (LinearLayout) rootView.findViewById(R.id.please_login_container);
                     LinearLayout favoriteContainer = (LinearLayout) rootView.findViewById(R.id.favorite_wrapper);
                     if(PUBLIC_APP_DATA.isLogin()) {
                         loginContainer.setVisibility(View.GONE);
                         favoriteContainer.setVisibility(View.VISIBLE);
-                        new LoadFavoriteListAsync(favoriteList, favSharedSheetRecyclerAdapter).execute();
                     }
                     else {
                         loginContainer.setVisibility(View.VISIBLE);
@@ -529,8 +579,33 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
             }
             if(page==3){
                 LinearLayout loginContainer = (LinearLayout) rootView.findViewById(R.id.please_login_container);
-                if(PUBLIC_APP_DATA.isLogin()) loginContainer.setVisibility(View.GONE);
-                else loginContainer.setVisibility(View.VISIBLE);
+                LinearLayout favoriteContainer = (LinearLayout) rootView.findViewById(R.id.favorite_wrapper);
+                final ProgressBar progressBar_loading = (ProgressBar) rootView.findViewById(R.id.progress_loading);
+                if(PUBLIC_APP_DATA.isLogin()) {
+                    loginContainer.setVisibility(View.GONE);
+                    favoriteContainer.setVisibility(View.VISIBLE);
+                    if(favoriteList.size()==0){
+                        favoriteList.clear();
+                        progressBar_loading.setVisibility(View.VISIBLE);
+                        new LoadFavoriteListAsync(favoriteList, favSharedSheetRecyclerAdapter)
+                                .setListStateListener(new ListStateListener() {
+                                    @Override
+                                    public void onLoaded() {
+                                        progressBar_loading.setVisibility(View.INVISIBLE);
+                                    }
+
+                                    @Override
+                                    public void onLoaded(SheetData sheetData) {
+
+                                    }
+                                }).execute();
+                    }
+
+                }
+                else {
+                    loginContainer.setVisibility(View.VISIBLE);
+                    favoriteContainer.setVisibility(View.GONE);
+                }
             }
         }
     }
