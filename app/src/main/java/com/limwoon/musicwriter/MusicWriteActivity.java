@@ -397,42 +397,36 @@ public class MusicWriteActivity extends AppCompatActivity {
                 if (compoundButton.getId() == R.id.checkbox_1st_string) {
                     if (b) {
                     } else {
-                        Toast.makeText(getApplicationContext(), "1번 해제", Toast.LENGTH_SHORT).show();
                         noteStore.cacheDelNote(0);
                     }
                 }
                 if (compoundButton.getId() == R.id.checkbox_2nd_string) {
                     if (b) {
                     } else {
-                        Toast.makeText(getApplicationContext(), "2번 해제", Toast.LENGTH_SHORT).show();
                         noteStore.cacheDelNote(1);
                     }
                 }
                 if (compoundButton.getId() == R.id.checkbox_3rd_string) {
                     if (b) {
                     } else {
-                        Toast.makeText(getApplicationContext(), "3번 해제", Toast.LENGTH_SHORT).show();
                         noteStore.cacheDelNote(2);
                     }
                 }
                 if (compoundButton.getId() == R.id.checkbox_4th_string) {
                     if (b) {
                     } else {
-                        Toast.makeText(getApplicationContext(), "4번 해제", Toast.LENGTH_SHORT).show();
                         noteStore.cacheDelNote(3);
                     }
                 }
                 if (compoundButton.getId() == R.id.checkbox_5th_string) {
                     if (b) {
                     } else {
-                        Toast.makeText(getApplicationContext(), "5번 해제", Toast.LENGTH_SHORT).show();
                         noteStore.cacheDelNote(4);
                     }
                 }
                 if (compoundButton.getId() == R.id.checkbox_6th_string) {
                     if (b) {
                     } else {
-                        Toast.makeText(getApplicationContext(), "6번 해제", Toast.LENGTH_SHORT).show();
                         noteStore.cacheDelNote(5);
                     }
                 }

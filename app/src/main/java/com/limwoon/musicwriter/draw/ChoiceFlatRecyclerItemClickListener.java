@@ -99,7 +99,6 @@ public class ChoiceFlatRecyclerItemClickListener implements RecyclerView.OnItemT
             adapter.list.get(position).setFlat(position);
 
             noteStore.cacheNote(selectedStringNum, position);
-            Toast.makeText(context ,position+ "번 플랫 선택", Toast.LENGTH_SHORT).show();
 
 
             if(selectedStringNum == 0)

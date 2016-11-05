@@ -185,7 +185,7 @@ public class SharedMusicViewActivity extends AppCompatActivity {
         commentRecyclerView.setNestedScrollingEnabled(false);
 
 
-        commentRecyclerAdapter = new CommentRecyclerAdapter(this, commentList);
+        commentRecyclerAdapter = new CommentRecyclerAdapter(this, commentList, textView_commentCount, data.getComments());
         commentRecyclerView.setAdapter(commentRecyclerAdapter);
         commentLinearLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         commentRecyclerView.setLayoutManager(commentLinearLayoutManager);
@@ -397,14 +397,23 @@ public class SharedMusicViewActivity extends AppCompatActivity {
                         bundle.putLong("sheetID", data.getId());
                         bundle.putLong("userID", PUBLIC_APP_DATA.getUserID());
                         resultIntent.putExtra("comment", commentList.size()+1);
-
-                        new WriteCommentAsync(commentList, commentRecyclerAdapter, textView_commentCount).execute(bundle);
+                        commentList.clear();
+                        new WriteCommentAsync(commentList, commentRecyclerAdapter, textView_commentCount).setDoneCallback(new WriteCommentAsync.DoneCallback() {
+                            @Override
+                            public void done() {
+                                commentList.clear();
+                                new LoadComments(commentList, commentRecyclerAdapter, textView_commentCount, getApplicationContext()).execute(data.getId(), (long)0);
+                                progressBar_loadingComment.setVisibility(View.GONE);
+                            }
+                        }).execute(bundle);
+                        commentLoading=true;
                         if(data.getUploadUserID() != PUBLIC_APP_DATA.getUserID()){
                             new SendNotiAsync().execute(data.getUploadUserID(), data.getId());
                         }
                         editText_writeComment.setText("");
                         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                         inputMethodManager.hideSoftInputFromWindow(editText_writeComment.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+                        progressBar_loadingComment.setVisibility(View.VISIBLE);
                     }
                 }
             }
@@ -441,7 +450,7 @@ public class SharedMusicViewActivity extends AppCompatActivity {
                 super.onScrolled(recyclerView, dx, dy);
                 int lastItem = commentLinearLayoutManager.findLastVisibleItemPosition();
                 int itemCount = commentLinearLayoutManager.getItemCount();
-                if(lastItem >= itemCount-2 && dy>0 && !commentLoading && commentList.size()%7==0){
+                if(lastItem >= itemCount-2 && dy>0 && !commentLoading && commentList.size()%7==0 ){
                     commentLoading=true;
                     new LoadComments(commentList, commentRecyclerAdapter, null, getApplicationContext()).execute(data.getId(), (long)itemCount/7);
                 }
@@ -462,6 +471,10 @@ public class SharedMusicViewActivity extends AppCompatActivity {
                         public void loadCompleted(int num) {
                             if(num==7)
                                 progressBar_loadingComment.setVisibility(View.INVISIBLE);
+                            else if(num==0){
+                                progressBar_loadingComment.setVisibility(View.GONE);
+                                commentLoading=true;
+                            }
                             else
                                 progressBar_loadingComment.setVisibility(View.GONE);
                         }

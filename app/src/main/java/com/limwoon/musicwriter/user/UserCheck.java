@@ -13,6 +13,7 @@ import com.facebook.login.LoginManager;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 import com.limwoon.musicwriter.http.FaceBookUserData;
 import com.limwoon.musicwriter.http.FacebookCheckSignIn;
+import com.limwoon.musicwriter.http.account.LogoutAsync;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -137,6 +138,8 @@ public class UserCheck {
     }
 
     public boolean logout(){
+        new LogoutAsync().execute(PUBLIC_APP_DATA.getUserID());
+
         PUBLIC_APP_DATA.setUserID(0);
         PUBLIC_APP_DATA.setUserToken(null);
         PUBLIC_APP_DATA.setUserPicBitmap(null);

@@ -44,6 +44,7 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -89,6 +90,26 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
 
     // 유저 이미지 처리 //
     UserPicture userPicture;
+
+    long clickTime = 0;
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        long systemTime = System.currentTimeMillis();
+        Toast toast = Toast.makeText(this,"뒤로 가려면 한번 더 누르세요", Toast.LENGTH_SHORT);
+
+        if(clickTime < systemTime){
+            clickTime = systemTime+1500;
+            toast.show();
+        }else if(clickTime >= systemTime){
+            toast.cancel();
+            finish();
+            if(getIntent().getBooleanExtra("isEdit", false)){
+                overridePendingTransition(R.anim.activity_slide_right, R.anim.activity_slide_right_gone);
+            }
+        }
+    }
 
     @Override
     protected void onDestroy() {

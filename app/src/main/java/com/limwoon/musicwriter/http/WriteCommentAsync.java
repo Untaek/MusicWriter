@@ -31,6 +31,16 @@ public class WriteCommentAsync extends AsyncTask<Bundle, Void, Integer> {
     CommentRecyclerAdapter adapter;
     TextView textView;
     Bundle bundle;
+    DoneCallback callback;
+
+    public interface DoneCallback{
+        void done();
+    }
+
+    public WriteCommentAsync setDoneCallback(DoneCallback callback){
+        this.callback=callback;
+        return this;
+    }
 
     public WriteCommentAsync(ArrayList<CommentData> list, CommentRecyclerAdapter adapter, TextView textView) {
         this.list = list;
@@ -86,8 +96,11 @@ public class WriteCommentAsync extends AsyncTask<Bundle, Void, Integer> {
 
     @Override
     protected void onPostExecute(Integer integer) {
-        list.clear();
-        new LoadComments(list, adapter, textView, textView.getContext()).execute(bundle.getLong("sheetID"), (long)0);
+        if(callback!=null){
+            callback.done();
+        }
+        //list.clear();
+       // new LoadComments(list, adapter, textView, textView.getContext()).execute(bundle.getLong("sheetID"), (long)0);
         super.onPostExecute(integer);
     }
 }

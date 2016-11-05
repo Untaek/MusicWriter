@@ -17,6 +17,7 @@ import com.limwoon.musicwriter.R;
 import com.limwoon.musicwriter.data.CommentData;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 import com.limwoon.musicwriter.http.DeleteCommentAsync;
+import com.limwoon.musicwriter.http.LoadComments;
 
 import java.util.ArrayList;
 
@@ -29,19 +30,23 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
     ArrayList<CommentData> list;
     Context context;
     CommentRecyclerAdapter adapter = this;
+    TextView count;
+    long c;
 
     public void setUserPicture(Holder holder, int position, Bitmap bitmap){
         holder.userPic.setImageBitmap(list.get(position).getUserPicture());
     }
 
-    public CommentRecyclerAdapter(Context context, ArrayList<CommentData> list){
+    public CommentRecyclerAdapter(Context context, ArrayList<CommentData> list, TextView count, long c){
         this.context=context;
         this.list=list;
+        this.count=count;
+        this.c = c;
     }
 
     @Override
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new Holder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_comment, parent, false));
+        return new Holder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_comment, parent, false), count, c);
     }
 
     @Override
@@ -63,18 +68,24 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
         TextView commentText;
         ImageView userPic;
         LinearLayout root_itemView;
-        public Holder(View itemView) {
+        TextView count;
+        long c;
+
+        public Holder(View itemView, final TextView count, final long c) {
             super(itemView);
             userStrID = (TextView) itemView.findViewById(R.id.textView_comment_userStrID);
             uploadTime = (TextView) itemView.findViewById(R.id.textView_comment_time);
             commentText = (TextView) itemView.findViewById(R.id.textView_comment_comment);
             userPic = (ImageView) itemView.findViewById(R.id.imageView_comment_userPic);
             root_itemView = (LinearLayout) itemView.findViewById(R.id.itemView);
+            this.count=count;
+            this.c=c;
 
             root_itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
                     final int index = getAdapterPosition();
+                    final long sheetID = list.get(index).getSheetID();
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(context)
                             .setTitle("삭제하시겠습니까")
@@ -85,7 +96,8 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
                                         new DeleteCommentAsync().setDeleteCommentCallback(new DeleteCommentAsync.DeleteCommentCallback() {
                                             @Override
                                             public void onResult(int result) {
-
+                                                list.clear();
+                                                new LoadComments(list, adapter, count, context).execute(sheetID, (long)0);
                                             }
                                         }).execute(list.get(index).getCommentID(), list.get(index).getSheetID());
                                         adapter.notifyItemRemoved(index);
