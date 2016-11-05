@@ -40,9 +40,9 @@ public class ChoiceFlatRecyclerAdapter extends RecyclerView.Adapter<ChoiceFlatRe
     public void onBindViewHolder(final ItemHolder holder, final int position) {
         holder.flatTextView.setText(list.get(position).getFlat()+" 번 플랫");
         if(list.get(position).isSelected()){
-            holder.itemView.setBackgroundColor(Color.BLUE);
+            holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.colorAccent));
         }else{
-            holder.itemView.setBackgroundColor(Color.WHITE);
+            holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.colorPrimaryLight));
         }
     }
 
@@ -67,7 +67,7 @@ public class ChoiceFlatRecyclerAdapter extends RecyclerView.Adapter<ChoiceFlatRe
                             list.get(i).setSelected(false);
                         }
                     }
-                    itemView.setBackgroundColor(Color.BLUE);
+                    itemView.setBackgroundColor(context.getResources().getColor(R.color.colorAccent));
                     rv.getAdapter().notifyDataSetChanged();
                 }
             });

@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,14 +62,16 @@ public class CommentRecyclerAdapter extends RecyclerView.Adapter<CommentRecycler
         TextView uploadTime;
         TextView commentText;
         ImageView userPic;
+        LinearLayout root_itemView;
         public Holder(View itemView) {
             super(itemView);
             userStrID = (TextView) itemView.findViewById(R.id.textView_comment_userStrID);
             uploadTime = (TextView) itemView.findViewById(R.id.textView_comment_time);
             commentText = (TextView) itemView.findViewById(R.id.textView_comment_comment);
             userPic = (ImageView) itemView.findViewById(R.id.imageView_comment_userPic);
+            root_itemView = (LinearLayout) itemView.findViewById(R.id.itemView);
 
-            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            root_itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
                     final int index = getAdapterPosition();

@@ -14,15 +14,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.limwoon.musicwriter.MusicViewActivity;
 import com.limwoon.musicwriter.MusicWriteActivity;
+import com.limwoon.musicwriter.NativeClass;
 import com.limwoon.musicwriter.R;
 import com.limwoon.musicwriter.SQLite.DefineSQL;
 import com.limwoon.musicwriter.SQLite.SheetDbHelper;
+import com.limwoon.musicwriter.data.NoteData;
+import com.limwoon.musicwriter.data.NoteParser;
 import com.limwoon.musicwriter.data.SheetData;
+import com.limwoon.musicwriter.sounds.Sounds;
 
 import java.util.ArrayList;
 
@@ -38,6 +42,9 @@ public class SheetRecyListAdapter extends RecyclerView.Adapter<SheetRecyListAdap
     SheetDbHelper sheetDbHelper;
     Cursor cursor;
     SQLiteDatabase db;
+
+    boolean isPlay=false;
+    Thread playThread;
 
     private void showProgress(){
         Thread thread = new Thread(new Runnable() {
@@ -80,9 +87,10 @@ public class SheetRecyListAdapter extends RecyclerView.Adapter<SheetRecyListAdap
     @Override
     public void onBindViewHolder(CustomHolder holder, int position) {
         holder.titleTextView.setText(sheetList.get(position).getTitle());
-        myOnClickListener(holder.btnView, position);
+        myOnClickListener(holder.card_view_linear_first, position);
         myOnClickListener(holder.btnModify, position);
         myOnClickListener(holder.btnDelete, position);
+        myOnClickListener(holder.btnPlay, position);
     }
 
     @Override
@@ -94,7 +102,6 @@ public class SheetRecyListAdapter extends RecyclerView.Adapter<SheetRecyListAdap
         view.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Toast.makeText(context,""+sheetList.get(pos).getId(),Toast.LENGTH_SHORT).show();
                 sheetDbHelper  = new SheetDbHelper(context);
                 db = sheetDbHelper.getReadableDatabase();
 
@@ -121,7 +128,7 @@ public class SheetRecyListAdapter extends RecyclerView.Adapter<SheetRecyListAdap
                 cursor.moveToFirst();
 
                 switch (view.getId()){
-                    case R.id.btn_view:
+                    case R.id.card_view_linear_first:
                         //showProgress();
                         int beat = cursor.getInt(cursor.getColumnIndexOrThrow(DefineSQL.COLUMN_NAME_BEATS));
                         String musicData = cursor.getString(cursor.getColumnIndexOrThrow(DefineSQL.COLUMN_NAME_NOTE));
@@ -180,6 +187,71 @@ public class SheetRecyListAdapter extends RecyclerView.Adapter<SheetRecyListAdap
                             }
                         }).show();
                         break;
+                    case R.id.btn_play:
+
+                        if(!isPlay){
+                            String data = cursor.getString(cursor.getColumnIndexOrThrow(DefineSQL.COLUMN_NAME_NOTE));
+                            NoteParser noteParser = new NoteParser(data);
+                            final ArrayList<NoteData> notes = new ArrayList<>();
+                            for(int i=0; i<noteParser.getNoteLength(); i++) {
+                                notes.add(noteParser.getNoteAt(i));
+                            }
+                            final ImageView play = (ImageView) view;
+
+                            playThread = new Thread(new Runnable() {
+                                @Override
+                                public void run(){
+                                    play.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            play.setImageResource(R.drawable.ic_pause_black_24dp);
+                                        }
+                                    });
+                                    isPlay=true;
+                                    try {
+                                        Thread.sleep(200);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    for(int i=0; i<notes.size(); i++) {
+                                        if (notes.get(i).node) continue;
+                                        for (int j = 0; j < 6; j++) {
+                                            if (notes.get(i).tone[j] != -1) {
+                                                NativeClass.setPlayingBufferQueue(j, notes.get(i).tone[j]);
+                                            }
+                                        }
+                                        try {
+                                            Thread.sleep(Sounds.getDuration(notes.get(i).duration, sheetList.get(pos).getTempo()));
+                                            NativeClass.setStopBufferQueue();
+
+                                        } catch (InterruptedException e) { // 정지버튼 클릭
+                                            play.post(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    play.setImageResource(R.drawable.ic_play_arrow_black_24dp);
+                                                }
+                                            });
+                                            isPlay=false;
+                                            NativeClass.setStopBufferQueue();
+                                            break;
+                                        }
+                                    }
+                                    play.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            play.setImageResource(R.drawable.ic_play_arrow_black_24dp);
+                                        }
+                                    });
+                                    isPlay=false;
+                                }
+                            });
+                            playThread.start();
+                        }
+                        else {
+                            playThread.interrupt();
+                        }
+                        break;
 
                 }
             }
@@ -189,17 +261,19 @@ public class SheetRecyListAdapter extends RecyclerView.Adapter<SheetRecyListAdap
 
     public static final class CustomHolder extends RecyclerView.ViewHolder{
         TextView titleTextView;
-        ImageView btnView;
+        ImageView btnPlay;
         ImageView btnModify;
         ImageView btnDelete;
+        LinearLayout card_view_linear_first;
 
         public CustomHolder(View itemView) {
             super(itemView);
 
             titleTextView = (TextView) itemView.findViewById(R.id.testTextView);
-            btnView= (ImageView) itemView.findViewById(R.id.btn_view);
+            btnPlay= (ImageView) itemView.findViewById(R.id.btn_play);
             btnModify= (ImageView) itemView.findViewById(R.id.btn_modify);
             btnDelete= (ImageView) itemView.findViewById(R.id.btn_delete);
+            card_view_linear_first = (LinearLayout) itemView.findViewById(R.id.card_view_linear_first);
         }
     }
 }

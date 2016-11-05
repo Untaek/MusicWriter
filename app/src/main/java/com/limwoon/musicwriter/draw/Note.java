@@ -588,10 +588,14 @@ public class Note extends View {
 
             }else if(noteData.rest){
                 Log.d("duration", ""+duration);
-                if(duration!=3){
+                if(duration==0 || duration==2){
                     canvas.drawBitmap(NoteBitmapMaker.bitmaps[duration+5],20,y+120,null);
+                }else if(duration==1){
+                    canvas.drawBitmap(NoteBitmapMaker.bitmaps[duration+5],20,y-24+156,null);
+                }else if(duration==3){
+                    canvas.drawBitmap(NoteBitmapMaker.bitmaps[duration+5],20,y-24+134,null);
                 }else{
-                    canvas.drawBitmap(NoteBitmapMaker.bitmaps[duration+5],20,y-24+120,null);
+                    canvas.drawBitmap(NoteBitmapMaker.bitmaps[duration+5],20,y-24+157,null);
                 }
             }
 

@@ -25,12 +25,15 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.limwoon.musicwriter.data.CommentData;
 import com.limwoon.musicwriter.data.NoteData;
 import com.limwoon.musicwriter.data.NoteParser;
@@ -52,6 +55,7 @@ import com.limwoon.musicwriter.http.LoadSharedSheetList;
 import com.limwoon.musicwriter.http.SendNotiAsync;
 import com.limwoon.musicwriter.http.WriteCommentAsync;
 import com.limwoon.musicwriter.list.CommentRecyclerAdapter;
+import com.limwoon.musicwriter.list.SheetRecyDivider;
 import com.limwoon.musicwriter.sounds.Sounds;
 
 import java.util.ArrayList;
@@ -67,7 +71,7 @@ public class SharedMusicViewActivity extends AppCompatActivity {
     SheetAppender sheetAppender;
     SeekBar seekBar_music;
     HorizontalScrollView horizontalScrollView_sheet;
-    Button button_play;
+    ImageView button_play;
     Thread playThread;
     boolean isPlay = false;
     int musicProgress;
@@ -82,8 +86,10 @@ public class SharedMusicViewActivity extends AppCompatActivity {
     SheetData data;
     static public boolean userLikeState;
     static public boolean userFavoriteState;
-    Button button_like;
-    Button button_favorite;
+    ImageView button_like;
+    ImageView button_favorite;
+    TextView textView_like;
+    TextView textView_favorite;
     TextView textView_commentCount;
     Button button_writeComment;
     EditText editText_writeComment;
@@ -98,7 +104,6 @@ public class SharedMusicViewActivity extends AppCompatActivity {
         if(PUBLIC_APP_DATA.getUserID()!= data.getUploadUserID()){
             menu.getItem(0).setVisible(false);
         }
-
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -151,14 +156,17 @@ public class SharedMusicViewActivity extends AppCompatActivity {
         NoteParser noteParser = new NoteParser(data.getNote());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("");
+        //toolbar.setTitle("");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        button_like = (Button) findViewById(R.id.button_like);
-        button_favorite = (Button) findViewById(R.id.button_favorite);
+        button_like = (ImageView) findViewById(R.id.imageView_thumb_up);
+        button_favorite = (ImageView) findViewById(R.id.imageView_favorite);
         button_writeComment = (Button) findViewById(R.id.button_write_comment);
         editText_writeComment = (EditText) findViewById(R.id.editText_comment);
+
+        textView_like = (TextView) findViewById(R.id.textView_thumb_up);
+        textView_like.setText(String.valueOf(data.getLikes()));
 
         if(!PUBLIC_APP_DATA.isLogin()){
             button_like.setEnabled(false);
@@ -167,8 +175,8 @@ public class SharedMusicViewActivity extends AppCompatActivity {
             editText_writeComment.setEnabled(false);
             editText_writeComment.setText("로그인이 필요합니다");
         }else{
-            new CheckLike(findViewById(R.id.button_like), userLikeState).execute(data.getId());
-            new CheckFavorite(findViewById(R.id.button_favorite)).execute(data.getId());
+            new CheckLike(button_like, userLikeState).execute(data.getId());
+            new CheckFavorite(button_favorite).execute(data.getId());
         }
 
         textView_commentCount = (TextView) findViewById(R.id.textView_comment_header);
@@ -176,23 +184,25 @@ public class SharedMusicViewActivity extends AppCompatActivity {
         progressBar_loadingComment = (ProgressBar) findViewById(R.id.progress_bar_loading_comment);
         commentRecyclerView.setNestedScrollingEnabled(false);
 
+
         commentRecyclerAdapter = new CommentRecyclerAdapter(this, commentList);
         commentRecyclerView.setAdapter(commentRecyclerAdapter);
         commentLinearLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false);
         commentRecyclerView.setLayoutManager(commentLinearLayoutManager);
+        commentRecyclerView.addItemDecoration(new SheetRecyDivider());
         new LoadComments(commentList, commentRecyclerAdapter, textView_commentCount, this).execute(data.getId(), (long)0);
 
         seekBar_music = (SeekBar) findViewById(R.id.music_seek_bar);
         horizontalScrollView_sheet = (HorizontalScrollView) findViewById(R.id.horizontalScrollView_sheet);
-        button_play = (Button) findViewById(R.id.button_play);
+        button_play = (ImageView) findViewById(R.id.button_play);
 
 
         TextView textView_title = (TextView) findViewById(R.id.textView_title);
         TextView textView_author = (TextView) findViewById(R.id.textView_author);
         TextView textView_description = (TextView) findViewById(R.id.textView_description);
 
-        textView_title.setText("제목: "+data.getTitle());
-        textView_author.setText("작곡자: "+data.getAuthor());
+        textView_title.setText(data.getTitle());
+        textView_author.setText(data.getAuthor());
         textView_description.setText("");
 
 
@@ -221,7 +231,7 @@ public class SharedMusicViewActivity extends AppCompatActivity {
                 if (!isPlay) {
                     seekBar_music.setAlpha(0.7f);
                     //seekBar_music.setOnTouchListener(onTouchListener);
-                   // button_play.setImageResource(R.drawable.ic_pause_black_48dp);
+                    button_play.setImageResource(R.drawable.ic_pause_black_48dp);
                     isPlay = true;
                     if (musicProgress == noteList.size() - 1) musicProgress = 0;
                     playThread = new Thread(new Runnable() {
@@ -305,7 +315,7 @@ public class SharedMusicViewActivity extends AppCompatActivity {
                             button_play.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    //button_play.setImageResource(R.drawable.ic_play_arrow_black_48dp);
+                                    button_play.setImageResource(R.drawable.ic_play_arrow_black_48dp);
                                 }
                             });
                         }
@@ -315,7 +325,6 @@ public class SharedMusicViewActivity extends AppCompatActivity {
                     seekBar_music.setAlpha(1);
                     seekBar_music.setOnTouchListener(null);
                     isPlay = false;
-                    //button_play.setImageResource(R.drawable.ic_play_arrow_black_48dp);
                     if (playThread != null) {
                         playThread.interrupt();
                     }
@@ -330,16 +339,21 @@ public class SharedMusicViewActivity extends AppCompatActivity {
                     if(userLikeState){
                         new LikeSheetAsync().execute(data.getId());
                         Toast.makeText(SharedMusicViewActivity.this, "추천 했습니다", Toast.LENGTH_SHORT).show();
-                        button_like.setText("추천했습니다");
+                        button_like.setImageResource(R.drawable.thumb_up_fill);
                         userLikeState=false;
-                        resultIntent.putExtra("like", data.getLikes()+1);
+                        data.setLikes(data.getLikes()+1);
+                        resultIntent.putExtra("like", data.getLikes());
+                        textView_like.setText(String.valueOf(data.getLikes()));
+                        YoYo.with(Techniques.FadeIn).duration(400).playOn(button_like);
                     }
                     else{
                         new DisLikeSheetAsync().execute(data.getId());
                         Toast.makeText(SharedMusicViewActivity.this, "추천을 취소했습니다", Toast.LENGTH_SHORT).show();
-                        button_like.setText("추천");
+                        button_like.setImageResource(R.drawable.thumb_up_blank);
                         userLikeState=true;
-                        resultIntent.putExtra("like", data.getLikes()-1);
+                        data.setLikes(data.getLikes()-1);
+                        resultIntent.putExtra("like", data.getLikes());
+                        textView_like.setText(String.valueOf(data.getLikes()));
                     }
 
                 }else{
@@ -355,14 +369,15 @@ public class SharedMusicViewActivity extends AppCompatActivity {
                     if(userFavoriteState){
                         new FavoriteSheetAsync().execute(data.getId());
                         Toast.makeText(SharedMusicViewActivity.this, "즐겨찾기에 추가 했습니다", Toast.LENGTH_SHORT).show();
-                        button_favorite.setText("즐겨찾기 되었습니다");
+                        button_favorite.setImageResource(R.drawable.star_fill);
                         userFavoriteState=false;
                         resultIntent.putExtra("favorite", userFavoriteState);
+                        YoYo.with(Techniques.FadeIn).duration(400).playOn(button_favorite);
                     }
                     else{
                         new DisFavoriteSheetAsync().execute(data.getId());
-                        Toast.makeText(SharedMusicViewActivity.this, "즐겨찾기를 취소했습니다", Toast.LENGTH_SHORT).show();
-                        button_favorite.setText("즐겨찾기");
+                        Toast.makeText(SharedMusicViewActivity.this, "즐겨찾기에서 삭제했습니다", Toast.LENGTH_SHORT).show();
+                        button_favorite.setImageResource(R.drawable.star_blank);
                         userFavoriteState=true;
                         resultIntent.putExtra("favorite", userFavoriteState);
                     }
@@ -407,6 +422,14 @@ public class SharedMusicViewActivity extends AppCompatActivity {
         editText_writeComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                AppBarLayout appbarLayout = (AppBarLayout) findViewById(R.id.appbar);
+                appbarLayout.setExpanded(false);
+            }
+        });
+
+        textView_commentCount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 AppBarLayout appbarLayout = (AppBarLayout) findViewById(R.id.appbar);
                 appbarLayout.setExpanded(false);
             }

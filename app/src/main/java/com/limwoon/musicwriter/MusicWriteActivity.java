@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -43,6 +44,7 @@ import com.limwoon.musicwriter.draw.NoteRecyclerViewDecoration;
 import com.limwoon.musicwriter.draw.NoteBitmapMaker;
 import com.limwoon.musicwriter.draw.SheetAppender;
 import com.limwoon.musicwriter.data.NoteParser;
+import com.limwoon.musicwriter.list.SheetRecyDivider;
 import com.limwoon.musicwriter.sounds.Sounds;
 
 import org.json.JSONArray;
@@ -382,6 +384,7 @@ public class MusicWriteActivity extends AppCompatActivity {
         choiceFlatRecyclerView.addItemDecoration(choiceFlatRecyclerDecoration);
         choiceFlatRecyclerItemClickListener = new ChoiceFlatRecyclerItemClickListener(getApplicationContext(), noteStore, selectedStringNum, (LinearLayout) findViewById(R.id.checkbox_wrapper));
         choiceFlatRecyclerView.addOnItemTouchListener(choiceFlatRecyclerItemClickListener);
+        choiceFlatRecyclerView.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
 
 
         for (int i = 0; i <= 20; i++) {
@@ -552,8 +555,8 @@ public class MusicWriteActivity extends AppCompatActivity {
             }
         });
 
-        imageViewExamNote.setImageBitmap(noteBitmapMaker.getBitmap(duration));
-        imageViewExamRest.setImageBitmap(noteBitmapMaker.getBitmap(duration + 5));
+        imageViewExamNote.setImageBitmap(NoteBitmapMaker.getBitmap_preview(duration));
+        imageViewExamRest.setImageBitmap(NoteBitmapMaker.getBitmap_preview(duration + 5));
 
         seekBarSelectBeat.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -561,8 +564,8 @@ public class MusicWriteActivity extends AppCompatActivity {
                 // 0 : 16분음표, 1 : 8분음표, 2: 4분음표, 3 : 2분음표, 4 : 온음표
                 duration = i;
 
-                imageViewExamNote.setImageBitmap(noteBitmapMaker.getBitmap(duration));
-                imageViewExamRest.setImageBitmap(noteBitmapMaker.getBitmap(duration + 5));
+                imageViewExamNote.setImageBitmap(NoteBitmapMaker.getBitmap_preview(duration));
+                imageViewExamRest.setImageBitmap(NoteBitmapMaker.getBitmap_preview(duration + 5));
             }
 
             @Override

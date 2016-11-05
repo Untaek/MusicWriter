@@ -10,9 +10,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="0번 플랫"
-        android:textSize="18sp"
+        android:textSize="14sp"
         android:id="@+id/textview_choice_flat"
-        android:textColor="#000000"
+        android:textColor="@color/colorPrimary"
         android:layout_gravity="center"
-        android:padding="16dp"/>
+        android:padding="12dp"
+        android:textStyle="bold"/>
 </LinearLayout>

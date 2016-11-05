@@ -173,7 +173,7 @@ public class LoadComments extends AsyncTask<Long, Void, Integer> {
 
         SharedMusicViewActivity.commentLoading = false;
         if(textView_count!=null){
-            textView_count.setText("댓글 ("+count+")");
+            textView_count.setText("▼      댓글 ("+count+")      ▼");
         }
 
         UserPicture userPicture = new UserPicture(context);

@@ -202,61 +202,66 @@ public class SharedListPagerFragment extends Fragment {
             mView = inflater.inflate(R.layout.fragment_shared_list, container, false);
             TextView textView_title = (TextView) mView.findViewById(R.id.textView_pageTitle);
             textView_title.setText("내가 게시한 악보");
-            sheetList3 = new ArrayList<>();
-            mRecyclerView3 = (RecyclerView) mView.findViewById(R.id.recycler_shared_sheet);
-            mRecyclerAdapter3 = new SharedSheetRecyclerAdapter(sheetList3, container.getContext(), this);
-            mRecyclerView3.setAdapter(mRecyclerAdapter3);
-            mLinearLayoutManager3 = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-            mRecyclerView3.setLayoutManager(mLinearLayoutManager3);
-            mRecyclerView3.addItemDecoration(new SheetRecyDivider());
-            mSwipeRefreshLayout3 = (SwipeRefreshLayout) mView.findViewById(R.id.refresh_layout);
-            mSwipeRefreshLayout3.setColorSchemeColors(getResources().getColor(R.color.colorAccent));
-            mSwipeRefreshLayout3.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    sheetList3.clear();
-                    new LoadSharedSheetList(sheetList3, mRecyclerAdapter3)
-                            .setListStateListener(new ListStateListener() {
-                                @Override
-                                public void onLoaded() {
-                                    mSwipeRefreshLayout3.setRefreshing(false);
-                                }
+            if(PUBLIC_APP_DATA.isLogin()){
+                sheetList3 = new ArrayList<>();
+                mRecyclerView3 = (RecyclerView) mView.findViewById(R.id.recycler_shared_sheet);
+                mRecyclerAdapter3 = new SharedSheetRecyclerAdapter(sheetList3, container.getContext(), this);
+                mRecyclerView3.setAdapter(mRecyclerAdapter3);
+                mLinearLayoutManager3 = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+                mRecyclerView3.setLayoutManager(mLinearLayoutManager3);
+                mRecyclerView3.addItemDecoration(new SheetRecyDivider());
+                mSwipeRefreshLayout3 = (SwipeRefreshLayout) mView.findViewById(R.id.refresh_layout);
+                mSwipeRefreshLayout3.setColorSchemeColors(getResources().getColor(R.color.colorAccent));
+                mSwipeRefreshLayout3.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        sheetList3.clear();
+                        new LoadSharedSheetList(sheetList3, mRecyclerAdapter3)
+                                .setListStateListener(new ListStateListener() {
+                                    @Override
+                                    public void onLoaded() {
+                                        mSwipeRefreshLayout3.setRefreshing(false);
+                                    }
 
-                                @Override
-                                public void onLoaded(SheetData sheetData) {
+                                    @Override
+                                    public void onLoaded(SheetData sheetData) {
 
-                                }
-                            }).execute(0, SORT_NEW, LOAD_MYSHEET); // 내 거
+                                    }
+                                }).execute(0, SORT_NEW, LOAD_MYSHEET); // 내 거
 
-                }
-            });
-            final ProgressBar progressBar_loading3 = (ProgressBar) mView.findViewById(R.id.progress_loading);
-            new LoadSharedSheetList(sheetList3, mRecyclerAdapter3)
-                    .setListStateListener(new ListStateListener() {
-                        @Override
-                        public void onLoaded() {
-                            progressBar_loading3.setVisibility(View.INVISIBLE);
-                        }
-
-                        @Override
-                        public void onLoaded(SheetData sheetData) {
-
-                        }
-                    }).execute(0, SORT_NEW, LOAD_MYSHEET); // 내 거
-
-            mRecyclerView3.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                @Override
-                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy);
-
-                    int lastItem = mLinearLayoutManager3.findLastVisibleItemPosition();
-                    int itemCount = mLinearLayoutManager3.getItemCount();
-                    if(lastItem >= itemCount-1 && dy>0 && !listLoading3 && sheetList3.size()%7==0){
-                        listLoading3=true;
-                        new LoadSharedSheetList(sheetList3, mRecyclerAdapter3).execute(itemCount/7, SORT_LIKE, LOAD_MYSHEET);
                     }
-                }
-            });
+                });
+                final ProgressBar progressBar_loading3 = (ProgressBar) mView.findViewById(R.id.progress_loading);
+                new LoadSharedSheetList(sheetList3, mRecyclerAdapter3)
+                        .setListStateListener(new ListStateListener() {
+                            @Override
+                            public void onLoaded() {
+                                progressBar_loading3.setVisibility(View.INVISIBLE);
+                            }
+
+                            @Override
+                            public void onLoaded(SheetData sheetData) {
+
+                            }
+                        }).execute(0, SORT_NEW, LOAD_MYSHEET); // 내 거
+
+                mRecyclerView3.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                    @Override
+                    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                        super.onScrolled(recyclerView, dx, dy);
+
+                        int lastItem = mLinearLayoutManager3.findLastVisibleItemPosition();
+                        int itemCount = mLinearLayoutManager3.getItemCount();
+                        if(lastItem >= itemCount-1 && dy>0 && !listLoading3 && sheetList3.size()%7==0){
+                            listLoading3=true;
+                            new LoadSharedSheetList(sheetList3, mRecyclerAdapter3).execute(itemCount/7, SORT_LIKE, LOAD_MYSHEET);
+                        }
+                    }
+                });
+            }else {
+                mView.findViewById(R.id.progress_loading).setVisibility(View.INVISIBLE);
+            }
+
 
             return mView;
         }

@@ -22,6 +22,7 @@ import static com.facebook.GraphRequest.TAG;
 public class SheetRecyDivider extends RecyclerView.ItemDecoration {
     Paint paint;
     int height;
+    static public int DIVIDE_LINE = 1;
 
     public SheetRecyDivider(){
         paint = new Paint();
@@ -31,6 +32,7 @@ public class SheetRecyDivider extends RecyclerView.ItemDecoration {
     @Override
     public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
         super.onDrawOver(c, parent, state);
+
     }
 
     @Override

@@ -1,11 +1,12 @@
 package com.limwoon.musicwriter.http;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
+import com.limwoon.musicwriter.R;
 import com.limwoon.musicwriter.SharedMusicViewActivity;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 
@@ -26,6 +27,13 @@ public class CheckLike extends AsyncTask<Long, Void, Integer> {
 
     View button;
     boolean state;
+
+    OnStatusCheckedListener onStatusCheckedListener;
+
+    public CheckLike setOnStatusCheckedListener(OnStatusCheckedListener listener){
+        this.onStatusCheckedListener = listener;
+        return this;
+    }
 
     public CheckLike(View button, boolean state){
         this.button=button;
@@ -77,10 +85,10 @@ public class CheckLike extends AsyncTask<Long, Void, Integer> {
         super.onPostExecute(result);
 
         if(result==2){
-            ((Button)button).setText("추천했습니다");
+            ((ImageView)button).setImageResource(R.drawable.thumb_up_fill);
             SharedMusicViewActivity.userLikeState=false;
         }else if(result==1){
-            ((Button)button).setText("추천");
+            ((ImageView)button).setImageResource(R.drawable.thumb_up_blank);
             SharedMusicViewActivity.userLikeState=true;
         }
     }

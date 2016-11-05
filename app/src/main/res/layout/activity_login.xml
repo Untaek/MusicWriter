@@ -94,7 +94,9 @@
                 android:id="@+id/confirm_log_in"
                 android:theme="@style/myButtonStyle_primary"
                 android:minWidth="0dp"
-                android:minHeight="40dp"
+                android:minHeight="0dp"
+                android:paddingTop="11dp"
+                android:paddingBottom="11dp"
                 />
             <com.facebook.login.widget.LoginButton
                 android:layout_width="match_parent"

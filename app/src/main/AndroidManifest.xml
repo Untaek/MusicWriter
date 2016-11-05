@@ -9,9 +9,11 @@
     <application
         android:name=".data.PUBLIC_APP_DATA"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/logo"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:label="플레이기타"
+        >
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
@@ -22,11 +24,7 @@
         <activity
             android:name=".MainNavActivity"
             android:label="@string/title_activity_main_nav">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".MusicViewActivity"
@@ -48,6 +46,11 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainNavActivity" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".FindPwActivity"
@@ -66,7 +69,8 @@
         <activity android:name=".TestActivityMustDelete" />
         <activity
             android:name=".SharedMusicViewActivity"
-            android:theme="@style/AppThemeSharedSheet">
+            android:theme="@style/AppThemeSharedSheet"
+            android:label="악보 보기">
         </activity>
 
         <service android:name=".service.fcm">

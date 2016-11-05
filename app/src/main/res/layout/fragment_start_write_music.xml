@@ -17,17 +17,91 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:id="@+id/bakja_container"
-            android:paddingBottom="@dimen/activity_padding_bottom"
-            android:paddingLeft="@dimen/activity_padding_left"
-            android:paddingRight="@dimen/activity_padding_right"
-            android:paddingTop="@dimen/activity_padding_top">
-            <TextView
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="20dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="박자"
+                        android:textSize="18sp"
+                        android:id="@+id/textView_select_bakja"
+                        android:textStyle="bold"
+                        android:paddingBottom="8dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="2/4"
+                        android:layout_marginLeft="16dp"
+                        android:id="@+id/textView_selected_bakja"/>
+                </LinearLayout>
+                <SeekBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="14dp"
+                    android:paddingBottom="14dp"
+                    android:id="@+id/seekBar_bakja"
+                    android:max="2"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:text="템포"
+                        android:textStyle="bold"
+                        android:paddingBottom="8dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="125"
+                        android:layout_marginLeft="16dp"
+                        android:textSize="18sp"
+                        android:id="@+id/textView_tempo"
+                        />
+                </LinearLayout>
+
+                <SeekBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="14dp"
+                    android:paddingBottom="14dp"
+                    android:id="@+id/seekBar_tempo"
+                    android:max="150"/>
+            </LinearLayout>
+            <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="박자"
-                android:textSize="24sp"
-                android:id="@+id/textView_select_bakja"
-                android:textStyle="bold" />
+                android:text="작곡시작"
+                android:theme="@style/myButtonStyle_primary"
+                android:minHeight="0dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:paddingLeft="40dp"
+                android:paddingRight="40dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:id="@+id/btn_select_bakja"/>
 
             <Spinner
                 android:layout_width="match_parent"
@@ -43,7 +117,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="16dp"
-                android:layout_marginTop="12dp">
+                android:layout_marginTop="12dp"
+                android:visibility="gone">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -78,6 +153,8 @@
                     android:theme="@style/myButtonStyle"/>
             </LinearLayout>
 
+
+
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -101,13 +178,7 @@
                     android:text="박자 "
                     android:textStyle="bold"
                     android:layout_gravity="end"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:text="2/4"
-                    android:layout_marginLeft="16dp"
-                    android:id="@+id/textView_selected_bakja"/>
+
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -134,22 +205,14 @@
                 android:visibility="gone"
                 />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="125"
-                android:textSize="20sp"
-                android:id="@+id/textView_tempo"
-                android:layout_marginTop="24dp"
-                />
+
 
             <SeekBar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:max="150"
                 android:progress="75"
-                android:id="@+id/seekBar_tempo"
+
                 android:layout_marginTop="16dp"
                 android:padding="8dp"
                 />
@@ -177,7 +240,7 @@
                 android:layout_height="wrap_content"
                 android:text="작곡 시작"
                 android:textSize="18sp"
-                android:id="@+id/btn_select_bakja"
+
                 android:layout_gravity="center"
                 android:layout_marginTop="30dp"
                 android:paddingLeft="24dp"
@@ -186,6 +249,7 @@
                 android:visibility="gone"
                 />
         </LinearLayout>
+
     </FrameLayout>
 
     <LinearLayout
@@ -195,7 +259,8 @@
         app:layout_anchorGravity="bottom|right"
         android:orientation="vertical"
         android:padding="36dp"
-        android:id="@+id/fab_right_wrapper">
+        android:id="@+id/fab_right_wrapper"
+        android:visibility="gone">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

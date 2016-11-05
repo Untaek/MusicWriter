@@ -20,7 +20,7 @@
     </style>
 
     <style name="myButtonStyle"         parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorControlHighlight">#a7d</item>
+        <item name="colorControlHighlight">@color/colorPrimary</item>
         <item name="colorButtonNormal">@color/colorPrimaryLight</item>
         <item name="android:textColor">@color/black</item>
     </style>

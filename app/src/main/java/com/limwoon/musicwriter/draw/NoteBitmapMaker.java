@@ -23,6 +23,7 @@ public class NoteBitmapMaker {
     private static int[] hearsReverse = {R.drawable.note16_reverse_hear, R.drawable.note8_reverse_hear};
 
     static Bitmap[] bitmaps = new Bitmap[drawables.length];
+    static Bitmap[] bitmaps_preview = new Bitmap[drawables.length];
     static Bitmap[] bitmapsRev = new Bitmap[drawablesReverse.length];
     static Bitmap[] bitmapsHears = new Bitmap[hears.length];
     static Bitmap[] bitmapsHearsRev = new Bitmap[hearsReverse.length];
@@ -61,8 +62,31 @@ public class NoteBitmapMaker {
         res = context.getResources();
         BitmapFactory.Options opt = new BitmapFactory.Options();
         for(int i=0; i<bitmaps.length; i++) {
+            bitmaps_preview[i] = BitmapFactory.decodeResource(res, drawables[i], opt);
+            bitmaps_preview[i] = Bitmap.createScaledBitmap(bitmaps_preview[i], width, height, false);
+
             if(res != null) {
                 if(i>4){
+                    if(i==5){
+                        smallWidth=100;
+                        smallHeight=smallWidth;
+                    }
+                    else if(i==6){
+                        smallWidth=70;
+                        smallHeight=smallWidth;
+                    }
+                    else if(i==7){
+                        smallWidth=100;
+                        smallHeight=smallWidth;
+                    }
+                    else if(i==8){
+                        smallWidth=100;
+                        smallHeight=smallWidth;
+                    }
+                    else if(i==9){
+                        smallWidth=100;
+                        smallHeight=smallWidth;
+                    }
                     bitmaps[i] = BitmapFactory.decodeResource(res, drawables[i], opt);
                     bitmaps[i] = Bitmap.createScaledBitmap(bitmaps[i], smallWidth, smallHeight, false);
                 }else{
@@ -100,5 +124,9 @@ public class NoteBitmapMaker {
 
     public Bitmap getBitmap(int num){
         return bitmaps[num];
+    }
+
+    public static Bitmap getBitmap_preview(int num) {
+        return bitmaps_preview[num];
     }
 }

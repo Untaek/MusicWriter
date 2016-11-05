@@ -68,6 +68,7 @@ public class MusicViewActivity extends AppCompatActivity {
     int musicProgress =0;
 
     Button button_shareMusic;
+    Button button_modify;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -279,10 +280,12 @@ public class MusicViewActivity extends AppCompatActivity {
             }
         });
 
-        textViewTitle.setText("제목 : " + title);
+        textViewTitle.setText(title);
         textViewAuthor.setText("작곡자 : " + author);
 
         button_shareMusic = (Button) findViewById(R.id.button_share_music);
+        button_modify = (Button) findViewById(R.id.button_modify_music);
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(MusicViewActivity.this);
         builder.setTitle("이 곡을 게시 하시겠습니까?");
         builder.setPositiveButton("네", new DialogInterface.OnClickListener() {
@@ -318,6 +321,21 @@ public class MusicViewActivity extends AppCompatActivity {
                 }
             }
         });
+        button_modify.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), MusicWriteActivity.class);
+                intent.putExtra("isEdit", true);
+                intent.putExtra("id", id);
+                intent.putExtra("beatIndex", beats);
+                intent.putExtra("title", title);
+                intent.putExtra("author", author);
+                intent.putExtra("tempo", tempo);
+                startActivity(intent);
+
+                overridePendingTransition(R.anim.activity_slide_left, R.anim.activity_slide_left_gone);
+            }
+        });
     }
 
     @Override
@@ -342,6 +360,9 @@ public class MusicViewActivity extends AppCompatActivity {
             for(int i=0; i<noteParser.getNoteLength(); i++) {
                 noteList.add(noteParser.getNoteAt(i));
                 sheetRecyAdapter.notifyItemChanged(i);
+                if(noteList.get(noteList.size()-1).node){
+                    noteList.remove(noteList.size()-1);
+                }
                 if (noteList.size() > 1 && (noteList.size()) % 4 == 0) {
                     sheetAppender = new SheetAppender(getApplicationContext());
                     sheetBaseLinear.addView(sheetAppender);
@@ -354,7 +375,7 @@ public class MusicViewActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId()==R.id.action_edit){
+        if(false){
             Log.d("id", ""+id);
 
             Intent intent = new Intent(getApplicationContext(), MusicWriteActivity.class);

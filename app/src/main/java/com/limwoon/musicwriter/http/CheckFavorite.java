@@ -4,7 +4,9 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
+import com.limwoon.musicwriter.R;
 import com.limwoon.musicwriter.SharedMusicViewActivity;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 
@@ -75,10 +77,10 @@ public class CheckFavorite extends AsyncTask<Long, Void, Integer> {
         super.onPostExecute(result);
 
         if(result==2){
-            ((Button)button).setText("즐겨찾기에 추가되었습니다");
+            ((ImageView)button).setImageResource(R.drawable.star_fill);
             SharedMusicViewActivity.userFavoriteState=false;
         }else if(result==1){
-            ((Button)button).setText("즐겨찾기");
+            ((ImageView)button).setImageResource(R.drawable.star_blank);
             SharedMusicViewActivity.userFavoriteState=true;
         }
     }

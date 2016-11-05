@@ -86,7 +86,7 @@ public class LoadFavoriteListAsync extends AsyncTask<Bundle, Void, Integer> {
                 String author = jsonObject.getString("author");
                 String note = jsonObject.getString("note");
                 String uploadTime = jsonObject.getString("uploadtime");
-                String uploadUserID = jsonObject.getString("uploadUserID");
+                long uploadUserID = jsonObject.getLong("uploadUserID");
                 long comments = jsonObject.getLong("comments");
                 long likes = jsonObject.getLong("likes");
                 long id = jsonObject.getLong("sheetID");
@@ -120,7 +120,8 @@ public class LoadFavoriteListAsync extends AsyncTask<Bundle, Void, Integer> {
                 sheetData.setAuthor(author);
                 sheetData.setNote(note);
                 sheetData.setUploadTime(timeStr);
-                sheetData.setUploadUserStrID(uploadUserID);
+                //sheetData.setUploadUserStrID(uploadUserID);
+                sheetData.setUploadUserID(uploadUserID);
                 sheetData.setComments(comments);
                 sheetData.setLikes(likes);
                 sheetData.setTempo(tempo);

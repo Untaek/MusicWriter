@@ -84,6 +84,8 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
     ImageView userImage;
     Bitmap userPicBitmap;
     Button button_logout;
+    TextView textView_guest;
+    LinearLayout linear_userStatusContainer;
 
     // 유저 이미지 처리 //
     UserPicture userPicture;
@@ -120,6 +122,8 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
         buttonLogin = (Button) mNavigationView.getHeaderView(0).findViewById(R.id.nav_header_loginBtn);
         userImage = (ImageView) mNavigationView.getHeaderView(0).findViewById(R.id.imageView_user_picture);
         button_logout = (Button) findViewById(R.id.button_menu_logout);
+        textView_guest = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.textView_nav_header_guest);
+        linear_userStatusContainer = (LinearLayout) mNavigationView.getHeaderView(0).findViewById(R.id.linear_user_stat_container);
 
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,21 +137,28 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
         button_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainNavActivity.this)
-                        .setTitle("로그아웃 확인")
-                        .setMessage("정말 로그아웃 하시겠습니까?")
-                        .setPositiveButton("로그아웃", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                new UserCheck(MainNavActivity.this).logout();
-                                mDrawerLayout.closeDrawer(GravityCompat.START);
-                                myFragmentPagerAdapter.notifyDataSetChanged();
-                                onResume();
-                            }
-                        })
-                        .setNegativeButton("아니오", null);
-                AlertDialog dialog = dialogBuilder.create();
-                dialog.show();
+                if(PUBLIC_APP_DATA.isLogin()){
+                    AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainNavActivity.this)
+                            .setTitle("로그아웃 확인")
+                            .setMessage("정말 로그아웃 하시겠습니까?")
+                            .setPositiveButton("로그아웃", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    new UserCheck(MainNavActivity.this).logout();
+                                    mDrawerLayout.closeDrawer(GravityCompat.START);
+                                    myFragmentPagerAdapter.notifyDataSetChanged();
+                                    onResume();
+                                }
+                            })
+                            .setNegativeButton("아니오", null);
+                    AlertDialog dialog = dialogBuilder.create();
+                    dialog.show();
+                }else{
+                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                    startActivity(intent);
+                    mDrawerLayout.closeDrawer(GravityCompat.START);
+                }
+
             }
         });
 
@@ -162,7 +173,6 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
         super.onResume();
         if(PUBLIC_APP_DATA.isLogin()){
             linearUserInfContainer.setVisibility(View.VISIBLE);
-            buttonLogin.setVisibility(View.GONE);
             textViewUserStrID.setText(PUBLIC_APP_DATA.getUserStrID());
             textViewUserEmail.setText(PUBLIC_APP_DATA.getUserEmail());
             mNavigationView.getMenu().setGroupVisible(R.id.nav_group_user, true);
@@ -175,14 +185,19 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                     userImage.setImageBitmap(userPicBitmap);
                 }
             });
-            button_logout.setVisibility(View.VISIBLE);
+            button_logout.setText("로그아웃");
+            textView_guest.setVisibility(View.GONE);
+            linear_userStatusContainer.setBackgroundColor(getResources().getColor(R.color.colorPrimaryLight));
+           // linear_userStatusContainer.setBackgroundResource(R.drawable.user_info_container);
         }
         else {
             linearUserInfContainer.setVisibility(View.INVISIBLE);
-            buttonLogin.setVisibility(View.VISIBLE);
             mNavigationView.getMenu().setGroupVisible(R.id.nav_group_user, false);
             userImage.setImageResource(R.drawable.ic_account_circle_white_48dp);
-            button_logout.setVisibility(View.INVISIBLE);
+            button_logout.setText("로그인");
+            textView_guest.setVisibility(View.VISIBLE);
+            //linear_userStatusContainer.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            linear_userStatusContainer.setBackgroundResource(R.drawable.user_info_container);
         }
     }
 
@@ -321,6 +336,8 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                     final LinearLayout fabRight_wrap = (LinearLayout) rootView.findViewById(R.id.fab_right_wrapper);
                     final TextView textView_fabRightAbove = (TextView) rootView.findViewById(R.id.textView_fab_above);
 
+                    SeekBar seekBar_bakja = (SeekBar) rootView.findViewById(R.id.seekBar_bakja);
+
                     button_goBackBakja.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -414,15 +431,6 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                             tempo=progress+50;
                             textView_tempo.setText(String.valueOf(tempo));
 
-                            int barWidth = seekBar.getMeasuredWidth();
-                            int numX_pos = (barWidth/seekBar.getMax())*seekBar.getProgress();
-                            numX_pos += 140;
-                            if(tempo<100){
-                                textView_tempo.setX(numX_pos+12);
-                            }else{
-                                textView_tempo.setX(numX_pos-28);
-                            }
-
                         }
                         @Override
                         public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -435,6 +443,18 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                             seekBar_tempo.setProgress(progress);
                             textView_tempo.setText(progress+50+"");
                             tempo=progress+50;
+                        }
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {}
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {}
+                    });
+
+                    seekBar_bakja.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                            textView_selectedBakja.setText((i+2)+"/4");
+                            beatIndex=i;
                         }
                         @Override
                         public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -463,8 +483,6 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
                     linearLayoutManager = new LinearLayoutManager(rootView.getContext(), LinearLayoutManager.VERTICAL, true);
                     recyclerViewMySheet.setLayoutManager(linearLayoutManager);
                     recyclerViewMySheet.setAdapter(sheetRecyListAdapter);
-
-
                     break;
 
                 case 3:
