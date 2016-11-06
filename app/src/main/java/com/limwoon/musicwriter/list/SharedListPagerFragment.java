@@ -262,7 +262,6 @@ public class SharedListPagerFragment extends Fragment {
                 mView.findViewById(R.id.progress_loading).setVisibility(View.INVISIBLE);
             }
 
-
             return mView;
         }
         return super.onCreateView(inflater, container, savedInstanceState);
@@ -273,49 +272,67 @@ public class SharedListPagerFragment extends Fragment {
         int fragNum = getArguments().getInt("num");
         long sheetID = data.getLongExtra("id", -1);
         final int index = data.getIntExtra("pos", -1);
+        boolean deleted = data.getBooleanExtra("deleted", false);
         Log.d("data", "onActivityResult: "+data.getLongExtra("id", -1));
         if(fragNum==1){
-            new RefreshListItem(sheetList, index)
-                    .setOnListStateListener(new ListStateListener() {
-                        @Override
-                        public void onLoaded() {
+            if(!deleted){
+                new RefreshListItem(sheetList, index)
+                        .setOnListStateListener(new ListStateListener() {
+                            @Override
+                            public void onLoaded() {
 
-                        }
+                            }
 
-                        @Override
-                        public void onLoaded(SheetData sheetData) {
-                            sheetList.set(index, sheetData);
-                            mRecyclerAdapter.notifyDataSetChanged();
-                        }
-                    }).execute(sheetID, PUBLIC_APP_DATA.getUserID());
+                            @Override
+                            public void onLoaded(SheetData sheetData) {
+                                sheetList.set(index, sheetData);
+                                mRecyclerAdapter.notifyDataSetChanged();
+                            }
+                        }).execute(sheetID, PUBLIC_APP_DATA.getUserID());
+            }else{
+                sheetList.remove(index);
+                mRecyclerAdapter.notifyDataSetChanged();
+            }
         }else if(fragNum==2){
-            new RefreshListItem(sheetList2, index)
-                    .setOnListStateListener(new ListStateListener() {
-                        @Override
-                        public void onLoaded() {
+            if(!deleted){
+                new RefreshListItem(sheetList2, index)
+                        .setOnListStateListener(new ListStateListener() {
+                            @Override
+                            public void onLoaded() {
 
-                        }
+                            }
 
-                        @Override
-                        public void onLoaded(SheetData sheetData) {
-                            sheetList2.set(index, sheetData);
-                            mRecyclerAdapter2.notifyDataSetChanged();
-                        }
-                    }).execute(sheetID, PUBLIC_APP_DATA.getUserID());
+                            @Override
+                            public void onLoaded(SheetData sheetData) {
+                                sheetList2.set(index, sheetData);
+                                mRecyclerAdapter2.notifyDataSetChanged();
+                            }
+                        }).execute(sheetID, PUBLIC_APP_DATA.getUserID());
+            }else{
+                sheetList2.remove(index);
+                mRecyclerAdapter2.notifyDataSetChanged();
+            }
+
         }else if(fragNum==3){
-            new RefreshListItem(sheetList3, index)
-                    .setOnListStateListener(new ListStateListener() {
-                        @Override
-                        public void onLoaded() {
+            if(!deleted){
+                new RefreshListItem(sheetList3, index)
+                        .setOnListStateListener(new ListStateListener() {
+                            @Override
+                            public void onLoaded() {
 
-                        }
+                            }
 
-                        @Override
-                        public void onLoaded(SheetData sheetData) {
-                            sheetList3.set(index, sheetData);
-                            mRecyclerAdapter3.notifyDataSetChanged();
-                        }
-                    }).execute(sheetID, PUBLIC_APP_DATA.getUserID());
+                            @Override
+                            public void onLoaded(SheetData sheetData) {
+                                sheetList3.set(index, sheetData);
+                                mRecyclerAdapter3.notifyDataSetChanged();
+                            }
+                        }).execute(sheetID, PUBLIC_APP_DATA.getUserID());
+            }else{
+                sheetList3.remove(index);
+                mRecyclerAdapter3.notifyDataSetChanged();
+            }
+
         }
 
         super.onActivityResult(requestCode, resultCode, data);

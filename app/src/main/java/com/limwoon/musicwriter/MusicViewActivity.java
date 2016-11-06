@@ -355,6 +355,39 @@ public class MusicViewActivity extends AppCompatActivity {
         String noteData = sharedPreferences.getString("noteData", null);
         if(noteData!=null){
             noteList.clear();
+            sheetRecyAdapter.notifyDataSetChanged();
+            for(int j=sheetBaseLinear.getChildCount()-1; j>1; j--){
+                sheetBaseLinear.removeViewAt(j);
+            }
+
+            noteStore.cursor=0;
+            noteParser.setData2(noteData);
+            for (int i = 0; i < noteParser.getNoteLength(); i++) {
+                noteStore.setTempData(noteParser.getNoteAt(i));
+                if(!noteStore.getTempData().node)
+                    noteStore.saveNote(i);
+            }
+
+            if(noteList.get(noteList.size()-1).node){
+                noteList.remove(noteList.size()-1);
+            }
+
+            for(int j=0; j<noteList.size()/4; j++){
+                sheetAppender = new SheetAppender(getApplicationContext());
+                sheetBaseLinear.addView(sheetAppender);
+            }
+
+            if(sheetBaseLinear.getChildCount()!=1){
+                sheetBaseLinear.removeViewAt(sheetBaseLinear.getChildCount()-1);
+                int sheetWidth = sheetBaseLinear.getChildCount()*600;
+                int noteWidth = linearLayoutManager.getItemCount()*150;
+                sheetAppender = new SheetAppender(getApplicationContext(), true, noteWidth-sheetWidth+200);
+                sheetBaseLinear.addView(sheetAppender);
+            }else{
+                sheetAppender = new SheetAppender(getApplicationContext(), true, 100);
+                sheetBaseLinear.addView(sheetAppender);
+            }
+            /*
             noteParser.setData2(noteData);
             sheetRecyAdapter.index=0;
             for(int i=0; i<noteParser.getNoteLength(); i++) {
@@ -368,6 +401,20 @@ public class MusicViewActivity extends AppCompatActivity {
                     sheetBaseLinear.addView(sheetAppender);
                 }
             }
+            if(noteList.get(noteList.size()-1).node){
+                noteList.remove(noteList.size()-1);
+            }
+
+            if(sheetBaseLinear.getChildCount()!=1){
+                sheetBaseLinear.removeViewAt(sheetBaseLinear.getChildCount()-1);
+                int sheetWidth = sheetBaseLinear.getChildCount()*600;
+                int noteWidth = linearLayoutManager.getItemCount()*150;
+                sheetAppender = new SheetAppender(getApplicationContext(), true, noteWidth-sheetWidth+200);
+                sheetBaseLinear.addView(sheetAppender);
+            }else{
+                sheetAppender = new SheetAppender(getApplicationContext(), true, 100);
+                sheetBaseLinear.addView(sheetAppender);
+            }*/
             editor.clear();
             editor.apply();
         }

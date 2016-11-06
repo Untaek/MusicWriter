@@ -22,8 +22,7 @@
             android:name=".MusicWriteActivity"
             android:label="작곡하기" />
         <activity
-            android:name=".MainNavActivity"
-            android:label="@string/title_activity_main_nav">
+            android:name=".MainNavActivity">
 
         </activity>
         <activity

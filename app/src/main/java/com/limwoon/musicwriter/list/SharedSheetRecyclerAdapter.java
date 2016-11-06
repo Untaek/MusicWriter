@@ -79,17 +79,20 @@ public class SharedSheetRecyclerAdapter extends RecyclerView.Adapter<SharedSheet
 
     @Override
     public void onBindViewHolder(CustomViewHolder holder, int position) {
-        holder.title.setText(list.get(position).getTitle());
-        holder.author.setText(list.get(position).getAuthor());
-        holder.comments.setText(String.valueOf(list.get(position).getComments()));
-        holder.likes.setText(String.valueOf(list.get(position).getLikes()));
-        holder.date.setText(list.get(position).getUploadTime());
-        if(list.get(position).isFavorite()){
-            holder.favorite.setImageResource(R.drawable.star_fill);
-        }else{
-            holder.favorite.setImageResource(R.drawable.star_blank);
+        if(list.get(position)!=null){
+            holder.title.setText(list.get(position).getTitle());
+            holder.author.setText(list.get(position).getAuthor());
+            holder.comments.setText(String.valueOf(list.get(position).getComments()));
+            holder.likes.setText(String.valueOf(list.get(position).getLikes()));
+            holder.date.setText(list.get(position).getUploadTime());
+            if(list.get(position).isFavorite()){
+                holder.favorite.setImageResource(R.drawable.star_fill);
+            }else{
+                holder.favorite.setImageResource(R.drawable.star_blank);
 
+            }
         }
+
     }
 
     @Override
