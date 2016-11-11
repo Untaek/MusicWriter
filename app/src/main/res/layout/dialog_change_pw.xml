@@ -9,6 +9,7 @@
         android:inputType="textPassword"
         android:ems="10"
         android:id="@+id/dialog_editText_pw_now"
+        android:textSize="16sp"
         android:hint="현재 비밀번호"/>
     <EditText
         android:layout_width="match_parent"
@@ -16,6 +17,7 @@
         android:inputType="textPassword"
         android:ems="10"
         android:id="@+id/dialog_editText_pw1"
+        android:textSize="16sp"
         android:hint="변경할 비밀번호"/>
 
     <EditText
@@ -24,5 +26,12 @@
         android:inputType="textPassword"
         android:ems="10"
         android:id="@+id/dialog_editText_pw2"
+        android:textSize="16sp"
         android:hint="변경할 비밀번호 재확인"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="비밀번호는 영문자, 숫자, 특수문자 포함 최소 8자 이어야합니다"
+        android:textSize="12sp"
+        android:layout_marginTop="4dp"/>
 </LinearLayout>

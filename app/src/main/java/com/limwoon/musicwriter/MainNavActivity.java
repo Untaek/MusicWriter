@@ -197,12 +197,12 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
             textViewUserStrID.setText(PUBLIC_APP_DATA.getUserStrID());
             textViewUserEmail.setText(PUBLIC_APP_DATA.getUserEmail());
             mNavigationView.getMenu().setGroupVisible(R.id.nav_group_user, true);
-            userPicBitmap = userPicture.getUserPicBitmapFromCache(PUBLIC_APP_DATA.getImageName());
+            userPicBitmap = userPicture.getUserPicBitmapFromCache(PUBLIC_APP_DATA.getImageName(), UserPicture.LIGHT);
             userImage.setImageBitmap(userPicBitmap);
             userPicture.setOnPictureReadyListener(new UserPicture.OnPictureReadyListener() {
                 @Override
                 public void onLoaded() {
-                    userPicBitmap = userPicture.getUserPicBitmapFromCache(PUBLIC_APP_DATA.getImageName());
+                    userPicBitmap = userPicture.getUserPicBitmapFromCache(PUBLIC_APP_DATA.getImageName(), UserPicture.LIGHT);
                     userImage.setImageBitmap(userPicBitmap);
                 }
             });

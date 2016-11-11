@@ -34,6 +34,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
 
 public class UserInfActivity extends AppCompatActivity {
 
@@ -84,7 +85,7 @@ public class UserInfActivity extends AppCompatActivity {
         else
             button_changepw.setVisibility(View.GONE);
 
-        Bitmap userPicBitmap = userPicture.getUserPicBitmapFromCache(PUBLIC_APP_DATA.getImageName());
+        Bitmap userPicBitmap = userPicture.getUserPicBitmapFromCache(PUBLIC_APP_DATA.getImageName(), UserPicture.LIGHT);
         imageView_userPic.setImageBitmap(userPicBitmap);
 
         imageView_userPic.setOnClickListener(new View.OnClickListener() {
@@ -157,6 +158,8 @@ public class UserInfActivity extends AppCompatActivity {
                         .setPositiveButton("바꾸기", null)
                         .setNegativeButton("취소", null);
 
+                final Pattern pwPattern = Pattern.compile("(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,}");
+
                 final AlertDialog dialog = builder.create();
                 dialog.setOnShowListener(new DialogInterface.OnShowListener() {
                     @Override
@@ -170,8 +173,12 @@ public class UserInfActivity extends AppCompatActivity {
                                 if(!pw1.equals("") && !pw2.equals("") && !cpw.equals("")){
                                     if(pw1.equals(pw2)){
                                         isMatch = true;
-                                        String pws[] = {pw1, cpw};
-                                        new ChangePwAsync(UserInfActivity.this).execute(pws);
+                                        if(pwPattern.matcher(pw1).matches()){
+                                            String pws[] = {pw1, cpw};
+                                            new ChangePwAsync(UserInfActivity.this).execute(pws);
+                                        }else{
+                                            Toast.makeText(UserInfActivity.this, "규칙에 맞춰주세요", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
                                     else{
                                         isMatch = false;

@@ -61,7 +61,7 @@ public class SignInActivity extends AppCompatActivity {
                 email = editTextEmail.getText().toString();
 
                 Pattern idPattern = Pattern.compile("[a-zA-Z0-9_]{4,16}");
-                Pattern pwPattern = Pattern.compile("(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{12,}");
+                Pattern pwPattern = Pattern.compile("(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,}");
                 Pattern emailPattern = Pattern.compile("[0-9a-zA-Z]([\\-.\\w]*[0-9a-zA-Z\\-_+])*@([0-9a-zA-Z][\\-\\w]*[0-9a-zA-Z]\\.)+[a-zA-Z]{2,9}");
 
                 if(!id.equals("") && !pw1.equals("") && !pw2.equals("") && !email.equals("")) {

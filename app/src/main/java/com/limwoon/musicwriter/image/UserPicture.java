@@ -53,7 +53,10 @@ public class UserPicture {
         this.mListener=onPictureReadyListener;
     }
 
-    public Bitmap getUserPicBitmapFromCache(String imageName){
+    static public int PRIMARY = 0;
+    static public int LIGHT = 1;
+
+    public Bitmap getUserPicBitmapFromCache(String imageName, int color){
         Bitmap b = null;
         try {
             FileInputStream fis = context.openFileInput(imageName);
@@ -67,7 +70,10 @@ public class UserPicture {
         } catch (FileNotFoundException e) {
             Log.d("TAG", "onCreate: notFound " + imageName);
             notFound=true;
-            b = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_account_circle_white_48dp);
+            if(color==PRIMARY)
+                b = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_account_circle_white_48dp);
+            else if(color==LIGHT)
+                b = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_account_circle_black_48dp);
         } catch (IOException e) {
             e.printStackTrace();
         }

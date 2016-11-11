@@ -178,7 +178,7 @@ public class LoadComments extends AsyncTask<Long, Void, Integer> {
 
         UserPicture userPicture = new UserPicture(context);
         for(int i=(int)page*7; i<commentList.size(); i++){
-            Bitmap pic = userPicture.getUserPicBitmapFromCache("user_" + commentList.get(i).getUserID() + "_pic.jpg");
+            Bitmap pic = userPicture.getUserPicBitmapFromCache("user_" + commentList.get(i).getUserID() + "_pic.jpg", UserPicture.LIGHT);
             if(!userPicture.isNotFound() || commentList.get(i).getUserPicUrl().equals("0")){
                 commentList.get(i).setUserPicture(pic);
             }

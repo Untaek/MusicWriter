@@ -146,6 +146,14 @@ public class SharedMusicViewActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+
+        //super.onBackPressed();
+        setResult(1, resultIntent);
+        finish();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shared_music_view);
