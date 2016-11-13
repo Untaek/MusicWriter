@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.limwoon.musicwriter.data.SheetData;
 import com.limwoon.musicwriter.http.LoadSharedSheetList;
 import com.limwoon.musicwriter.list.SharedSheetRecyclerAdapter;
+import com.limwoon.musicwriter.list.SheetRecyDivider;
 
 import java.util.ArrayList;
 
@@ -65,6 +66,7 @@ public class SearchSheetActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mRecyclerAdapter);
         mLinearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
+        mRecyclerView.addItemDecoration(new SheetRecyDivider());
 
         editText_query = (EditText) findViewById(R.id.editText_query);
         textView_result_query = (TextView) findViewById(R.id.textView_result_query);

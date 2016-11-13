@@ -3,6 +3,11 @@ package com.limwoon.musicwriter.image;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.VectorDrawable;
 import android.util.Log;
 
 import com.limwoon.musicwriter.R;
@@ -67,7 +72,14 @@ public class UserPicture {
         } catch (FileNotFoundException e) {
             Log.d("TAG", "onCreate: notFound " + imageName);
             notFound=true;
-            b = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_account_circle_white_48dp);
+            /*
+            Drawable drawable = context.getResources().getDrawable(R.drawable.ic_account_box_light_24dp);
+            b = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_4444);
+            Canvas canvas = new Canvas(b);
+            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            drawable.draw(canvas);
+            */
+            b = null;//BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_account_box_black_24dp);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -93,7 +93,7 @@ public class NoteStore {
             NoteData prev = list.get(pos-1);
             NoteData curr = list.get(pos);
 
-            if(!prev.isBind && !curr.isBind && prev.duration==1 && curr.duration==1 && !prev.node && !curr.node){
+            if(!prev.isBind && !curr.isBind && prev.duration==1 && curr.duration==1 && !prev.node && !curr.node && !prev.rest && !curr.rest ){
                 prev.isBind = true;
                 prev.isPrev = true;
                 curr.isBind = true;

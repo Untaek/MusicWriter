@@ -41,7 +41,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_account_circle_white_48dp"
+                app:srcCompat="@drawable/ic_account_box_light_24dp"
                 android:id="@+id/imageView_user_picture_inf"
                 android:minHeight="100dp"
                 android:minWidth="100dp"
@@ -55,7 +55,7 @@
                 android:src="@drawable/ic_menu_camera"
                 android:labelFor="@id/imageView_user_picture_inf"
                 android:layout_gravity="bottom|end"
-                android:tint="@color/colorPrimaryLight"/>
+                android:tint="@color/colorAccent"/>
             <ProgressBar
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

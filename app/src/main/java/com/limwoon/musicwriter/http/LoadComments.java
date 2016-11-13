@@ -2,11 +2,15 @@ package com.limwoon.musicwriter.http;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.limwoon.musicwriter.R;
 import com.limwoon.musicwriter.SharedMusicViewActivity;
 import com.limwoon.musicwriter.data.CommentData;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
@@ -180,7 +184,16 @@ public class LoadComments extends AsyncTask<Long, Void, Integer> {
         for(int i=(int)page*7; i<commentList.size(); i++){
             Bitmap pic = userPicture.getUserPicBitmapFromCache("user_" + commentList.get(i).getUserID() + "_pic.jpg");
             if(!userPicture.isNotFound() || commentList.get(i).getUserPicUrl().equals("0")){
-                commentList.get(i).setUserPicture(pic);
+                if(pic==null){
+                    Drawable drawable = context.getResources().getDrawable(R.drawable.ic_account_box_light_24dp);
+                    Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_4444);
+                    Canvas canvas = new Canvas(bitmap);
+                    drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+                    drawable.draw(canvas);
+                    commentList.get(i).setUserPicture(bitmap);
+                }
+                else
+                    commentList.get(i).setUserPicture(pic);
             }
             else{
                 new GetCommentUserPicAsync(context, commentList, i, commentRecyclerAdapter).execute(commentList.get(i).getUserPicUrl());

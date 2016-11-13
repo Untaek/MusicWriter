@@ -1,8 +1,11 @@
 package com.limwoon.musicwriter.user;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.util.Base64;
 import android.util.Log;
 
@@ -10,6 +13,7 @@ import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
+import com.limwoon.musicwriter.LoginActivity;
 import com.limwoon.musicwriter.data.PUBLIC_APP_DATA;
 import com.limwoon.musicwriter.http.FaceBookUserData;
 import com.limwoon.musicwriter.http.FacebookCheckSignIn;
@@ -29,6 +33,20 @@ public class UserCheck {
 
     public UserCheck(Context context){
         this.context=context;
+    }
+
+    static public void showLoginDialog(final Context context){
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setMessage("로그인이 필요합니다")
+                .setPositiveButton("로그인", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(context, LoginActivity.class);
+                        context.startActivity(intent);
+                    }
+                })
+                .setNegativeButton("취소", null).create();
+        dialog.show();
     }
 
     public boolean checkIsLogin(){

@@ -58,7 +58,7 @@
                 <ImageView
                     android:layout_width="40dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/ic_play_arrow_black_24dp"
+                    android:src="@drawable/ic_play_circle_outline_black_24dp"
                     android:tint="@color/colorPrimary"
                     android:id="@+id/btn_play"
                     android:padding="0dp"
@@ -66,7 +66,7 @@
                 <ImageView
                     android:layout_width="40dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/ic_mode_edit_black_24dp"
+                    android:src="@drawable/modify"
                     android:tint="@color/colorPrimary"
                     android:id="@+id/btn_modify"
                     android:layout_marginLeft="20dp"

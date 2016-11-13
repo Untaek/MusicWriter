@@ -198,12 +198,20 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
             textViewUserEmail.setText(PUBLIC_APP_DATA.getUserEmail());
             mNavigationView.getMenu().setGroupVisible(R.id.nav_group_user, true);
             userPicBitmap = userPicture.getUserPicBitmapFromCache(PUBLIC_APP_DATA.getImageName());
-            userImage.setImageBitmap(userPicBitmap);
+            if(userPicBitmap!=null)
+                userImage.setImageBitmap(userPicBitmap);
+            else
+                userImage.setImageResource(R.drawable.ic_account_box_black_24dp);
+            Log.d(TAG, "onLoaded: "+userPicBitmap);
             userPicture.setOnPictureReadyListener(new UserPicture.OnPictureReadyListener() {
                 @Override
                 public void onLoaded() {
                     userPicBitmap = userPicture.getUserPicBitmapFromCache(PUBLIC_APP_DATA.getImageName());
-                    userImage.setImageBitmap(userPicBitmap);
+                    Log.d(TAG, "onLoaded: "+userPicBitmap);
+                    if(userPicBitmap!=null)
+                        userImage.setImageBitmap(userPicBitmap);
+                    else
+                        userImage.setImageResource(R.drawable.thumb_up_blank);
                 }
             });
             button_logout.setText("로그아웃");
@@ -214,7 +222,7 @@ public class MainNavActivity extends AppCompatActivity implements NavigationView
         else {
             linearUserInfContainer.setVisibility(View.INVISIBLE);
             mNavigationView.getMenu().setGroupVisible(R.id.nav_group_user, false);
-            userImage.setImageResource(R.drawable.ic_account_circle_white_48dp);
+            userImage.setImageResource(R.drawable.ic_account_box_light_24dp);
             button_logout.setText("로그인");
             textView_guest.setVisibility(View.VISIBLE);
             //linear_userStatusContainer.setBackgroundColor(getResources().getColor(R.color.colorPrimary));

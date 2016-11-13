@@ -229,7 +229,7 @@ public class SheetRecyListAdapter extends RecyclerView.Adapter<SheetRecyListAdap
                                             play.post(new Runnable() {
                                                 @Override
                                                 public void run() {
-                                                    play.setImageResource(R.drawable.ic_play_arrow_black_24dp);
+                                                    play.setImageResource(R.drawable.ic_play_circle_outline_black_24dp);
                                                 }
                                             });
                                             isPlay=false;
@@ -240,7 +240,7 @@ public class SheetRecyListAdapter extends RecyclerView.Adapter<SheetRecyListAdap
                                     play.post(new Runnable() {
                                         @Override
                                         public void run() {
-                                            play.setImageResource(R.drawable.ic_play_arrow_black_24dp);
+                                            play.setImageResource(R.drawable.ic_play_circle_outline_black_24dp);
                                         }
                                     });
                                     isPlay=false;

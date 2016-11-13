@@ -57,6 +57,7 @@ import com.limwoon.musicwriter.http.WriteCommentAsync;
 import com.limwoon.musicwriter.list.CommentRecyclerAdapter;
 import com.limwoon.musicwriter.list.SheetRecyDivider;
 import com.limwoon.musicwriter.sounds.Sounds;
+import com.limwoon.musicwriter.user.UserCheck;
 
 import java.util.ArrayList;
 
@@ -97,6 +98,12 @@ public class SharedMusicViewActivity extends AppCompatActivity {
     static public boolean commentLoading = false;
 
     Intent resultIntent = new Intent();
+
+    @Override
+    public void onBackPressed() {
+        setResult(1, resultIntent);
+        finish();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -169,8 +176,6 @@ public class SharedMusicViewActivity extends AppCompatActivity {
         textView_like.setText(String.valueOf(data.getLikes()));
 
         if(!PUBLIC_APP_DATA.isLogin()){
-            button_like.setEnabled(false);
-            button_favorite.setEnabled(false);
             button_writeComment.setEnabled(false);
             editText_writeComment.setEnabled(false);
             editText_writeComment.setText("로그인이 필요합니다");
@@ -315,7 +320,7 @@ public class SharedMusicViewActivity extends AppCompatActivity {
                             button_play.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    button_play.setImageResource(R.drawable.ic_play_arrow_black_48dp);
+                                    button_play.setImageResource(R.drawable.ic_play_circle_outline_black_24dp);
                                 }
                             });
                         }
@@ -356,8 +361,9 @@ public class SharedMusicViewActivity extends AppCompatActivity {
                         textView_like.setText(String.valueOf(data.getLikes()));
                     }
 
-                }else{
-                    Toast.makeText(SharedMusicViewActivity.this, "로그인 해주세요", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    UserCheck.showLoginDialog(SharedMusicViewActivity.this);
                 }
             }
         });
@@ -381,8 +387,9 @@ public class SharedMusicViewActivity extends AppCompatActivity {
                         userFavoriteState=true;
                         resultIntent.putExtra("favorite", userFavoriteState);
                     }
-                }else{
-                    Toast.makeText(SharedMusicViewActivity.this, "로그인 해주세요", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    UserCheck.showLoginDialog(SharedMusicViewActivity.this);
                 }
             }
         });

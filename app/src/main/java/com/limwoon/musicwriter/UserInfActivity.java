@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
@@ -70,9 +72,7 @@ public class UserInfActivity extends AppCompatActivity {
         textView_userStrID.setText(PUBLIC_APP_DATA.getUserStrID());
         textView_userEmail = (TextView) findViewById(R.id.textView_info_email);
         textView_userEmail.setText(PUBLIC_APP_DATA.getUserEmail());
-        YoYo.with(Techniques.FadeInDown)
-                .duration(500)
-                .playOn(imageView_userPic);
+
 
         Button button_changepw = (Button) findViewById(R.id.button_change_pw);
         final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_change_pic);
@@ -85,7 +85,16 @@ public class UserInfActivity extends AppCompatActivity {
             button_changepw.setVisibility(View.GONE);
 
         Bitmap userPicBitmap = userPicture.getUserPicBitmapFromCache(PUBLIC_APP_DATA.getImageName());
-        imageView_userPic.setImageBitmap(userPicBitmap);
+        if(userPicBitmap != null){
+            imageView_userPic.setImageBitmap(userPicBitmap);
+        }
+        else{
+            Drawable drawable = getResources().getDrawable(R.drawable.ic_account_box_light_24dp);
+            Bitmap b = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_4444);
+            Canvas canvas = new Canvas(b);
+            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            drawable.draw(canvas);
+        }
 
         imageView_userPic.setOnClickListener(new View.OnClickListener() {
             @Override

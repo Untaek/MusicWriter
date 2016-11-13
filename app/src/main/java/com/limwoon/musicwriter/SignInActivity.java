@@ -61,14 +61,14 @@ public class SignInActivity extends AppCompatActivity {
                 email = editTextEmail.getText().toString();
 
                 Pattern idPattern = Pattern.compile("[a-zA-Z0-9_]{4,16}");
-                Pattern pwPattern = Pattern.compile("(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{12,}");
+                Pattern pwPattern = Pattern.compile("(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,}");
                 Pattern emailPattern = Pattern.compile("[0-9a-zA-Z]([\\-.\\w]*[0-9a-zA-Z\\-_+])*@([0-9a-zA-Z][\\-\\w]*[0-9a-zA-Z]\\.)+[a-zA-Z]{2,9}");
 
                 if(!id.equals("") && !pw1.equals("") && !pw2.equals("") && !email.equals("")) {
                     if(!idPattern.matcher(id).matches()){
                         Toast.makeText(getBaseContext(), "아이디는 영문, 숫자를 포함해 최소 4글자 최대 16글자만 가능합니다", Toast.LENGTH_SHORT).show();
                     }else if(!pwPattern.matcher(pw1).matches()){
-                        Toast.makeText(getBaseContext(), "비밀번호는 영문, 숫자, 특수문자를 포함해 최소 12글자 이상이어야 합니다", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getBaseContext(), "비밀번호는 영문, 숫자, 특수문자를 포함해 최소 8글자 이상이어야 합니다", Toast.LENGTH_SHORT).show();
                     }else if(!emailPattern.matcher(email).matches()){
                         Toast.makeText(getBaseContext(), "알맞은 이메일 형식이 아닙니다", Toast.LENGTH_SHORT).show();
                     }else{

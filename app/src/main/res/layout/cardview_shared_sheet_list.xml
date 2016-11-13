@@ -70,7 +70,7 @@
                     <ImageView
                         android:layout_width="70dp"
                         android:layout_height="50dp"
-                        android:src="@drawable/ic_play_arrow_black_24dp"
+                        android:src="@drawable/ic_play_circle_outline_black_24dp"
                         style="@style/Widget.AppCompat.Button.Borderless.Colored"
                         android:id="@+id/button_play_in_list"
                         android:tint="@color/colorSharedSheetSub"

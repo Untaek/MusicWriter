@@ -229,12 +229,6 @@ public class MusicWriteActivity extends AppCompatActivity {
                         public void run() {
                             for (i = musicProgress; i < noteList.size(); i++) {
                                 musicProgress = i;
-                                for (int j = 0; j < 6; j++) {
-                                    if (noteList.get(i).tone[j] != -1) {
-                                        NativeClass.setPlayingBufferQueue(j, noteList.get(i).tone[j]);
-                                        Log.d("TTT", "runnote: " + noteList.get(i).tone[j]);
-                                    }
-                                }
                                 horizontalScrollView.post(new Runnable() {
                                     @Override
                                     public void run() {
@@ -263,6 +257,11 @@ public class MusicWriteActivity extends AppCompatActivity {
                                 });
                                 if (noteList.get(i).node) continue;
 
+                                for (int j = 0; j < 6; j++) {
+                                    if (noteList.get(i).tone[j] != -1) {
+                                        NativeClass.setPlayingBufferQueue(j, noteList.get(i).tone[j]);
+                                    }
+                                }
                                 try {
                                     Thread.sleep(Sounds.getDuration(noteList.get(i).duration, tempo));
                                     NativeClass.setStopBufferQueue();
@@ -308,7 +307,7 @@ public class MusicWriteActivity extends AppCompatActivity {
                             btnPlayMusic.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    btnPlayMusic.setImageResource(R.drawable.ic_play_arrow_black_36dp);
+                                    btnPlayMusic.setImageResource(R.drawable.ic_play_circle_outline_black_24dp);
                                 }
                             });
                         }
@@ -318,7 +317,7 @@ public class MusicWriteActivity extends AppCompatActivity {
                     musicSeekBar.setAlpha(1);
                     musicSeekBar.setOnTouchListener(null);
                     isPlay = false;
-                    btnPlayMusic.setImageResource(R.drawable.ic_play_arrow_black_36dp);
+                    btnPlayMusic.setImageResource(R.drawable.ic_play_circle_outline_black_24dp);
                     if (playThread != null) {
                         playThread.interrupt();
                     }
@@ -610,7 +609,7 @@ public class MusicWriteActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.action_save_new) {
             View editVIew = getLayoutInflater().inflate(R.layout.dialog_save_new, null);
             final EditText editText = (EditText) editVIew.findViewById(R.id.editText_title);
-            editText.findFocus();
+            editText.requestFocus();
             AlertDialog dialog = new AlertDialog.Builder(this)
                     .setTitle("제목을 입력해주세요")
                     .setPositiveButton("저장", new DialogInterface.OnClickListener() {
@@ -672,12 +671,13 @@ public class MusicWriteActivity extends AppCompatActivity {
                                 currentId = cursor.getInt(cursor.getColumnIndexOrThrow(DefineSQL._ID));
                                 Log.d("currentid", ""+currentId);
 
+                                /*
                                 SharedPreferences sharedPreferences = getSharedPreferences("TempNoteData", MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
 
                                 editor.putString("noteData", jsonArray.toString());
                                 editor.apply();
-
+*/
                                 Toast.makeText(getApplicationContext(), "새로 저장합니다", Toast.LENGTH_SHORT).show();
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -729,7 +729,7 @@ public class MusicWriteActivity extends AppCompatActivity {
                 SharedPreferences sharedPreferences = getSharedPreferences("TempNoteData", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
 
-                editor.putString("noteData", jsonArray.toString());
+                editor.putString("noteData", jsonObject.toString());
                 editor.apply();
             }catch (JSONException e){
                 e.printStackTrace();
