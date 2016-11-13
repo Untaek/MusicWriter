@@ -182,7 +182,7 @@ public class LoadComments extends AsyncTask<Long, Void, Integer> {
 
         UserPicture userPicture = new UserPicture(context);
         for(int i=(int)page*7; i<commentList.size(); i++){
-            Bitmap pic = userPicture.getUserPicBitmapFromCache("user_" + commentList.get(i).getUserID() + "_pic.jpg");
+            Bitmap pic = userPicture.getUserPicBitmapFromCache("user_" + commentList.get(i).getUserID() + "_pic.jpg", UserPicture.LIGHT);
             if(!userPicture.isNotFound() || commentList.get(i).getUserPicUrl().equals("0")){
                 if(pic==null){
                     Drawable drawable = context.getResources().getDrawable(R.drawable.ic_account_box_light_24dp);

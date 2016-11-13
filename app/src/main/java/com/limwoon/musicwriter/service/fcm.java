@@ -113,7 +113,7 @@ public class fcm extends FirebaseMessagingService {
             Notification noti = new NotificationCompat.Builder(getApplicationContext())
                     .setContentTitle(data.get("title"))
                     .setContentText(data.get("text"))
-                    .setSmallIcon(R.drawable.com_facebook_button_icon)
+                    .setSmallIcon(R.drawable.logo_soft)
                     .setContentIntent(resultPendingIntent)
                     .setAutoCancel(true)
                     .build();

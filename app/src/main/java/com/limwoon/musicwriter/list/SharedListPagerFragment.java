@@ -312,7 +312,6 @@ public class SharedListPagerFragment extends Fragment {
                 sheetList2.remove(index);
                 mRecyclerAdapter2.notifyDataSetChanged();
             }
-
         }else if(fragNum==3){
             if(!deleted){
                 new RefreshListItem(sheetList3, index)
@@ -332,9 +331,7 @@ public class SharedListPagerFragment extends Fragment {
                 sheetList3.remove(index);
                 mRecyclerAdapter3.notifyDataSetChanged();
             }
-
         }
-
         super.onActivityResult(requestCode, resultCode, data);
     }
 }

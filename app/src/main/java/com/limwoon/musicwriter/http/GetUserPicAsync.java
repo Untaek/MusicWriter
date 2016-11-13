@@ -80,7 +80,7 @@ public class GetUserPicAsync extends AsyncTask<String, Void, Integer> {
 
     @Override
     protected void onPostExecute(Integer result) {
-        Bitmap bit = new UserPicture(context).getUserPicBitmapFromCache(PUBLIC_APP_DATA.getImageName());
+        Bitmap bit = new UserPicture(context).getUserPicBitmapFromCache(PUBLIC_APP_DATA.getImageName(), UserPicture.LIGHT);
         if(imageView!=null)
             imageView.setImageBitmap(bit);
         if(progressBar!=null)
